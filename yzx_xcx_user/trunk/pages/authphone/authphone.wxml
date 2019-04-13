@@ -1,0 +1,8 @@
+<view class="auth-box">
+    <view class="auth-logo"></view>
+    <view class="auth-title">有妙课</view>
+    <view class="auth-split"></view>
+    <view class="auth-describe1">请确认以下授权信息</view>
+    <view class="auth-describe2">获取你的信息（手机号码）仅用于参加活动</view>
+    <button class="auth-btn" type="primary" open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumberFN">授权</button>
+</view>

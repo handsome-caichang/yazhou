@@ -1,0 +1,2 @@
+<!-- 处理已登录 -->
+<web-view src="{{redirectUrl}}" bindmessage="bindGetMsg"></web-view>

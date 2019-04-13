@@ -1,0 +1,9 @@
+<scroll-view scroll-y="{{true}}" class="body">
+    <view class="void"></view>
+    <canvas canvas-id="cvs" style="width:700rpx;height:{{cvsHeight}}px;" class="canvas" wx:if="{{!savedPic}}"></canvas>
+    <image mode="widthFix" src="{{savedPic}}" wx:if="{{savedPic}}" class="postimg"></image>
+
+    <cover-view class="save-btn" wx:if="{{ifSavePhotos}}" bindtap="savePoster">保存海报</cover-view>
+    <button class="save-btn" wx:else open-type="openSetting" bindopensetting="callback">保存海报</button>
+    <view class="void"></view>
+</scroll-view>    

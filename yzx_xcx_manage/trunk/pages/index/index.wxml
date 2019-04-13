@@ -1,0 +1,22 @@
+<!-- 处理微信授权 -->
+<view class="auth-box" wx:if="{{showAuthBtn}}">
+    <view class="auth-logo"></view>
+    <view class="auth-title">妙招生</view>
+    <view class="auth-describe">申请获得您的微信昵称和头像</view>
+    <view class="auth-btn-wrap">
+        <button class="auth-btn" open-type="getUserInfo" bindgetuserinfo="getUserInfoFN">微信授权</button>
+    </view>
+</view>
+
+<!-- 处理加载动画 -->
+<view class="loading-box" wx:if="{{count==0&&!showAuthBtn}}">
+    <view class="loading"></view>
+</view>
+
+<!-- 处理页面回退 -->
+<view class="exit-box" wx:if="{{count>0}}">
+    <view class="exit-logo"></view>
+    <view class="exit-tips">点击“退出小程序”，下次打开时会自动登录，无须重新登录</view>
+    <view class="exit-btn goto-index" bindtap="enterIndex">进入首页</view> 
+    <navigator class="exit-btn" open-type="exit" target="miniProgram">退出小程序</navigator> 
+</view>

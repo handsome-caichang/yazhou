@@ -1,0 +1,32 @@
+.body {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('//cdn01.xiaogj.com/file/f20af664039e4d5b87a41c1e07516186/201903/014b275022b24f6384058a58b19eb91d.png');
+}
+.void {
+    height: 30px;
+}
+.postimg{
+    display: block;
+    width:700rpx;
+    height:500px;
+    margin:0 auto;
+}
+.canvas{
+    margin: 0 auto;
+    border-radius: 10px;    
+}
+.save-btn{
+    margin: 18px auto 0 auto;
+    width: 260px;
+    height: 44px;
+    line-height: 44px;
+    color: #fff;
+    border-radius: 44px;
+    background: #FFBF00;
+    text-align: center;
+    font-size: 16px;
+}

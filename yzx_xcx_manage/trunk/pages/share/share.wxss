@@ -1,0 +1,65 @@
+.body {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('//cdn01.xiaogj.com/file/f20af664039e4d5b87a41c1e07516186/201903/014b275022b24f6384058a58b19eb91d.png');
+}
+.save-btn{
+    margin: 30px auto 0 auto;
+    width: 260px;
+    height: 44px;
+    line-height: 44px;
+    color: #fff;
+    border-radius: 44px;
+    background: #FFBF00;
+    text-align: center;
+    font-size: 16px;
+}
+.desc {
+    color: #AAAAAA;
+    font-size: 12px;
+    margin-top: 10px;
+}
+.void {
+    height: 30px;
+}
+.share-container{
+    z-index:100;
+    background: #fff;
+    width:calc(100% - 70px);
+    margin:0 auto;
+    border-radius:10px;
+    padding:28px 20px 33px 20px;
+}
+.share-container .title{
+    font-size:18px;
+    width:100%;
+    display: -webkit-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    color: #666666;
+}
+.share-container .banner{
+    width:100%;
+    margin-top:20px;
+}
+.bg {
+    width: 100%;
+    height: 0;
+    padding-top: 80%;
+}
+.save-btn{
+    margin: 18px auto 0 auto;
+    width: 260px;
+    height: 44px;
+    line-height: 44px;
+    color: #fff;
+    border-radius: 44px;
+    background: #FF8B02;
+    text-align: center;
+    font-size: 16px;
+}

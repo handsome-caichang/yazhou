@@ -1,0 +1,122 @@
+page{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+.cvs-container{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding-top: 30px;
+    background: rgba(0,0,0,.4);
+    z-index:1000;
+}
+.share-container{
+    z-index:100;
+    background: #fff;
+    width:calc(100% - 70px);
+    margin:35px auto;
+    border-radius:10px;
+    padding:20px;
+    min-height: 450px;
+}
+.share-container .title{
+    font-size:16px;
+    font-weight: bold;
+    width:100%;
+    height: 45px;
+    display: -webkit-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+.share-container .banner{
+    width:100%;
+    margin-top:20px;
+}
+.line-wraper{
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    color:#888;
+    font-size:12px;
+    margin-top:20px;
+}
+.line-wraper .line{
+    width:80px;
+    border-top:1px solid #aaa;
+}
+.btns {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    padding: 0 1px;
+}
+.btn-box {
+    border-radius: 20px;
+    border: 1px solid #DAD8D7;
+    border-radius:20px;
+    border:1px solid #DAD8D7;
+    width:97%;
+    height:36px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.btn-wraper{
+    flex: 1;
+    height: 38px;
+    line-height: 38px;
+    margin: 28px 0 0 0;
+    padding: 0;
+    color: #888888;
+    font-size: 14px;
+    background:rgba(255,255,255,1);
+}
+.btn-wraper::after {
+    border: none;
+}
+.btn-wraper:first-child {
+    margin-right: 10px;
+}
+.btn-wraper .btn-img{
+    width: 25px;
+    height: 21px;
+    margin-right: 5px;
+}
+.bg-img{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index:-1;    
+}
+.canvas{
+    margin: 0 auto;
+    border-radius: 10px;    
+}
+.save-btn{
+    margin: 18px auto 0 auto;
+    width: 260px;
+    height: 44px;
+    line-height: 44px;
+    color: #fff;
+    border-radius: 44px;
+    background: #FF8B02;
+    text-align: center;
+    font-size: 16px;
+}
+.postimg{
+    display: block;
+    width:700rpx;
+    height:500px;
+    margin:0 auto;
+}

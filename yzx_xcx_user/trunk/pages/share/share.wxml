@@ -1,0 +1,38 @@
+<view class="container">    
+    <image src="./img/bg.png" class="bg-img"></image>
+    <view class="share-container">
+        <view class="title">{{template.title}}</view>
+        <image src="{{template.mainimg}}" class="banner" mode="aspectFit"></image>
+        <view class="line-wraper">
+            <view class="line"></view>
+            <text>{{template.tips}}</text>
+            <view class="line"></view>
+        </view>
+        <view class="btns">
+            <button class="btn-wraper" open-type="share">
+                  <view class='btn-box'>
+                <image class="btn-img" src="https://cdn01.xiaogj.com/file/2c6969730ace493594b396b1a56d4e71/201903/2193dc353bb94940a093f041b31ab72e.png"></image>
+                分享至微信
+              </view>
+            </button>
+            <button class="btn-wraper" wx:if="{{ifSavePhotos}}" bindtap="createPoster">
+              <view class='btn-box'>
+                  <image class="btn-img" src="https://cdn01.xiaogj.com/file/fddd691dce1a46c59ee0b6d020cf17cc/201903/53cc5614b23f45069a20b71dc183975e.png"></image>
+                  生成海报
+              </view>
+            </button>
+            <button class="btn-wraper" wx:if="{{!ifSavePhotos}}" open-type="openSetting" bindopensetting="callback">
+                <view class='btn-box'>
+                  <image class="btn-img" src="https://cdn01.xiaogj.com/file/fddd691dce1a46c59ee0b6d020cf17cc/201903/53cc5614b23f45069a20b71dc183975e.png"></image>
+                  生成海报
+              </view>
+            </button>
+
+        </view>
+    </view>
+    <view class="cvs-container" wx:if="{{createCvs}}">        
+        <canvas canvas-id="cvs" style="width:700rpx;height:{{cvsHeight}}px;" class="canvas" wx:if="{{!savedPic}}"></canvas>
+        <image mode="widthFix" src="{{savedPic}}" wx:if="{{savedPic}}" class="postimg"></image>
+        <cover-view class="save-btn" bindtap="closeCvs">好的</cover-view>
+    </view>
+</view>
