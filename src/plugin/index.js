@@ -1,17 +1,14 @@
-import basecss from './scss/index.scss'
+import vueComponents from './components/components.js'
 
 // 引入工具库
-import app from './app/app.js'
+import appExtendPlugin from './app-extend/app-extend.js'
 
-import vueComponents from './components/components.js'
-import vueFilters from './filters/filters.js'
+export default {
+    install: function(Vue, options) {
+        appExtendPlugin.install(Vue, options)
 
-Vue.mixin({
-    components: vueComponents,
-    filters: vueFilters
-});
-
-// 解决在移动设备上键盘弹出输入的各种问题
-app.listenKeyboard();
-
-export default app
+        Vue.mixin({
+            components: vueComponents
+        });
+    }
+}

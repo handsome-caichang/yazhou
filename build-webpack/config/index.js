@@ -8,30 +8,14 @@ function resolve(dir) {
         : path.resolve(__dirname, '../../release')
 }
 
-
-var port = 9999
-// 获取本地IP
-var ServerHost = (function getIPAdress() {
-    var interfaces = require('os').networkInterfaces();
-    for (var devName in interfaces) {
-        var iface = interfaces[devName];
-        for (var i = 0; i < iface.length; i++) {
-            var alias = iface[i];
-            if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
-                return alias.address;
-            }
-        }
-    }
-})()
-
-
 module.exports = {
+    resolve: resolve,
+    
     dev: {
-        index: resolve('index.html'),        
+        index: resolve('index.html'),
         assetsRoot: resolve(),
-        assetsSubDirectory: '',
-        // assetsPublicPath: '/',
-        assetsPublicPath: `https://${ServerHost}:${port}/`,
+        assetsSubDirectory: 'static',
+        assetsPublicPath: '/im/html/',
 
         cacheBusting: true,
 
@@ -46,9 +30,9 @@ module.exports = {
     build: {
         index: resolve('index.html'),
         assetsRoot: resolve(),
-        assetsSubDirectory: '',
-        // assetsPublicPath: 'https://cdn01.xiaogj.com/uploads/common/m/',
-        assetsPublicPath: 'https://cdn01.xiaogj.com/uploads/mobile/m/',
+        assetsSubDirectory: 'static',
+        // assetsPublicPath: '/im/html/',        
+        assetsPublicPath: '//cdn01.xiaogj.com/uploads/mobile/im/',
 
         jsSourceMap: false,
         cssSourceMap: false,
@@ -64,5 +48,33 @@ module.exports = {
     },
 
     proxy: {
+        '/api': {
+            target: 'https://imdevp.xiaogj.com',
+            changeOrigin: true,
+        },
+        '/user': {
+            target: 'https://imdevp.xiaogj.com',
+            changeOrigin: true,
+        },
+        '/imdevp/api': {
+            target: 'https://imdevp.xiaogj.com',
+            changeOrigin: true,
+            pathRewrite: {'^/imdevp/api': '/api'}
+        },
+        '/imdevp/user': {
+            target: 'https://imdevp.xiaogj.com',
+            changeOrigin: true,
+            pathRewrite: {'^/imdevp/user': '/user'}
+        },
+        '/im/api': {
+            target: 'https://im.xiaogj.com',
+            changeOrigin: true,
+            pathRewrite: {'^/im/api': '/api'}
+        },
+        '/im/user': {
+            target: 'https://im.xiaogj.com',
+            changeOrigin: true,
+            pathRewrite: {'^/im/user': '/user'}
+        },
     }
 }

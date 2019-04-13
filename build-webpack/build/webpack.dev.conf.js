@@ -6,7 +6,6 @@ const path = require('path')
 const baseWebpackConfig = require('./webpack.base.conf')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 
 const config = require('../config')
@@ -14,7 +13,7 @@ var dev = config.dev
 var proxys = config.proxy
 
 var sourceMap = { "sourceMap": dev.cssSourceMap }
-var port = 9999
+var port = 3001
 // 获取本地IP
 var ServerHost = (function getIPAdress() {
     var interfaces = require('os').networkInterfaces();
@@ -29,43 +28,44 @@ var ServerHost = (function getIPAdress() {
     }
 })()
 
+
 const devWebpackConfig = merge(baseWebpackConfig, {
     output: {
         path: dev.assetsRoot,
-        filename: utils.assetsPath('public/plugin/plugin/[name].js'),
-        chunkFilename: utils.assetsPath('public/plugin/plugin/[name].js'),
+        filename: utils.assetsPath('js/[name].js'),
+        chunkFilename: utils.assetsPath('js/[name].js'),
         publicPath: dev.assetsPublicPath
     },
 
     module: {
-        rules: utils.styleLoaders({
-            sourceMap: config.dev.cssSourceMap, 
-            extract: true,
-            usePostCSS: true
-        }).concat([
-            {
-                test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
-                loader: 'url-loader',
-                options: {
-                    limit: 50000,
-                    name: utils.assetsPath('public/plugin/assets/img/[name].[hash:7].[ext]')
+        rules: [{
+            "test": /\.css$/,
+            "use": [
+                "vue-style-loader", 
+                {
+                    "loader": "css-loader",
+                    "options": sourceMap
+                }, {
+                    "loader": "postcss-loader",
+                    "options": sourceMap
                 }
-            }, {
-                test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
-                loader: 'url-loader',
-                options: {
-                    limit: 50000,
-                    name: utils.assetsPath('public/plugin/assets/media/[name].[hash:7].[ext]')
+            ]
+        }, {
+            "test": /\.scss$/,
+            "use": [
+                "vue-style-loader", 
+                {
+                    "loader": "css-loader",
+                    "options": sourceMap
+                }, {
+                    "loader": "postcss-loader",
+                    "options": sourceMap
+                }, {
+                    "loader": "sass-loader",
+                    "options": sourceMap
                 }
-            }, {
-                test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
-                loader: 'url-loader',
-                options: {
-                    limit: 50000,
-                    name: utils.assetsPath('public/plugin/assets/fonts/[name].[hash:7].[ext]')
-                }
-            }
-        ])
+            ]
+        }]
     },
 
     devtool: dev.jsSourceMap ? 'cheap-module-eval-source-map' : false,
@@ -74,42 +74,26 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         clientLogLevel: 'warning',
         hot: true,
         // contentBase: false,
-        contentBase: dev.assetsRoot,
         compress: true,
         https: true,
         host: '0.0.0.0',
         port: port,
         disableHostCheck: true,
         open: true,
-        openPage: '',
+        openPage: 'im/html/index.html',
         overlay: true,
         publicPath: dev.assetsPublicPath,
         proxy: proxys,
         quiet: true, // necessary for FriendlyErrorsPlugin
         inline: true,
         public: `${ServerHost}:${port}`,
-        progress: true,
-        setup: app => {
-            app.use('*', (req, res, next) => {
-                res.header("Access-Control-Allow-Credentials", "true")
-                res.header("Access-Control-Allow-Origin", "*")
-                res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
-                res.header("Access-Control-Allow-Methods", "POST, GET")
-                next();
-            })
-        }
+        progress: true
     },
 
     plugins: [
         new webpack.DefinePlugin({
             'process.env': dev.env
         }),
-
-        new ExtractTextPlugin({
-            filename: utils.assetsPath('public/plugin/plugin/[name].css'),
-            allChunks: true,
-        }),
-
         new webpack.HotModuleReplacementPlugin(),
 
         // HMR shows correct file names in console on update.
@@ -120,9 +104,19 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         new HtmlWebpackPlugin({
             filename: dev.index,
             template: 'index.html',
-            chunks: ['plugin'],
-            // inject: true
-            inject: 'head'
+            inject: true
+        }),
+        
+        new HtmlWebpackPlugin({
+          filename: '404.html',
+          template: '404.html',
+          inject: false
+        }),
+
+        new HtmlWebpackPlugin({
+            filename: config.resolve('index_jie.html'),
+            template: 'index_jie.html',
+            inject: true
         }),
 
         new CopyWebpackPlugin([{

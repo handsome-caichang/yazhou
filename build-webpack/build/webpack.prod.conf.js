@@ -12,45 +12,47 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 const build = require('../config').build
 
-var sourceMap = { "sourceMap": build.cssSourceMap }
+var sourceMap = {
+    "sourceMap": build.cssSourceMap
+}
 
 const webpackConfig = merge(baseWebpackConfig, {
     output: {
         path: build.assetsRoot,
-        filename: utils.assetsPath('public/plugin/plugin/[name].js'),
-        chunkFilename: utils.assetsPath('public/plugin/plugin/[name].js'),
+        filename: utils.assetsPath('js/[name].[chunkhash].js'),
+        chunkFilename: utils.assetsPath('js/[name].[chunkhash].js'),
         publicPath: build.assetsPublicPath
     },
 
     module: {
-        rules: utils.styleLoaders({
-            sourceMap: build.cssSourceMap,
-            extract: true,
-            usePostCSS: true
-        }).concat([
-            {
-                test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
-                loader: 'file-loader',
-                options: {
-                    limit: 50000,
-                    name: utils.assetsPath('public/plugin/assets/img/[name].[hash:7].[ext]')
-                }
-            }, {
-                test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
-                loader: 'file-loader',
-                options: {
-                    limit: 50000,
-                    name: utils.assetsPath('public/plugin/assets/media/[name].[hash:7].[ext]')
-                }
-            }, {
-                test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
-                loader: 'file-loader',
-                options: {
-                    limit: 50000,
-                    name: utils.assetsPath('public/plugin/assets/fonts/[name].[hash:7].[ext]')
-                }
-            }
-        ])
+        rules: [{
+            "test": /\.css$/,
+            "use": ExtractTextPlugin.extract({
+                "fallback": 'vue-style-loader',
+                "use": [{
+                    "loader": 'css-loader',
+                    "options": sourceMap
+                }, {
+                    "loader": 'postcss-loader',
+                    "options": sourceMap
+                }]
+            })
+        }, {
+            "test": /\.scss$/,
+            "use": ExtractTextPlugin.extract({
+                "fallback": 'vue-style-loader',
+                "use": [{
+                    "loader": 'css-loader',
+                    "options": sourceMap
+                }, {
+                    "loader": 'postcss-loader',
+                    "options": sourceMap
+                }, {
+                    "loader": "sass-loader",
+                    "options": sourceMap
+                }]
+            })
+        }]
     },
 
     devtool: build.jsSourceMap ? '#source-map' : false,
@@ -71,26 +73,76 @@ const webpackConfig = merge(baseWebpackConfig, {
         }),
 
         new ExtractTextPlugin({
-            filename: utils.assetsPath('public/plugin/plugin/[name].css'),
+            filename: utils.assetsPath('css/[name].[contenthash].css'),
             allChunks: true,
         }),
 
         new OptimizeCSSPlugin({
-            cssProcessorOptions: build.cssSourceMap ?
-                {
-                    safe: true,
-                    map: {
-                        inline: false
-                    }
-                } :
-                {
-                    safe: true
+            cssProcessorOptions: build.cssSourceMap ? {
+                safe: true,
+                map: {
+                    inline: false
                 }
+            } : {
+                safe: true
+            }
+        }),
+
+        new HtmlWebpackPlugin({
+            filename: build.index,
+            template: 'index.html',
+            inject: true,
+            minify: {
+                removeComments: true,
+                collapseWhitespace: true,
+                removeAttributeQuotes: true,
+                removeScriptTypeAttributes: true,
+                removeStyleLinkTypeAttributes: true,
+                minifyCSS: true,
+                minifyJS: true
+            },
+            chunksSortMode: 'dependency'
+        }),
+
+        new HtmlWebpackPlugin({
+            filename: '404.html',
+            template: '404.html',
+            inject: false,
+            minify: {
+                removeComments: true,
+                collapseWhitespace: true,
+                removeAttributeQuotes: true
+            },
         }),
 
         new webpack.HashedModuleIdsPlugin(),
 
         new webpack.optimize.ModuleConcatenationPlugin(),
+
+        /*new webpack.optimize.CommonsChunkPlugin({
+            name: 'vendor',
+            minChunks(module) {
+                // any required modules inside node_modules are extracted to vendor
+                return (
+                    module.resource &&
+                    /\.js$/.test(module.resource) &&
+                    module.resource.indexOf(
+                        path.join(__dirname, '../../node_modules')
+                    ) === 0
+                )
+            }
+        }),
+        new webpack.optimize.CommonsChunkPlugin({
+            name: 'manifest',
+            minChunks: Infinity
+        }),*/
+
+        new webpack.optimize.CommonsChunkPlugin({
+            name: 'app',
+            async: 'vendor-async',
+            children: true,
+            minChunks: 3
+        }),
 
         new CopyWebpackPlugin([{
             from: path.resolve(__dirname, '../../static'),
