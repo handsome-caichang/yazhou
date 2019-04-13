@@ -19,47 +19,47 @@ var sourceMap = {
 const webpackConfig = merge(baseWebpackConfig, {
     output: {
         path: build.assetsRoot,
-        filename: utils.assetsPath('js/[name].[chunkhash].js'),
-        chunkFilename: utils.assetsPath('js/[name].[id].[chunkhash].js'),
+        filename: utils.assetsPath("js/[name].[chunkhash].js"),
+        chunkFilename: utils.assetsPath("js/[name].[id].[chunkhash].js"),
         publicPath: build.assetsPublicPath
     },
 
     module: {
         rules: [{
-            "test": /\.css$/,
-            "use": ExtractTextPlugin.extract({
-                "fallback": 'vue-style-loader',
-                "use": [{
-                    "loader": 'css-loader',
-                    "options": sourceMap
+            test: /\.css$/,
+            use: ExtractTextPlugin.extract({
+                fallback: "vue-style-loader",
+                use: [{
+                    loader: "css-loader",
+                    options: sourceMap
                 }, {
-                    "loader": 'postcss-loader',
-                    "options": sourceMap
+                    loader: "postcss-loader",
+                    options: sourceMap
                 }]
             })
         }, {
-            "test": /\.scss$/,
-            "use": ExtractTextPlugin.extract({
-                "fallback": 'vue-style-loader',
-                "use": [{
-                    "loader": 'css-loader',
-                    "options": sourceMap
+            test: /\.scss$/,
+            use: ExtractTextPlugin.extract({
+                fallback: "vue-style-loader",
+                use: [{
+                    loader: "css-loader",
+                    options: sourceMap
                 }, {
-                    "loader": 'postcss-loader',
-                    "options": sourceMap
+                    loader: "postcss-loader",
+                    options: sourceMap
                 }, {
-                    "loader": "sass-loader",
-                    "options": sourceMap
+                    loader: "sass-loader",
+                    options: sourceMap
                 }]
             })
         }]
     },
 
-    devtool: build.jsSourceMap ? '#source-map' : false,
+    devtool: build.jsSourceMap ? "#source-map" : false,
 
     plugins: [
         new webpack.DefinePlugin({
-            'process.env': build.env
+            "process.env": build.env
         }),
 
         new UglifyJsPlugin({
@@ -73,25 +73,27 @@ const webpackConfig = merge(baseWebpackConfig, {
         }),
 
         new ExtractTextPlugin({
-            filename: utils.assetsPath('css/[name].[contenthash].css'),
-            allChunks: true,
+            filename: utils.assetsPath("css/[name].[contenthash].css"),
+            allChunks: true
         }),
 
         new OptimizeCSSPlugin({
-            cssProcessorOptions: build.cssSourceMap ? {
-                safe: true,
-                map: {
-                    inline: false
+            cssProcessorOptions: build.cssSourceMap ?
+                {
+                    safe: true,
+                    map: {
+                        inline: false
+                    }
+                } :
+                {
+                    safe: true
                 }
-            } : {
-                safe: true
-            }
         }),
 
         new HtmlWebpackPlugin({
-            filename: 'index.html',
-            template: './src/app/crm/index.html',
-            chunks: ['crm'],
+            filename: "index.html",
+            template: "./src/app/mall/index.html",
+            chunks: ["mall"],
             inject: true,
             minify: {
                 removeComments: true,
@@ -102,13 +104,13 @@ const webpackConfig = merge(baseWebpackConfig, {
                 minifyCSS: true,
                 minifyJS: true
             },
-            chunksSortMode: 'dependency'
+            chunksSortMode: "dependency"
         }),
 
         new HtmlWebpackPlugin({
-            filename: 'share.html',
-            template: './src/app/share/index.html',
-            chunks: ['share'],
+            filename: "404.html",
+            template: "./src/app/mall/404.html",
+            chunks: ["mall"],
             inject: true,
             minify: {
                 removeComments: true,
@@ -119,9 +121,8 @@ const webpackConfig = merge(baseWebpackConfig, {
                 minifyCSS: true,
                 minifyJS: true
             },
-            chunksSortMode: 'dependency'
+            chunksSortMode: "dependency"
         }),
-
 
         new webpack.HashedModuleIdsPlugin(),
 
@@ -146,11 +147,11 @@ const webpackConfig = merge(baseWebpackConfig, {
         }),*/
 
         new webpack.optimize.CommonsChunkPlugin({
-            name: 'app',
-            async: 'vendor-async',
+            name: "app",
+            async: "vendor-async",
             children: true,
             minChunks: 3
-        }),
+        })
 
         // new CopyWebpackPlugin([{
         //     from: path.resolve(__dirname, '../../static/share'),
@@ -158,7 +159,7 @@ const webpackConfig = merge(baseWebpackConfig, {
         //     ignore: ['.*']
         // }]),
     ]
-})
+});
 
 if (build.productionGzip) {
     const CompressionWebpackPlugin = require('compression-webpack-plugin')

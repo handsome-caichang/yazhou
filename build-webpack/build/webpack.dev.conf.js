@@ -15,7 +15,7 @@ var proxys = config.proxy
 var sourceMap = {
     "sourceMap": dev.cssSourceMap
 }
-var port = 1088
+var port = 9001
 // 获取本地IP
 var ServerHost = (function getIPAdress() {
     var interfaces = require('os').networkInterfaces();
@@ -108,16 +108,16 @@ const devWebpackConfig = merge(baseWebpackConfig, {
 
         new HtmlWebpackPlugin({
             filename: 'index.html',
-            template: './src/app/crm/index.html',
-            chunks: ['crm'],
+            template: './src/app/mall/index.html',
+            chunks: ['mall'],
             inject: true
         }),
-        new HtmlWebpackPlugin({
+        /*new HtmlWebpackPlugin({
             filename: 'share.html',
             template: './src/app/share/index.html',
             chunks: ['share'],
             inject: true
-        }),
+        }),*/
 
         // new CopyWebpackPlugin([{
         //     from: path.resolve(__dirname, '../../static/share'),

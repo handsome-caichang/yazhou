@@ -1,0 +1,246 @@
+@import './variable.scss';
+
+// 字体大小与行高关系
+    @mixin fs-lh($size: 14) {
+        @if $size == 10 {
+            font-size: 10px;
+            line-height: 14px;
+        }
+        @else if $size == 12 {
+            font-size: 12px;
+            line-height: 16px;
+        }
+        @else if $size == 14 {
+            font-size: 14px;
+            line-height: 20px;
+        }
+        @else if $size == 16 {
+            font-size: 16px;
+            line-height: 24px;
+        }
+        @else if $size == 18 {
+            font-size: 18px;
+            line-height: 28px;
+        }
+        @else {
+            font-size: $size + px;
+            line-height: $size*1.67 + px;
+        }
+    }
+
+// 绝对定位
+    @mixin position-absolute($top: 0, $right: 0, $bottom: 0, $left: 0) {
+        position: absolute;
+        @if $top {
+            top: $top;
+        }
+        @if $right {
+            right: $right;
+        }
+        @if $bottom {
+            bottom: $bottom;
+        }
+        @if $left {
+            left: $left;
+        }
+    }
+
+// 弹性盒子相关
+    // $direction: 取值范围如下:
+    // row： 主轴与行内轴方向作为默认的书写模式。即横向从左到右排列（左对齐）。 
+    // row-reverse： 对齐方式与row相反。 
+    // column： 主轴与块轴方向作为默认的书写模式。即纵向从上往下排列（顶对齐）。 
+    // column-reverse： 对齐方式与column相反。
+    // 主轴为'direction'时的水平垂直居中
+    @mixin flex-center($direction: row) {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        @if $direction {
+            flex-direction: $direction;
+        }
+    }
+    // 主轴为'direction'时,垂直居中,水平方向两端对齐
+    @mixin flex-between($direction: row) {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        @if $direction {
+            flex-direction: $direction;
+        }
+    }
+    // 主轴为'direction'时,垂直居中,水平方向平均分布
+    @mixin flex-around($direction: row) {
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        @if $direction {
+            flex-direction: $direction;
+        }
+    }
+
+
+// 清除浮动
+    @mixin clear-float{
+        /* for IE6 IE7 */
+        zoom: 1;
+        &:after {
+            visibility: hidden;
+            display: block;
+            font-size: 0;
+            content: " ";
+            clear: both;
+            height: 0;
+        }
+    }
+
+// 一像素边框
+    @mixin border-top ($color: $color-border) {
+        position: relative;
+        &:before {
+            display: block;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            border-top: 1px solid $color;
+            content: '';
+            @media (-webkit-min-device-pixel-ratio:2),(min-device-pixel-ratio:2) {
+                transform: scale(1, 0.5);
+            }
+            @media (-webkit-min-device-pixel-ratio:3),(min-device-pixel-ratio:3) {
+                transform: scale(1, 0.33);
+            }
+        }
+    }
+    @mixin border-bottom ($color: $color-border) {
+        position: relative;
+        &:after {
+            display: block;
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            border-top: 1px solid $color;
+            content: '';
+            @media (-webkit-min-device-pixel-ratio:2),(min-device-pixel-ratio:2) {
+                transform: scale(1, 0.5) translate3d(0, 0.5px, 0);
+            }
+            @media (-webkit-min-device-pixel-ratio:3),(min-device-pixel-ratio:3) {
+                transform: scale(1, 0.33) translate3d(0, 0.5px, 0);
+            }
+        }
+    }
+    @mixin border-left ($color: $color-border) {
+        position: relative;
+        &:before {
+            display: block;
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            height: 100%;
+            border-left: 1px solid $color;
+            content: '';
+            @media (-webkit-min-device-pixel-ratio:2),(min-device-pixel-ratio:2) {
+                transform: translate(0, 0.5px) scale( 0.5, 1);
+            }
+            @media (-webkit-min-device-pixel-ratio:3),(min-device-pixel-ratio:3) {
+                transform:translate(0, 0.5px) scale(0.33, 1);
+            }
+        }
+    }
+    @mixin border-right ($color: $color-border) {
+        position: relative;
+        &:after {
+            display: block;
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            height: 100%;
+            border-left: 1px solid $color;
+            content: '';
+            @media (-webkit-min-device-pixel-ratio:2),(min-device-pixel-ratio:2) {
+                transform: translate(0, 0.5px) scale( 0.5, 1);
+            }
+            @media (-webkit-min-device-pixel-ratio:3),(min-device-pixel-ratio:3) {
+                transform:translate(0, 0.5px) scale(0.33, 1);
+            }
+        }
+    }
+    // 无边框
+    @mixin border-none {
+        &:after, &:before {
+            display: none;
+        }
+    }
+
+// 背景图片
+    // auto： 背景图像的真实大小。 
+    // cover： 将背景图像等比缩放到完全覆盖容器，背景图像有可能超出容器。 
+    // contain： 将背景图像等比缩放到宽度或高度与容器的宽度或高度相等，背景图像始终被包含在容器内。
+    @mixin background-img($url: false, $size: cover) {        
+        background-repeat: no-repeat;
+        background-attachment: scroll;
+        background-position: center center;
+        background-size: $size;
+        @if $url {
+            background-image: url($url);
+        }
+    }
+
+// 单行文本省略号...
+    @mixin ellipsis-single {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+// 多行文本省略号...
+    @mixin ellipsis-multi ($num: 2) {
+        display: -webkit-box;
+        overflow: hidden;
+
+        text-overflow: ellipsis;
+        word-break: break-all;
+
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: $num;
+    }
+
+// 文字两端对齐
+    @mixin text-justify {
+        text-align: justify;
+        text-justify: inter-ideograph;
+    }
+
+// 强制换行
+    @mixin toWrap {
+        /* 只对英文起作用，以字母作为换行依据。 */
+        word-break: break-all;
+        /* 只对英文起作用，以单词作为换行依据。*/
+        word-wrap: break-word;
+        /* 只对中文起作用，强制换行。*/
+        white-space: pre-wrap;
+    }
+
+// 动态宽高，$w是指在375宽的屏幕下指定的宽度，$per指高度是宽度的多少倍;
+// 媒体查询以宽度375px为分界点，当宽度小于375px时，实际宽度为指定值的0.85倍;
+@mixin dynamic-wh($w, $per, $media: false) {
+    @if $media == false {
+        width: $w;
+        height: $w*$per;
+    }
+    @else {
+        @media screen and (min-width: 375px) {
+            width: $w;
+            height: $w*$per;
+        }
+        @media screen and (max-width: 374px) {
+            width: $w*0.85;
+            height: $w*$per*0.85;
+        }
+    }
+}
+

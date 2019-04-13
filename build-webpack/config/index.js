@@ -13,7 +13,7 @@ module.exports = {
 
     dev: {
         assetsSubDirectory: 'static',
-        assetsPublicPath: '/winxin/crm/',
+        assetsPublicPath: '',
 
         cacheBusting: true,
 
@@ -26,10 +26,10 @@ module.exports = {
     },
 
     build: {
-        assetsRoot: resolve('../release/winxin/crm'),
+        assetsRoot: resolve('../release/'),
         assetsSubDirectory: 'static',
-        assetsPublicPath: '/winxin/crm/',
-        // assetsPublicPath: '//cdn01.xiaogj.com/uploads/mobile/crm/',
+        assetsPublicPath: '',
+        // assetsPublicPath: '//cdn01.xiaogj.com/uploads/mobile/mall/',
 
         jsSourceMap: false,
         cssSourceMap: false,
@@ -45,18 +45,13 @@ module.exports = {
     },
 
     proxy: {
-        '/wx.do': {
-            target: 'https://smarttest.xiaogj.com',
-            // target: 'http://10.0.0.101:10000',
+        '/api': {
+            target: 'https://mall.xiaogj.com/test',
             changeOrigin: true,
-            // pathRewrite: {'^/101/wx.do': '/wx.do'}
         },
-        '/101/wx.do': {
-            target: 'http://10.0.0.101:10000',
-            changeOrigin: true,
-            pathRewrite: {
-                '^/101/wx.do': '/wx.do'
-            }
-        }
+        '/workwx.do': {
+            target: 'https://smarttest.xiaogj.com',
+            changeOrigin: true
+        },
     }
 }
