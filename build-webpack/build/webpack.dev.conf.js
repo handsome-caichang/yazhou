@@ -12,8 +12,10 @@ const config = require('../config')
 var dev = config.dev
 var proxys = config.proxy
 
-var sourceMap = { "sourceMap": dev.cssSourceMap }
-var port = 3001
+var sourceMap = {
+    "sourceMap": dev.cssSourceMap
+}
+var port = 1088
 // 获取本地IP
 var ServerHost = (function getIPAdress() {
     var interfaces = require('os').networkInterfaces();
@@ -29,9 +31,11 @@ var ServerHost = (function getIPAdress() {
 })()
 
 
+var httpsEnable = true
+
+
 const devWebpackConfig = merge(baseWebpackConfig, {
     output: {
-        path: dev.assetsRoot,
         filename: utils.assetsPath('js/[name].js'),
         chunkFilename: utils.assetsPath('js/[name].js'),
         publicPath: dev.assetsPublicPath
@@ -41,8 +45,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         rules: [{
             "test": /\.css$/,
             "use": [
-                "vue-style-loader", 
-                {
+                "vue-style-loader", {
                     "loader": "css-loader",
                     "options": sourceMap
                 }, {
@@ -53,8 +56,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         }, {
             "test": /\.scss$/,
             "use": [
-                "vue-style-loader", 
-                {
+                "vue-style-loader", {
                     "loader": "css-loader",
                     "options": sourceMap
                 }, {
@@ -74,15 +76,17 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         clientLogLevel: 'warning',
         hot: true,
         // contentBase: false,
+        contentBase: config.resolve("../release"),
         compress: true,
-        https: true,
+        https: httpsEnable,
         host: '0.0.0.0',
         port: port,
         disableHostCheck: true,
         open: true,
-        openPage: 'im/html/index.html',
+        // openPage: 'weixin/parent/index.html',
+        openPage: '',
         overlay: true,
-        publicPath: dev.assetsPublicPath,
+        // publicPath: dev.assetsPublicPath,
         proxy: proxys,
         quiet: true, // necessary for FriendlyErrorsPlugin
         inline: true,
@@ -101,34 +105,30 @@ const devWebpackConfig = merge(baseWebpackConfig, {
 
         new webpack.NoEmitOnErrorsPlugin(),
 
-        new HtmlWebpackPlugin({
-            filename: dev.index,
-            template: 'index.html',
-            inject: true
-        }),
-        
-        new HtmlWebpackPlugin({
-          filename: '404.html',
-          template: '404.html',
-          inject: false
-        }),
 
         new HtmlWebpackPlugin({
-            filename: config.resolve('index_jie.html'),
-            template: 'index_jie.html',
+            filename: 'index.html',
+            template: './src/app/crm/index.html',
+            chunks: ['crm'],
+            inject: true
+        }),
+        new HtmlWebpackPlugin({
+            filename: 'share.html',
+            template: './src/app/share/index.html',
+            chunks: ['share'],
             inject: true
         }),
 
-        new CopyWebpackPlugin([{
-            from: path.resolve(__dirname, '../../static'),
-            to: dev.assetsSubDirectory,
-            ignore: ['.*']
-        }]),
+        // new CopyWebpackPlugin([{
+        //     from: path.resolve(__dirname, '../../static/share'),
+        //     to: './share',
+        //     ignore: ['.*']
+        // }]),
 
         // webpack打包过程中在CLI提示错误
         new FriendlyErrorsPlugin({
             compilationSuccessInfo: {
-                messages: [`Your application is running here: http://${ServerHost}:${port}`],
+                messages: [`Your application is running here: ${httpsEnable? 'https' : 'http'}://${ServerHost}:${port}`],
             },
             onErrors: utils.createNotifierCallback()
         })

@@ -13,6 +13,8 @@ module.exports = {
     }),
     cssSourceMap: sourceMapEnabled,
     cacheBusting: config.dev.cacheBusting,
+    // 如果'preserveWhitespace'设置为 false，模版中 HTML 标签之间的空格将会被忽略。
+    preserveWhitespace: false,
     transformToRequire: {
         video: ['src', 'poster'],
         source: 'src',

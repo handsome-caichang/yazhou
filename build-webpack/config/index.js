@@ -3,19 +3,17 @@
 const path = require('path')
 
 function resolve(dir) {
-    return dir 
-        ? path.resolve(__dirname, '../../release', dir) 
-        : path.resolve(__dirname, '../../release')
+    return dir ?
+        path.resolve(__dirname, '../../release', dir) :
+        path.resolve(__dirname, '../../release')
 }
 
 module.exports = {
     resolve: resolve,
-    
+
     dev: {
-        index: resolve('index.html'),
-        assetsRoot: resolve(),
         assetsSubDirectory: 'static',
-        assetsPublicPath: '/im/html/',
+        assetsPublicPath: '/winxin/crm/',
 
         cacheBusting: true,
 
@@ -28,11 +26,10 @@ module.exports = {
     },
 
     build: {
-        index: resolve('index.html'),
-        assetsRoot: resolve(),
+        assetsRoot: resolve('../release/winxin/crm'),
         assetsSubDirectory: 'static',
-        // assetsPublicPath: '/im/html/',        
-        assetsPublicPath: '//cdn01.xiaogj.com/uploads/mobile/im/',
+        assetsPublicPath: '/winxin/crm/',
+        // assetsPublicPath: '//cdn01.xiaogj.com/uploads/mobile/crm/',
 
         jsSourceMap: false,
         cssSourceMap: false,
@@ -48,33 +45,18 @@ module.exports = {
     },
 
     proxy: {
-        '/api': {
-            target: 'https://imdevp.xiaogj.com',
+        '/wx.do': {
+            target: 'https://smarttest.xiaogj.com',
+            // target: 'http://10.0.0.101:10000',
             changeOrigin: true,
+            // pathRewrite: {'^/101/wx.do': '/wx.do'}
         },
-        '/user': {
-            target: 'https://imdevp.xiaogj.com',
+        '/101/wx.do': {
+            target: 'http://10.0.0.101:10000',
             changeOrigin: true,
-        },
-        '/imdevp/api': {
-            target: 'https://imdevp.xiaogj.com',
-            changeOrigin: true,
-            pathRewrite: {'^/imdevp/api': '/api'}
-        },
-        '/imdevp/user': {
-            target: 'https://imdevp.xiaogj.com',
-            changeOrigin: true,
-            pathRewrite: {'^/imdevp/user': '/user'}
-        },
-        '/im/api': {
-            target: 'https://im.xiaogj.com',
-            changeOrigin: true,
-            pathRewrite: {'^/im/api': '/api'}
-        },
-        '/im/user': {
-            target: 'https://im.xiaogj.com',
-            changeOrigin: true,
-            pathRewrite: {'^/im/user': '/user'}
-        },
+            pathRewrite: {
+                '^/101/wx.do': '/wx.do'
+            }
+        }
     }
 }

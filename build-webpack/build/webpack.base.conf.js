@@ -4,42 +4,26 @@ const utils = require('./utils')
 const vueLoaderConfig = require('./vue-loader.conf')
 
 function resolve(dir) {
-    return dir 
-        ? path.resolve(__dirname, '../..', dir) 
-        : path.resolve(__dirname, '../..')
+    return dir ?
+        path.resolve(__dirname, '../..', dir) :
+        path.resolve(__dirname, '../..')
 }
 
 module.exports = {
     context: resolve(),
-    
+
     entry: {
-        app: './src/main.js'
+        crm: './src/app/crm/main.js',
+        share: './src/app/share/main.js',
     },
 
     resolve: {
         extensions: ['.js', '.vue', '.json'],
         alias: {
             'vue$': 'vue/dist/vue.esm.js',
-            '@': resolve('src'),
-            'src': resolve('src'),
-
-            // 'api': 'src/api',
-
-            // 'assets': 'src/assets',
-            // 'scss': 'assets/scss',
-
-            // 'components': 'src/components',
-            // 'base': 'components/base',
-            // 'common': 'components/common',
-            // 'page': 'components/page',
-
-            // 'plugin': 'src/plugin',
-            // 'ui': 'plugin/ui',
-
-            // 'router': 'src/router/index.js',
-            // 'store': 'src/store/index.js',
-
-            // 'static': resolve('static'),
+            'common': resolve('src/common'),
+            'crm': resolve('src/app/crm'),
+            'share': resolve('src/app/share')
         }
     },
     module: {

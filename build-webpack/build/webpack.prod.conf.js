@@ -20,7 +20,7 @@ const webpackConfig = merge(baseWebpackConfig, {
     output: {
         path: build.assetsRoot,
         filename: utils.assetsPath('js/[name].[chunkhash].js'),
-        chunkFilename: utils.assetsPath('js/[name].[chunkhash].js'),
+        chunkFilename: utils.assetsPath('js/[name].[id].[chunkhash].js'),
         publicPath: build.assetsPublicPath
     },
 
@@ -89,8 +89,9 @@ const webpackConfig = merge(baseWebpackConfig, {
         }),
 
         new HtmlWebpackPlugin({
-            filename: build.index,
-            template: 'index.html',
+            filename: 'index.html',
+            template: './src/app/crm/index.html',
+            chunks: ['crm'],
             inject: true,
             minify: {
                 removeComments: true,
@@ -105,15 +106,22 @@ const webpackConfig = merge(baseWebpackConfig, {
         }),
 
         new HtmlWebpackPlugin({
-            filename: '404.html',
-            template: '404.html',
-            inject: false,
+            filename: 'share.html',
+            template: './src/app/share/index.html',
+            chunks: ['share'],
+            inject: true,
             minify: {
                 removeComments: true,
                 collapseWhitespace: true,
-                removeAttributeQuotes: true
+                removeAttributeQuotes: true,
+                removeScriptTypeAttributes: true,
+                removeStyleLinkTypeAttributes: true,
+                minifyCSS: true,
+                minifyJS: true
             },
+            chunksSortMode: 'dependency'
         }),
+
 
         new webpack.HashedModuleIdsPlugin(),
 
@@ -144,11 +152,11 @@ const webpackConfig = merge(baseWebpackConfig, {
             minChunks: 3
         }),
 
-        new CopyWebpackPlugin([{
-            from: path.resolve(__dirname, '../../static'),
-            to: build.assetsSubDirectory,
-            ignore: ['.*']
-        }])
+        // new CopyWebpackPlugin([{
+        //     from: path.resolve(__dirname, '../../static/share'),
+        //     to: './share',
+        //     ignore: ['.*']
+        // }]),
     ]
 })
 
