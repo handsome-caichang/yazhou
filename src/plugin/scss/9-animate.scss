@@ -1,0 +1,37 @@
+$duration: 0.3s;
+
+// 动画的过渡类型 
+// linear： 线性过渡。等同于贝塞尔曲线(0.0, 0.0, 1.0, 1.0) 
+// ease： 平滑过渡。等同于贝塞尔曲线(0.25, 0.1, 0.25, 1.0) 
+// ease-in： 由慢到快。等同于贝塞尔曲线(0.42, 0, 1.0, 1.0) 
+// ease-out： 由快到慢。等同于贝塞尔曲线(0, 0, 0.58, 1.0) 
+// ease-in-out： 由慢到快再到慢。等同于贝塞尔曲线(0.42, 0, 0.58, 1.0)
+$timing: ease;
+
+/* 右侧进，左侧出 */
+/* 用于前进时 */
+.right-left-enter-active, .right-left-leave-active {
+    transition: all $duration $timing;
+}
+.right-left-enter {
+    transform: translate3d(100%, 0, 0);
+    opacity: 0;
+}
+.right-left-leave-active {
+    transform: translate3d(-100%, 0, 0);
+    opacity: 1;
+}
+
+/* 左侧进，右侧出 */ 
+/* 用于后退时 */
+.left-right-enter-active, .left-right-leave-active {
+    transition: all $duration $timing;
+}
+.left-right-enter {
+    transform: translate3d(-100%, 0, 0);
+    opacity: 0;
+}
+.left-right-leave-active {
+    transform: translate3d(100%, 0, 0);
+    opacity: 1;
+}

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title> 加载中... </title>
+
+    <!-- 解决iscroll 在chrome 模拟器中滚不动或滚一下就停的bug -->
+    <script>window.PointerEvent = void 0</script>
+
+    <!-- SDK -->
+    <script src='/vender/sdk-wx/1.2.0/jweixin.js'></script>
+    <script src='/vender/sdk-dd/1.9.0/dingtalk.js'></script>
+    
+    <!-- 类库 -->
+    <script src='/vender/vue/2.5.16/vue.js'></script>
+    <script src='/vender/vuex/3.0.1/vuex.js'></script>
+    <script src='/vender/iscroll/5.2.0/iscroll-probe-jie.js'></script>
+    <script src='/vender/axios/0.18.0/axios.js'></script>
+    
+    <script src='/vender/vue-router/2.7.0/vue-router.js'></script>
+    <script src='/vender/vue-router/2.7.0/extend/vue-router-extend.0.0.1.js'></script>
+    <script src='/vender/echarts/4.1.0/echarts.min.js'></script>
+    <script src='/vender/echarts/4.1.0/echarts-daily.min.js'></script>
+
+    <!-- 类库集合包 -->
+    <!-- <script src='/public/via/dev/via.min.js'></script> -->
+
+    <!-- <script type="text/javascript" src="/plugin/plugin.js"></script> -->
+</head>
+
+<body>
+    <div id="app"></div>
+    <!-- built files will be auto injected -->
+
+    <script type="text/javascript">
+        console.log("... new router ...");
+        var router = new VueRouter({
+            routes: []
+        })
+
+        Vue.config.productionTip = false;
+    </script>
+</body>
+
+</html>

@@ -1,6 +1,0 @@
-<view class="wrapper">
-    <scroll-view scroll-y class="scroll">
-        <image mode="widthFix" src="./img/1.png" class="bg-img"></image>
-    </scroll-view>
-    <view class="bottom" bind:tap="jumpManage">立即招生</view>
-</view>
