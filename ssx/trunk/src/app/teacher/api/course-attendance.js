@@ -1,66 +1,72 @@
 import axios from './axios-j'
 
+export function getcourseattendancwx(params){
+	return axios.smajax('getcourseattendancwx',params);
+}
+
+export function getcourseattendancedetailwx(params){
+	return axios.smajax('getcourseattendancedetailwx',params);
+}
+
 //搜索学员
-export function searchStudents(params){
-	return axios.cajax('/api/Student/QueryBrief',params);
+export function getstudentinfosforwx(params){
+	return axios.smajax('getstudentinfosforwx',params);
 }
 
 //加入这节课
-export function addStudentCourse(params){
-	return axios.ajax('/api/Course/AddStudents',params);
+export function studentinfocourse(params){
+	return axios.smajax('studentinfocourse',params);
 }
 
 //加入这个班
-export function addStudentClass(params){
-	return axios.ajax('/api/Class/AddStudent',params);
+export function opclassstudent(params){
+	return axios.smajax('opclassstudent',params);
 }
 
-//移除临加学员
-export function removeStudent(params){
-	return axios.ajax('/api/course/RemoveStudent',params);
-}
 
 //移除学员
-export function reduceStudent(params){
-	return axios.ajax('/api/course/ReduceStudents',params);
+export function optempcorsestudent(params){
+	return axios.smajax('optempcorsestudent',params);
 }
 
-//移除临调和试听学员
-export function removeTryStudent(params){
-	return axios.ajax('/api/course/RemoveAdjustOrTryStudents',params);
-}
 
 //修改上课时间
-export function updateCourseTime(params){
-	return axios.ajax('/api/course/PhoneSettingCourseTime',params);
+export function opcourse(params){
+	return axios.smajax('opcourse',params);
 }
 
-//获取考勤打卡信息
+/*//获取考勤打卡信息
 export function getMachineAttend(params){
-	return axios.ajax('/api/course/GetMachineAttendanceStuList',params);
-}
+	return axios.smajax('/api/course/GetMachineAttendanceStuList',params);
+}*/
 
 //撤销上课、取消上课、点名上课
-export function postCourse(params){
-	return axios.ajax('/weixin/teacher/Process.ashx',Object.assign({pname:'courseAttendance_save'},params));
+export function setAttendance(params){
+	return axios.smajax('setAttendance',params);
 }
 
 //检查冲突
-export function postCheckConflict(params){
-	return axios.ajax('/api/course/CheckStudentAttendanceConflict',params);
+/*export function postCheckConflict(params){
+	return axios.smajax('/api/course/CheckStudentAttendanceConflict',params);
 }
+*/
+
 
 // 获取科目 post接口
-export function subjectPost(params) {
-    return axios.ajax('/api/Dictionary/Get',params)
-}
-
-// 获取科目 post接口
-export function classroomPost(params) {
-    return axios.ajax('/api/Classroom/Query',params)
+export function getclassroomlist(params) {
+    return axios.smajax('getclassroomlist',params)
 }
 
 // 快速排课 保存动作 post接口
-export function classAddBatch(params){
-    return axios.ajax('/api/Course/ClassAddBatch',params)
+export function addcoursebatchfromwx(params){
+    return axios.smajax('addcoursebatchfromwx',params)
+}
+
+export function getclasscampusfromwx(params){
+	return axios.smajax('getclasscampusfromwx',params);
+}
+
+
+export function getclasslistfromwx(params){
+	return axios.smajax('getclasslistfromwx',params);
 }

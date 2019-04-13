@@ -1,8 +1,6 @@
-WX 产品线 师生信相关项目
-
 # weiParent
 
-> �师生信
+> 校锐星
 
 ## Build Setup
 

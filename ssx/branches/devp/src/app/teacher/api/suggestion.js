@@ -1,32 +1,20 @@
-import http from './http/http.js'
+import axios from './axios-j'
 
 export function getSuggestionList(params) {
-	return http.ajax({
-		type:'mock',
-		url: 'getsuggestforteacherinfos',
-		data: params
-	})
+	return axios.ajax('/api/SSX/QuerySuggest', params);
 }
 
-export function getSuggestDetail(params){
-	return http.ajax({
-		type:'mock',
-		url:'getsuggestforteacherinfo',
-		data:params
-	})
+export function getsuggestionforteacherlist(params){
+	return axios.smajax('getsuggestionforteacherlist', params);
 }
 
-export function receiveSuggest(params){
-	return http.ajax({
-		type:'mock',
-		url:'opsuggestforteacher',
-		data:params
-	})
-}
-// export function getSuggestDetail(params) {
-// 	return axios.ajax('/api/SSX/GetSuggestionInfo', params);
-// }
 
-// export function receiveSuggest(params) {
-// 	return axios.ajax('/api/SSX/ReceiveSuggest', params);
-// }
+export function getsuggestionforteacherinfo(params){
+	return axios.smajax('getsuggestionforteacherinfo', params);
+}
+
+
+export function addsuggestionforteacher(params){
+	return axios.smajax('addsuggestionforteacher', params);
+}
+ 

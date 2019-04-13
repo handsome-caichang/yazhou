@@ -109,9 +109,8 @@
 </template>
 
 <script>
+    import {getCustomers} from 'teacher/api/customers';
     
-    
-    import {getCustomers} from 'teacher/api/customers'
     export default {
         mixins: [app.mixin.popupWindowRouteMixin],
         props: {
@@ -139,26 +138,12 @@
                             signStatus: -1,
                             isSingle: 0,
                             desc: 0
-                        },
-                        pageOpt: {
-                            // 分页初始页码的'key'、'value'
-                            indexKey: 'page',
-                            indexVal: 1,
-                            // 每页请求数据长度的'key'、'value'
-                            sizeKey: 'pageSize',
-                            sizeVal: 20,
-                            // 后端返回的总页数'key'
-                            countKey: 'pageCount'
                         }
                         
                     }
                 },
                 text: ''
-                
             }
-        },
-        computed: {
-           
         },
         methods: {
             loadData(promise) {
@@ -194,15 +179,9 @@
                 })
             }
         },
-        created() {
-        },
         watch: {
             opened(val) {
-                
             }
-        },
-        components: {
-            
         }
     }
 </script>

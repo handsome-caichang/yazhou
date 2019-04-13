@@ -8,7 +8,6 @@ const store = new Vuex.Store({
 	getters,
 	mutations,
 	actions,
-	// strict: process.env.NODE_ENV !== 'production'
 })
 
 window.store = store

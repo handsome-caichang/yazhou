@@ -1,58 +1,31 @@
-import http from './http/http.js';
+import axios from './axios-j'
 
 // 获取作业列表
-export function getjoblistforteacher(params) {
-	return http.ajax({
-		type: 'mock',
-		url: 'getjoblistforteacher', 
-		data: params
-	});
+export function gethomeworkforteacher(params) {
+	return axios.smajax('gethomeworkforteacher', params)
 }
 // 获取作业详情
-export function getjobinfobyidforteacher(params) {
-    return http.ajax({
-    	type: 'mock',
-    	url: 'getjobinfobyidforteacher', 
-    	data: params
-    });
+export function gethomeworkdetailforteacher(params) {
+	return axios.smajax('gethomeworkdetailforteacher', params)
 }
-// 发布作业时选择班级学员
+// 发送作业时选择学员
 export function getcoursestudentforhomework(params) {
-    return http.ajax({
-    	type: 'mock',
-    	url: 'getcoursestudentforhomework', 
-    	data: params
-    });
-}
-// 删除作业
-export function deletehomework(params) {
-    return http.ajax({
-    	type: 'mock',
-    	url: 'deletehomework', 
-    	data: params
-    });
+	return axios.smajax('getcoursestudentforhomework')
 }
 // 发送作业
-export function addjobbyteacher(params) {
-    return http.ajax({
-    	type: 'mock',
-    	url: 'addjobbyteacher', 
-    	data: params
-    });
+export function ophomework(params) {
+	return axios.smajax('ophomework', params)
 }
-// 作业评价选择分数(按ABCD等级)
-export function getcommentscore(params) {
-	return http.ajax({
-		type: 'mock',
-		url: 'getcommentscore', 
-		data: params
-	});
+// 删除作业
+export function deletehomework(param) {
+	/* messageid */
+	return axios.smajax('deletehomework', param);
 }
-// 老师获取某个学员的作业详情
-export function getjobreplyinfo(params) {
-    return http.ajax({
-    	type: 'mock',
-    	url: 'getjobreplyinfo', 
-    	data: params
-    });
+// 获取已读未读学员信息
+export function getmessagereadinfos(param) {
+	return axios.smajax('getmessagereadinfos', param);
+}
+// 老师评价学员提交的作业
+export function evalhomework(param) {
+	return axios.smajax('evalhomework', param);
 }

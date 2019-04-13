@@ -18,9 +18,6 @@
             height: 10px;
             background-color: $color-assist-1;
         }
-        .check {
-            font-size: 18px;
-        }
         .list-body {
             @include position-absolute(54px, 0, 49px, 0);
             .scroller {
@@ -36,12 +33,9 @@
                         font-size: 16px;
                         color: $color-3;
                         border-bottom: 1px solid $color-assist-1;
-                        .check {
-                            padding-right: 13px;
-                        }
                     }
                     .card-body {
-                        padding: 0 12px 12px 42px;
+                        padding: 0 12px 12px 32px;
                         .item {
                             font-size: 12px;
                             margin-top: 12px;
@@ -75,13 +69,6 @@
                 color: $color-3;
             }
         }
-        .loading {
-            z-index: 200;
-        }
-        .empty-page {
-            @include position-absolute(54px, 0, 49px, 0);
-            z-index: 20;
-        }
     }
 </style>
 
@@ -89,7 +76,7 @@
     <div class="container">
         <div class="heard" @click="allSelect">
             <span class="spec">
-                <svg class="icon check" aria-hidden="true">
+                <svg class="icon" aria-hidden="true">
                     <use :xlink:href="isAllSelect?'#icon-duoxuan':'#icon-duoxuan-weixuanze'"></use>
                 </svg>
             </span>
@@ -100,17 +87,17 @@
             <scroller-super class="scroller"
                             :type="2"
                             :data="list"
-                            ref="scroll"
                             :pagingOption="pagingOption"
                             @loadData="loadData">
                 <div>
                     <div class="card" v-for="card in list">
                         <div class="card-heard" @click="selectCard(card)">
-                            <svg class="icon check" aria-hidden="true">
+                            <svg class="icon" aria-hidden="true">
                                 <use :xlink:href="card.isSelect?'#icon-duoxuan':'#icon-duoxuan-weixuanze'"></use>
-                            </svg>{{card.Name}}
-                            <svg class="icon" aria-hidden="true" v-if="card.Sex>0">
-                                <use :xlink:href="card.Sex==1?'#icon-nan':'#icon-nv'"></use>
+                            </svg>
+                            {{card.Name}}
+                            <svg class="icon" aria-hidden="true">
+                                <use xlink:href="#icon-laoshifabu"></use>
                             </svg>
                         </div>
                         <div class="card-body">
@@ -120,7 +107,7 @@
                             <div class="item">意向级别:&nbsp&nbsp
                                 <span class="item-content">
                                     <svg class="icon" aria-hidden="true" v-for="i in card.WillLevel">
-                                        <use xlink:href="#icon-yixiangdengji"></use>
+                                        <use xlink:href="#icon-xingxingxuanzhong"></use>
                                     </svg>
                                 </span>
                             </div>
@@ -146,54 +133,37 @@
             @selectObj="selectObj">
             
         </select-status-and-campus>
-        <loading class="loading" v-show="isLoading" :bgType='bgType'></loading>
-        <empty-page :type="5" :text="'没有可以操作的客户哦~'" class="empty-page" v-if="!list.length"></empty-page>
     </div>
 </template>
 
 <script>
     import SelectCampus from './selectCampus'
     import SelectStatusAndCampus from './selectStatusAndCampus'
-    import EmptyPage from 'teacher/components/common/empty-page/empty-page'
     import {queryCustomer} from 'teacher/api/customers'
-    import {mapState, mapMutations} from 'vuex'
     import {saveData} from 'teacher/api/customers'
     export default {
         data() {
             return {
-                wxTitle: "意向客户管理",
                 list: [],
                 pagingOption: {
                     api: queryCustomer,
                     params: {
                         pname:"querycustomer",
-                        CreateTime1: '',
-                        CreateTime2: '',
-                        Query: app.ls.get('params') ? app.ls.get('params').Query : ''
-                    },
-                    pageOpt: {
-                        // 分页初始页码的'key'、'value'
-                        indexKey: 'page',
-                        indexVal: 1,
-                        // 每页请求数据长度的'key'、'value'
-                        sizeKey: 'pageSize',
-                        sizeVal: 20,
-                        // 后端返回的总页数'key'
-                        countKey: 'pageCount'
+                        // CreateTime1: '2018-02-23'
                     }
                 },
                 isAllSelect: false,
                 showSelectCampus: false,
                 showSelectStatusAndCampus: false,
                 campusObj: {},
-                isLoading: true,
-                bgType: 0
+
             }
         },
         computed: {
-            ...mapState(['allParams','todayParams']),
             isSelectCard() {
-                let arr = this.list.filter(obj => obj.isSelect)
+                let arr = this.list.filter(obj => {
+                    return obj.isSelect
+                })
                 return arr.length > 0 ? true : false
             }
         },  
@@ -204,7 +174,7 @@
             },
             loadData(ajaxPromise) {
                 ajaxPromise.then(res => {
-                    this.isLoading = false
+                    // this.isLoading = false
                     if (res.errcode == app.errok) {
                         if (res.pageIndex === 1) {
                             this.list = []
@@ -212,7 +182,6 @@
                         res.data.forEach(obj => {
                             this.$set(obj, 'isSelect', false)
                         })
-                        this.isAllSelect = false
                         this.list = this.list.concat(res.data)
                     }
                 })
@@ -226,67 +195,24 @@
             selectCard(obj) {
                 obj.isSelect = !obj.isSelect
                 if (this.isAllSelect) this.isAllSelect = obj.isSelect ? this.isAllSelect : false
-                if (!this.isAllSelect) {
-                    let flag = true
-                    for (let i = 0; i < this.list.length; i++) {
-                        if(!this.list[i].isSelect) {
-                            flag = false
-                            break
-                        }
-                    }
-                    this.isAllSelect = flag
-                }
-            },
-            checkCustomersIsVisit() {
-                let arr = this.list.filter(obj => obj.isSelect).map(obj => obj.IsVisit)
-                if (arr.length && arr.indexOf(0) > -1) {
-                    return true
-                } else {
-                    return false
-                }
             },
             getCustomId() {
-                return this.list.filter(obj => obj.isSelect).map(obj => obj.ID).join()
+                let arr = [], str = ''
+                for (let i = 0; i < this.list.length; i++) {
+                    if (this.list[i].isSelect) {
+                        arr.push(this.list[i].ID)
+                    }
+                }
+                str = arr.join(',')
+                return str
             },
             handleCustomer(string) {
                 if (!this.isSelectCard) return
-                if (string == 'del' && !app.tool.op('CustomerDelete')) {
-                    // app.toast('info','权限不足','未授权。此操作需要以下权限：招生管理－意向客户管理－删除客户')
-                    app.dialog('alert', {
-                        title: '权限不足',
-                        text: '未授权。此操作需要以下权限：招生管理－意向客户管理－删除客户',
-                        btn: {
-                            text: '我知道了',
-                            style: {
-                                fontSize: '15px',
-                                color: '#1E88F5',
-                            }
-                        },
-                        clickMask2close: true
-                    })
-                    return
-                }
-                if (string == 'cancle' && !app.tool.op('CustomerCancelSuccess')) {
-                    app.dialog('alert', {
-                        title: '权限不足',
-                        text: '未授权。此操作需要以下权限：招生管理－意向客户管理－取消转为正式学员',
-                        btn: {
-                            text: '我知道了',
-                            style: {
-                                fontSize: '15px',
-                                color: '#1E88F5',
-                            }
-                        },
-                        clickMask2close: true
-                    })
-                    return
-                }
-                
                 let arr = [],
                     str = this.getCustomId(),
                     saveFlag = string === 'del' ? 'deletecustomer' : 'disrelationtrystudent',
                     obj = {
-                        text: string === 'del' ? '是否删除意向客户' : '是否撤销转化选中学员',
+                        text: string === 'del' ? '是否删除意向客户' : '是否撤销转化中学员',
                         textStyle: {
                             textAlign: 'center'
                         }
@@ -300,10 +226,7 @@
                         params[text] = str
                         saveData(params).then(res => {
                             if (res.errcode === app.errok) {
-                                app.toast('success', '提交成功。')
-                                this.$refs.scroll.refresh()
-                            } else {
-                                app.toast('info', res.errmsg)
+                                alert('删除成功')
                             }
                         })
                     }
@@ -311,44 +234,10 @@
             },
             changeCustomToFormal() {
                 if (!this.isSelectCard) return
-                if (!app.tool.op('CustomerSetSuccess')) {
-                    app.dialog('alert', {
-                        title: '权限不足',
-                        text: '未授权。此操作需要以下权限：招生管理－意向客户管理－转为正式学员',
-                        btn: {
-                            text: '我知道了',
-                            style: {
-                                fontSize: '15px',
-                                color: '#1E88F5',
-                            }
-                        },
-                        clickMask2close: true
-                    })
-                    return
-                }
-                if (app.sysInfo.CustomerCheckVisit === '1' && this.checkCustomersIsVisit()) {
-                    app.toast('info', '学员未到访，不允许转化')
-                    return
-                }
                 this.showSelectCampus = true
             },
             revise() {
                 if (!this.isSelectCard) return
-                if (!app.tool.op('CustomerEdit')) {
-                    app.dialog('alert', {
-                        title: '权限不足',
-                        text: '未授权。此操作需要以下权限：招生管理－意向客户管理－修改客户信息（不含电话、来源渠道和自定义字段）',
-                        btn: {
-                            text: '我知道了',
-                            style: {
-                                fontSize: '15px',
-                                color: '#1E88F5',
-                            }
-                        },
-                        clickMask2close: true
-                    })
-                    return
-                }
                 this.showSelectStatusAndCampus = true
             },
             selectCampusOver() {
@@ -358,11 +247,10 @@
                     campusID: this.campusObj.Key,
                     customerids: str
                 }).then(res => {
-                    if (res.errcode === app.errok) {
-                        app.toast('success', '转化成功。')
-                        this.$refs.scroll.refresh()
+                    if (res.ErrorCode === app.errok) {
+                        app.toast('info', '转化成功。')
                     } else {
-                        app.toast('error', res.errmsg)
+                        app.toast('info', res.ErrorMsg)
                     }
                 })
             },
@@ -379,48 +267,19 @@
                     params['campus'] = obj.selectObj.Key
                 }
                 saveData(params).then(res => {
-                    if (res.errcode === app.errok) {
-                        app.toast('success', '修改成功')
-                        this.$refs.scroll.refresh()
+                    if (res.ErrorCode === app.errok) {
+                        app.toast('info', '转化成功。')
                     } else {
-                        app.toast('error', res.errmsg)
+                        app.toast('info', res.ErrorMsg)
                     }
                     this.showSelectStatusAndCampus = false
                 })
             }
 
-        },
-        created() {
-            if (this.$route.params.type === 'today') {
-                let date = new Date(), str = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
-                this.$set(this.pagingOption.params, 'CreateTime1', str)
-                this.$set(this.pagingOption.params, 'CreateTime2', str)
-                this.$set(this.pagingOption.params, 'Status', this.todayParams.ID)
-            }
-            if (this.$route.params.type === 'all') {
-                this.$set(this.pagingOption, 'params', {
-                    desc: 1,
-                    pname:"querycustomer",
-                    Query: this.allParams.inputText,
-                    Status: this.allParams.Status,
-                    CreateTime1: this.allParams.CreateTime1,
-                    CreateTime2: this.allParams.CreateTime2,
-                    LastDate1: this.allParams.LastDate1,
-                    LastDate2: this.allParams.LastDate2,
-                    NextDate1: this.allParams.NextDate1,
-                    NextDate2: this.allParams.NextDate2,
-                    employeeid: this.allParams.employeeid,
-                    employeename: this.allParams.employeename
-                })
-            }
-        },
-        destroyed() {
-            app.ls.clear('params')
-        },
+         },
         components: {
             SelectCampus,
-            SelectStatusAndCampus,
-            EmptyPage
+            SelectStatusAndCampus
         }
     }
 </script>

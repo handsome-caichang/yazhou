@@ -62,9 +62,9 @@
 				<div class="card" v-for="(item,index) in replylist" @click="showReplyDetails(index)">
 					<div class="card-content">
 						<div>
-							<div class="date">{{item.CreateTime.replace(/-/g,'.')}}</div>
-							<div class="evaluation">{{item.Content}}</div>
-							<div class="star">{{item.StrStar}}</div>
+							<div class="date">{{item.createtime.replace(/-/g,'.')}}</div>
+							<div class="evaluation">{{item.content}}</div>
+							<div class="star">{{item.strstar}}</div>
 						</div>
 						<div class="arrow">
 							<svg class="icon" aria-hidden="true">
@@ -87,9 +87,9 @@
 </template>
 
 <script>
-    
     import EmptyPage from 'teacher/components/common/empty-page/empty-page';
     import CommentReplyDetails from './child/comment-reply-details';
+
     export default {
         name: "comment-parents-reply",
         mixins: [app.mixin.popupWindowRouteMixin],

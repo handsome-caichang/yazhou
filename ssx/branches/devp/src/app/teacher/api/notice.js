@@ -1,43 +1,25 @@
-import http from './http/http.js';
-
-// 通知详情
-export function getNoticeDetail(params){
-    return http.ajax({
-    	type: 'mock',
-    	url: 'getmessageinfo',
-    	data: params
-    });
-}
+import axios from './axios-j'
 // 获取通知列表
-export function getNoticeList(params){
-    return http.ajax({
-    	type: 'mock',
-    	url: 'getmessagelistforteacher',
-    	data: params
-    });
+export function getnoticelistforteacher(params){
+    return axios.smajax('getnoticelistforteacher',params)
+}
+// 获取通知详情
+export function getteachernoticeinfo(params){
+    return axios.smajax('getteachernoticeinfo',params)
+}
+// 获取评价模板 班级列表
+export function getreadmessagestudent(params){
+    return axios.smajax('getreadmessagestudent',params)
 }
 // 删除通知
-export function deleteNotice(params) {
-	return http.ajax({
-		type: 'mock',
-		url: 'deletemessageinfo',
-		data: params
-	});
+export function removemessage(params) {
+	return axios.smajax('removemessage',params)
 }
-// 已读未读学员列表
-export function getReadMessageStudent(params) {
-	return http.ajax({
-		type: 'mock',
-		url: 'getreadmessagestudent',
-		data: params
-	});
-}
-
 // 发布通知
-export function saveMessage(params) {
-	return http.ajax({
-		type: 'mock',
-		url: 'addmessage',
-		data: params
-	});
+export function addpublishmessage(params) {
+	return axios.smajax('addpublishmessage',params)
+}
+// 获取可发送通知的对象
+export function getclassstudentformessage(params) {
+	return axios.smajax('getclassstudentformessage',params)
 }

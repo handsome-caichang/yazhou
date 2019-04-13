@@ -37,20 +37,14 @@
 	import img008 from './imgs/008.png';
 	import img009 from './imgs/009.png';
 	import img010 from './imgs/010.png';
-	import img011 from './imgs/011.png';
-	import img012 from './imgs/012.png';	
-	import course from './imgs/course.png';	
-	import img014 from './imgs/014.png';
-
+	import img011 from './imgs/011.png';	
+	
 	export default {
 		name: 'empty-page',
 		props: {
 			type: {
 				// type: Number,
 				default: 1
-			},
-			text: {
-				default: ''
 			}
 		},
 		data () {
@@ -78,7 +72,7 @@
 						img: img000,
 						width: 292,
 						height: 144,
-						text: "当天没有要上的课哦~"
+						text: "当天没有课程消息~"
 					},
 					no1: { //课堂评价
 						img: img001,
@@ -145,25 +139,7 @@
 						width: 200,
 						height: 270,
 						text: "你大胆的提问，我们大胆的改~"
-					},
-					no12: { //订单空
-						img: img012,
-						width: 412,
-						height: 235,
-						text: "您的订单记录空空如也~"
-					},
-					no13: { //没有班级
-						img: course,
-						width: 412,
-						height: 235,
-						text: "还没有报读班级哦~"
-					},
-                    no14: { //没有优惠券
-                        img: img014,
-                        width: 290,
-                        height: 252,
-                        text: "暂无优惠券噢~"
-                    }
+					}
 				}
 			}
 		},
@@ -176,7 +152,7 @@
 						height: `${p.height/2}px`,
 						backgroundImage: `url(${p.img})`
 					},
-					text: this.text ? this.text : p.text
+					text: p.text
 				}
 			}
 		}

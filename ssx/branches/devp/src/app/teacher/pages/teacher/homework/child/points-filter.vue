@@ -1,5 +1,8 @@
 <!--作业详情 成绩选择-->
 <style scoped lang="scss">
+    
+    
+
     .as-body {
         margin: 0;
         padding: 0;
@@ -55,6 +58,8 @@
 </template>
 
 <script>
+    import {getPointsList} from 'teacher/api/homework';
+
     export default {
         name: 'points-filter',
         mixins: [app.mixin.popupWindowRouteMixin],
@@ -81,7 +86,9 @@
         },
         methods: {
             selectScore(newVal) {
+
                 this.selected = newVal;
+
                 this.$emit("homeworkLevelPoint", this.selected);
                 this.close()
             },
@@ -89,21 +96,11 @@
                 if (this.selected) {
                     return this.selected.ID == obj.ID;
                 }
-            },
-            handleEmit(){
-                this.selected=null;
             }
         },
         created() {
-        },
-        mounted() {
-            app.eventDefine.on('homeworkCommentResetPointChosed',this.handleEmit);
-        },
-        beforeDestroy() {
-            app.eventDefine.off('homeworkCommentResetPointChosed');
-        },
-        components: {
-            
+            // this._getPointsList();
+            console.log(this.levelList)
         }
     }
 </script>

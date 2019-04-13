@@ -23,7 +23,7 @@
 </style>
 
 <template>
-	<div class="no-role" v-if="app.sysInfo.RoleList&&app.sysInfo.RoleList.length===0">
+	<div class="no-role" v-if="app.sysInfo&&app.sysInfo.roles&&app.sysInfo.roles.length===0">
 		<svg class="icon empty-img" aria-hidden="true">
 			<use xlink:href="#icon-juese"></use>
 		</svg>

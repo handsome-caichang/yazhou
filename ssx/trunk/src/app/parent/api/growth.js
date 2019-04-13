@@ -1,11 +1,11 @@
 import axios from './axios-j'
 
 /* 我的成长列表 */
-export function getGrowthList(params) {
-	return axios.ajax('/api/ReportExtension/QueryUserGrowUp', params);
+export function getstudentgrowingalbuminfo(params) {
+	return axios.smajax('getstudentgrowingalbuminfo', params);
 }
 
 /* 获取班级 */
-export function getStudentClass(params) {
-	return axios.cajax('/api/ReportExtension/QueryStudentClass', params);
+export function getclassinfobystudentid(params) {
+	return axios.smajax('getclassinfobystudentid', params);
 }

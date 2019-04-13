@@ -1,5 +1,7 @@
 <!-- 修改密码界面 -->
 <style lang="scss" scoped>
+    
+    
     .password-modify {
 		background-color: $color-white;
 		.ps-form{
@@ -56,7 +58,7 @@
 		<div class="ps-form">
 			<div class="title">
 				<div>用户名</div>
-				<div class="title-name">{{app.sysInfo.UserName}}</div>
+				<div class="title-name">{{app.sysInfo.username}}</div>
 			</div>
 			<input type="password" placeholder="请输入旧密码" v-model="oldPwd"/>
 			<input type="password" placeholder="请输入4位数以上的新密码" v-model="newPwd"/>
@@ -68,7 +70,7 @@
 </template>
 
 <script>
-	import {opuserpwd} from 'teacher/api/personal-center.js';
+	import {opuserpwd} from 'teacher/api/personal-center';
 
 	export default{
 		name:'password-modify',
@@ -92,7 +94,6 @@
         		if (app.dom.hasClass($target,'active')) {
         			if (this._baseValidate()) {
 		        		opuserpwd({
-		        			id: app.sysInfo.id,
 							oldpwd: this.oldPwd,
 							newpwd: this.newPwd
 		        		}).then(res => {

@@ -220,8 +220,8 @@
 					<div class="date-sousuo">
 						<date-bar 
 							class="date" 
-							:sdate='pagingOption.params.sdate' 
-							:edate='pagingOption.params.edate' 
+							:sdate='pagingOption.params.starttime' 
+							:edate='pagingOption.params.endtime' 
 							:index="quickDateIndex" 
 							@changeDate="changeDate">
 						</date-bar>
@@ -231,15 +231,16 @@
 
 				<!-- 统计结果 -->
 				<div class="rank-result">
+
 					<div class="my-avg">我的平均分</div>
-					<!-- 平均分大于0时展示 -->
+					
 					<div class="avg-value" v-if="MyAvg > 0">{{ MyAvg }}</div>
 					<div class="my-rank" v-if="MyAvg > 0">在老师中排名第<span class="span">{{ MyRank }}</span>名</div>
 					<div class="beyond" v-if="MyRank == 1">超越了所有人，位于榜首</div>
 					<div class="beyond" v-if="MyAvg > 0 && MyRank != 1">你超越了<span>{{ Beyond }}</span>的小伙伴</div>
-					<!-- 平均分为0时 -->
+					
 					<div :class="['beyond', {'no-avg': TopScore == 0 || TotalAvg == 0}, {'no-myavg': MyAvg == 0}]" v-if="MyAvg == 0 || TotalAvg == 0 || TopScore == 0 ">暂未收到评价</div>
-					<!-- 学校老师平均分或老师最高分不为0时才展示 -->
+					
 					<div class="school-rank" v-if="TotalAvg > 0 || TopScore > 0">
 						<div class="div">
 							<span class="span">学校老师平均分</span>
@@ -250,6 +251,7 @@
 							<span class="strong">{{ TopScore }}</span>
 						</div>
 					</div>
+
 				</div>
 
 				<!-- 课程列表 icon-paixumoren icon-paixudidaogao icon-paixugaodaodi-->
@@ -261,8 +263,8 @@
 	              			<span @click="filterScopeAndRank('Scope')">平均分
 	                			<svg class="icon" aria-hidden="true">
 		                  			<use 
-		                  				:xlink:href="pagingOption.params.sort === 'Scope' && pagingOption.params.desc === 1 ? '#icon-paixudidaogao' 
-				                    	: pagingOption.params.sort === 'Scope' && pagingOption.params.desc === 0 ? '#icon-paixugaodaodi' 
+		                  				:xlink:href="pagingOption.pageOpt.sortfield === 'Scope' && pagingOption.pageOpt.isdesc == true ? '#icon-paixudidaogao' 
+				                    	: pagingOption.pageOpt.sortfield === 'Scope' && pagingOption.pageOpt.isdesc == false ? '#icon-paixugaodaodi' 
 				                    	: '#icon-paixumoren'">
 		                  			</use>
 	               				</svg>
@@ -270,8 +272,8 @@
 							<span @click="filterScopeAndRank('MyRank')">排名
 			                	<svg class="icon" aria-hidden="true">
 			                    	<use 
-			                    		:xlink:href="pagingOption.params.sort === 'MyRank' && pagingOption.params.desc === 1 ? '#icon-paixudidaogao' 
-			                          	: pagingOption.params.sort === 'MyRank' && pagingOption.params.desc === 0 ? '#icon-paixugaodaodi' 
+			                    		:xlink:href="pagingOption.pageOpt.sortfield === 'MyRank' && pagingOption.pageOpt.isdesc == true ? '#icon-paixudidaogao' 
+			                          	: pagingOption.pageOpt.sortfield === 'MyRank' && pagingOption.pageOpt.isdesc == false ? '#icon-paixugaodaodi' 
 			                          	: '#icon-paixumoren'">
 			                      	</use>
 			                  	</svg>
@@ -281,23 +283,24 @@
 					<!-- item -->
 					<div class="comment-list">
 						<div 
-							@click="toDimension(item.ItemValue)" 
+							@click="toDimension(item.itemvalue)" 
 							v-for="item in list" 
-							:key="item.ItemValue" 
+							:key="item.itemvalue" 
 							class="to-detail">
-							<span>{{ item.ItemName }}</span>
+							<span>{{ item.itemname }}</span>
 							<span class="span">
-                      			<span>{{ item.Scope }}</span>
+                      			<span>{{ item.scope }}</span>
 								<!-- 给1,2,3名设置不同的颜色样式 -->
-								<span :class="{'lanse' : item.MyRank == 1, 'juse' : item.MyRank == 2, 'zise' : item.MyRank == 3}">
-                          			{{ item.MyRank }}
+								<span :class="{'lanse' : item.myrank == 1, 'juse' : item.myrank == 2, 'zise' : item.myrank == 3}">
+                          			{{ item.myrank }}
 		                        	<svg class="icon card-next" aria-hidden="true">
 		                            	<use xlink:href="#icon-youjiantou"></use>
 		                        	</svg>
 								</span>
 							</span>
 						</div>
-						<empty-page class="noData-temp" text="该时段暂未收到评价" v-if="list.length == 0" :type="1"></empty-page>
+						<div style="height:12px;"></div>
+						<empty-page class="noData-temp" v-if="list.length == 0" :type="1" text="该时段暂未收到评价"></empty-page>
 					</div>
 				</div>
 			</scroller-super>
@@ -308,7 +311,7 @@
 				:stateList="stateFilter.arr" 
 				:curState="stateFilter.state" 
 				:opened.sync="stateFilter.opened">
-			</state-actionsheet>
+            </state-actionsheet>
 
 			<!-- 选择校区 -->
 			<CampusList :opened.sync="opened" @getCampus="getCampus"></CampusList>
@@ -319,7 +322,7 @@
 </template>
 
 <script>
-	import { getCommentRankList, getCommentClassList } from "teacher/api/comment-rank";
+	import { getteacherrank, getteacherscopeinfo } from "teacher/api/comment-rank";
 	import EmptyPage from "teacher/components/common/empty-page/empty-page";
 	import StateActionsheet from "teacher/components/common/actionsheets/state-actionsheet.vue";
 	import CampusList from './child/campus';
@@ -340,43 +343,46 @@
 					names: null,
 					length: null
 				},
-				quickDateIndex: -1,
 				TotalAvg: null, // 老师平均分
 				MyAvg: null, // 我的平均分
 				Beyond: null, // 百分比
 				TopScore: null, // 最高分
 				MyRank: null, // 我的排名
-				type: '课程', // 表头根据筛选条件变化
+				type: '类型', // 表头根据筛选条件变化
 				list: [],
-				status: {
+				quickDateIndex: -1,
+				statusstatus: {
 					sort: 'Scope', // 默认平均分;MyRank,排名
 					desc: "1" //默认1，从高到低；0，从低到高；‘’，无排序
 				},
 				pagingOption: {
-					api: getCommentClassList,
+					api: getteacherscopeinfo,
 					params: {
-						sort: "Scope", // 默认平均分;MyRank,排名
-						desc: 1,
-						type: 5,
-						campusid: "",
+						type: 1,
+						campusids: [],
 						// 默认显示7天
-						sdate: app.tool.parseHash().query.sdate || app.tool.getDatesByIndex(3, app.localTimeToServer).sdate,
-						edate: app.tool.parseHash().query.edate || app.tool.getDatesByIndex(3, app.localTimeToServer).edate
+						starttime: app.tool.parseHash().query.sdate || app.tool.getDatesByIndex(3, app.localTimeToServer).sdate,
+						endtime: app.tool.parseHash().query.edate || app.tool.getDatesByIndex(3, app.localTimeToServer).edate
+						// 这个区间有数据（接口调试用）
+						// starttime: '2017-12-01',
+						// endtime: '2017-12-30',
 					},
 					pageOpt: {
+						sortfield: 'Scope',
+						isdesc: true,  // true，倒序
 						// 分页初始页码的'key'、'value'
-						indexKey: "PageIndex",
-						indexVal: 1,
-						// 每页请求数据长度的'key'、'value'
-						sizeKey: "PageSize",
-						sizeVal: 20,
-						// 后端返回的总页数'key'
-						countKey: "PageCount"
+                        indexKey: 'pageindex',
+                        indexVal: 1,
+                        // 每页请求数据长度的'key'、'value'
+                        sizeKey: 'pagesize',
+                        sizeVal: 20,
+                        // 后端返回的总页数'key'
+                        countKey: 'totalpage'
 					}
 				},
 				stateFilter: {
 					opened: false,
-					arr: ["期段", "类型", "年级", "科目", "课程"],
+					arr: ["类型", "年级", "科目", "期段", "课程"],
 					state: 5
 				},
 				isLoading: true
@@ -384,14 +390,14 @@
 		},
 		methods: {
 			// 搜索统计结果
-			_getCommentRankList() {
-				getCommentRankList(this.pagingOption.params).then(res => {
-					if(res.ErrorCode == 200) {
-						this.MyAvg = res.Data.MyAvg;
-						this.TotalAvg = res.Data.TotalAvg;
-						this.Beyond = res.Data.Beyond;
-						this.TopScore = res.Data.TopScore;
-						this.MyRank = res.Data.MyRank;
+			_getteacherrank() {
+				getteacherrank(this.pagingOption.params).then(res => {
+					if(res.result.code == 200) {
+						this.MyAvg = res.data.myavg || 0;
+						this.TotalAvg = res.data.totalavg || 0;
+						this.Beyond = res.data.beyond;
+						this.TopScore = res.data.topscore || 0;
+						this.MyRank = res.data.myrank;
 					}
 				});
 			},
@@ -400,20 +406,19 @@
 			},
 			// 日期搜索
 			changeDate(date) {
-				this.pagingOption.params.sdate = date.sdate;
-				this.pagingOption.params.edate = date.edate;
+				this.pagingOption.params.starttime = date.sdate;
+				this.pagingOption.params.endtime = date.edate;
 				this.quickDateIndex = date.index;
-				this.isLoading = true;
-				this._getCommentRankList();
+				this.isLoading = false;
+				this._getteacherrank();
 				this._refreshData();
 			},
 			// 加载更多
 			loadData(ajaxPromise) {
 				ajaxPromise.then(res => {
 					this.isLoading = false;
-					if(res.ErrorCode == 200) {
-						this.list =
-							res.PageIndex == 1 ? res.Data : [].concat(this.list, res.Data);
+					if(res.result.code == 200) {
+						this.list = res.page.pageindex && res.page.pageindex > 1 ? [].concat(this.list, res.data) : [].concat(res.data);
 					}
 				});
 			},
@@ -422,29 +427,26 @@
 			},
 			// 按照类型筛选
 			acceptType(type) {
-				// 0,期段；1,类型；2,年级；3,科目；5,课程
+				// 1,类型；2,年级；3,科目；4,期段；5,课程
 
 				// 课程的查询类型为5
 				this.type = this.stateFilter.arr[type];
-                // 科目对应的查询字段值为4
-				type = type == 4 ? 5 : type;
-				this.pagingOption.params.type = type;
+                // // 科目对应的查询字段值为4
+				// type = type == 4 ? 5 : type;
+				this.pagingOption.params.type = type + 1 == 4  ? 0 : type + 1;
 				this._refreshData();
 			},
 			// 按平均分，排名筛选
 			filterScopeAndRank(sort) {
 				// 筛选类型没有发生变化时，排名为升序(0)，降序(1)，默认排序('')
-				if(this.pagingOption.params.sort === sort) {
-					this.pagingOption.params.desc = this.pagingOption.params.desc === 1 ? 0 :
-						this.pagingOption.params.desc === '' ? 1 :
-						'';
+				if(this.pagingOption.pageOpt.sortfield === sort) {
+					this.pagingOption.pageOpt.isdesc = !this.pagingOption.pageOpt.isdesc;
 				} else {
 					// 筛选类型发生变化后，默认降序排列
-					this.pagingOption.params.desc = 1;
-					this.pagingOption.params.sort = sort;
+					this.pagingOption.pageOpt.isdesc = true;
+					this.pagingOption.pageOpt.sortfield = sort;
 				}
-				console.log(typeof sort, this.pagingOption.params.desc);
-				this._refreshData();
+				this.$refs.commentRankListIScroller.refresh({pageOpt: this.pagingOption.pageOpt});
 			},
 			chooseCampus() {
 				this.opened = true;
@@ -454,8 +456,8 @@
 					_ids = [];
 
 				data.forEach(item => {
-					_names.push(item.Name);
-					_ids.push(item.ID);
+					_names.push(item.name);
+					_ids.push(item.id);
 				});
                 // _isAll = data.every(item => item.checked);
                 if (_isAll) {
@@ -466,22 +468,21 @@
                     this.campus.length = data.length > 1 ? '等' + data.length + '个校区' : '';
                 }
 				// 刷新页面
-				this.pagingOption.params.campusid = _ids.join(',');
+				this.pagingOption.params.campusids = [..._ids];
 				this._refreshData();
-				this._getCommentRankList();
+				this._getteacherrank();
 			},
 			toDimension(itemValue) {
+				let _params = app.tool.clone(this.pagingOption.params);
+				_params.campusids = typeof _params.campusids === 'object' ? JSON.stringify(_params.campusids) :	_params.campusids;
 				this.$router.push({
-					path: '/commentDimension',
-					query: { ...this.pagingOption.params,
-						itemValue: itemValue
-					}
+					path: 'commentDimension',
+					query: {..._params, itemvalue: itemValue}
 				});
 			}
 		},
 		created() {
-			this._getCommentRankList();
-
+			this._getteacherrank();
 		},
 		components: {
 			EmptyPage,

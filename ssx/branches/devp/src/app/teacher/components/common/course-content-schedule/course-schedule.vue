@@ -55,9 +55,6 @@
 </template>
 
 <script>
-	
-	
-
 	export default {
 		name: "course-content",
 		mixins: [app.mixin.popupWindowRouteMixin],
@@ -77,9 +74,6 @@
 			refresh() {
 				this.$refs.actionsheet.refresh();
 			}
-		},
-		components: {
-			
 		}
 	}
 </script>

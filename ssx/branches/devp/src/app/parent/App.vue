@@ -19,13 +19,9 @@
 
 <template>
     <div id='app'>
-        <custom-router-view class="page-veiw"></custom-router-view>
+        <custom-router-view class="page-veiw" v-if="!systemOverdue"></custom-router-view>
         
         <global-dom-plugin class="plugins-view"></global-dom-plugin>
-
-        <form method="post" id="wxPayForm" name="wxPayForm" style="display:none">
-            <input type="hidden" id="wxData" name="wxData" value="">
-        </form>
     </div>
 </template>
 
@@ -36,6 +32,9 @@
         name: 'App',
         mounted() {
             app.parentApp = this;
+        },
+        computed: {
+            ...Vuex.mapState(['systemOverdue'])
         },
         components: {
             GlobalDomPlugin

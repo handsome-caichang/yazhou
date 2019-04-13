@@ -1,8 +1,8 @@
 /*
  * @Author: Sa 
  * @Date: 2017-12-20 11:03:51 
- * @Last Modified by: Customer
- * @Last Modified time: 2018-01-17 10:44:30
+ * @Last Modified by: mikey.zhaopeng
+ * @Last Modified time: 2018-03-27 16:38:44
  * @Descript: 选择组件（单选，复选）
  */
 <style lang="scss" scoped>
@@ -79,19 +79,20 @@
 		class="action-sheet"
 		:data="list"
 		:position="position"
-		:scrollerConfig="scrollerConfig"
+		:scrollerStyle="scrollerStyle"
 		@loadData="loadData"
+		:scrollerConfig="scrollerConfig"
 		@close="closeCheckedAction">
 		<div slot="header" class="class-name">
 			<input class="ipt-class-name" type="text" placeholder="请输入名称" v-model="iptClassName">
 		</div>
-		<div v-for="(item, key) in list" :key="item.ID" class="student-item" @click="itemChecked(item, key, $event)">
+		<div v-for="(item, key) in list" :key="item.id" class="student-item" @click="itemChecked(item, key, $event)">
 			<span>
 				<svg class="icon icon-duoxuan-weixuanze" aria-hidden="true">
 					<use :xlink:href="!item.checked === true ? '#icon-duoxuan-weixuanze':'#icon-duoxuan'"></use>
 				</svg>
 			</span>
-			<span class="student-name">{{item.ClassName}}</span>
+			<span class="student-name">{{item.name}}</span>
 		</div>
 		<empty-page class="noData-temp" :type="1001" v-if="list.length == 0"></empty-page>
 		<div slot="footer" class="bottom-fixed-button">
@@ -103,9 +104,8 @@
 </template>
 
 <script>
-	import {getStudentClass} from "parent/api/growth";
+	import {getclassinfobystudentid} from "parent/api/growth";
 	import EmptyPage from 'parent/components/common/empty-page/empty-page';
-	// import ActionSheetSuper from "./actionsheet-super";
 	
 	export default {
 		name: "StudentClass",
@@ -127,23 +127,21 @@
 				isAll: false,
 				chooseNum: 0, // 已选择的数量
 				total: 0, // 总数
+				scrollerStyle: {},
 				scrollerConfig: {
 					tag: 'super',
 					type: 2,
 					pagingOption: {
-						api: getStudentClass,
+						api: getclassinfobystudentid,
 						params: {
-							className: "",
-							queryType: 0,
-							PageIndex: 1,
-							PageSize: 40
+							classname: ""
 						}
 					}
 				},
 				iptClassName: "",
 				params: {
-					className: "",
-					PageIndex: 1
+					classname: "",
+					pageindex: 1
 				},
 				list: [],
 				isLoading: true
@@ -154,12 +152,12 @@
 				let _list = []
 				promise.then(res => {
 					this.isLoading = false;
-					if(res.ErrorCode === 200) {
-						_list = [].concat(res.Data);
+					if(res.result.code == 200) {
+						_list = [].concat(res.data);
 						_list.forEach(item => {
 							item.checked = false;
 						});
-						this.list = res.PageIndex === 1 ? [].concat(_list) : [].concat(this.list, _list);
+						this.list = res.page.pageindex === 1 ? [].concat(_list) : [].concat(this.list, _list);
 					}
 				});
 			},
@@ -178,12 +176,14 @@
 				this.initClass();
 			},
 			initClass() {
-				// this.chooseNum = 0;
+				this.iptClassName = '';
 				let _list = [];
-				getStudentClass({
-					className: "",
-					PageIndex: 1,
-					PageSize: 20
+				getclassinfobystudentid({
+					classname: "",
+					page:{
+						pageindex: 1,
+						pagesize: 30
+					}
 				}).then(res => {
 					if(res.ErrorCode === 200) {
 						_list = [].concat(res.Data);
@@ -217,14 +217,13 @@
 			},
 			iptClassName(newVal, oldVal) {
 				// 设置参数
-				this.params.className = newVal;
-				this.params.PageIndex = 1;
+				this.params.classname = newVal;
+				this.params.pageindex = 1;
 
 				this.$refs.classList.$refs.scroller.refresh(this.params);
 			}
 		},
 		components: {
-			// ActionSheetSuper,
 			EmptyPage
 		}
 	}

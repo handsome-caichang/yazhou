@@ -1,10 +1,16 @@
-<!--作业详情=>学生列表页-->
+<!--作业详情~学生列表页-->
 <style scoped lang="scss">
+    
+    
+
     .homework-students-list {
-        background-color: $color-assist-1;
         .header {
+            position: absolute;
             display: flex;
+            top: 0;
+            left: 0;
             height: 49px;
+            width: 100%;
             background-color: $color-white;
             padding: 10px 15px 11px 15px;
             @include border-bottom;
@@ -21,8 +27,15 @@
                 }
             }
         }
+        .void {
+            position: absolute;
+            top: 40px;
+            width: 100%;
+            height: 9px;
+            background-color: $color-assist-1;
+        }
         .body {
-            @include position-absolute(50px, 0, 0, 0);
+            @include position-absolute(49px,0,0,0);
             .student {
                 position: relative;
                 background-color: $color-white;
@@ -40,7 +53,8 @@
                     border-radius: 50%;
                     border: 1px solid #eef1f6;
                     background-color: #eef1f6;
-                    @include background-img(false, cover);
+                    border: 1px solid #ffffff;
+                    @include background-img(false,cover);
                 }
                 .text-part {
                     height: 60px;
@@ -48,6 +62,8 @@
                     padding-right: 12px;
                     @include flex-between;
                     .stu-name {
+                        /*display: inline-block;*/
+                        /*width: 40%;*/
                         max-width: 36%;
                         font-size: 15px;
                         color: $color-3;
@@ -82,14 +98,10 @@
                     }
                 }
             }
-            .card-void{
-                background-color: $color-assist-1;
-                height: 10px;
-                width: 100%;
-            }
         }
     }
-    .as-body, .noData-temp {
+
+    .as-body,.noData-temp {
         @include position-absolute;
         overflow: hidden;
     }
@@ -100,45 +112,56 @@
         <!--头部选项卡-->
         <div class="header">
             <div class="header-item-wrap"
-                 :class="{active:stype==index}"
-                 v-for="(item, index) in headerList"
-                 :key="index"
-                 @click="changeStatus(index)">
+             :class="{active:stype==index}" 
+             v-for="(item, index) in headerList" :key="index"
+              @click="changeStatus(index)">
                 {{item}}
                 <span v-show="index==0">({{listAll.length}})</span>
                 <span v-show="index==1">({{listSubmited.length}})</span>
                 <span v-show="index==2">({{listSubmit.length}})</span>
             </div>
         </div>
+        <!-- <div class="void"></div> -->
         <!--学员情况列表-->
         <div class="body">
             <scroller-base class="as-body" :data="list">
-                <div v-for="(item,index) in list" :key="index">
-                    <div class="student" @click="item.issubmit==1||item.iscomment==1?goToHomeworkEvaluatePage(item.studentuserid):''">
-                        <div class="img" :style="'background-image:url('+item.photo+')'"></div>
-                        <div class="text-part">
-                            <div class="stu-name">{{item.studentname}}</div>
-                            <div class="describe">
-                                <!--已交，已评=>分数-->
-                                <span v-if="item.issubmit==1&&item.iscomment==1">{{item.score}}<span v-if="item.scoreFlag==0">分</span></span>
-                                <!--已交，未评=>‘待评价’-->
-                                <span class="blue" v-if="item.issubmit==1&&item.iscomment==0">待评价</span>
-                                <!--未交，未读=>‘未读’-->
-                                <span class="notyet" v-if="item.issubmit==0&&item.isread==0">未读</span>
-                                <!--未交，已读=>‘已读’-->
-                                <span v-if="item.issubmit==0&&item.isread==1">已读</span>
-                                <svg aria-hidden="true" class="icon" v-if="item.issubmit==1||item.iscomment==1">
-                                    <use xlink:href="#icon-youjiantou">
-                                    </use>
-                                </svg>
-                            </div>
+                <div class="student" v-for="item in list" :key="item.studentid" @click="item.issubmited==1||item.isevaluateed==1?goToHomeworkEvaluatePage(item.studentid):''">
+                    <div class="img" :style="'background-image:url('+item.photo+')'"></div>
+                    
+                    <div class="text-part">
+                        <div class="stu-name">{{item.name}}</div>
+                        <!-- <div class="describe">
+                            <span v-if="item.isread==1">已读</span><span v-else>未读</span>
+                        </div> -->
+                        <div class="describe">
+                            <!--已交 已评 =》分数-->
+                            <span v-if="item.issubmited==1&&item.isevaluateed==1">
+                                {{item.score}}<span v-if="item.scoreFlag==0">分</span>
+                            </span>
+                            <!--已交 未评 =》‘待评价’-->
+                            <span class="blue" v-if="item.issubmited==1&&item.isevaluateed==0">
+                                待评价
+                            </span>
+                            <!--未交 未读 =》‘未读’-->
+                            <span class="notyet" v-if="item.issubmited==0&&item.isread==0">
+                                未读
+                            </span>
+                            <!--未交 已读 =》‘已读’-->
+                            <span v-if="item.issubmited==0&&item.isread==1">
+                                已读
+                            </span>
+                            <svg aria-hidden="true" class="icon" v-if="item.issubmited==1||item.isevaluateed==1">
+                                <use xlink:href="#icon-youjiantou">
+                                </use>
+                            </svg>
                         </div>
                     </div>
-                    <div class="card-void"></div>
+
                 </div>
                 <empty-page class="noData-temp" v-show="!list.length" :type="1001"></empty-page>
             </scroller-base>
         </div>
+
         <!--加载中-->
         <loading class="loading" v-show="isLoading"></loading>
     </div>
@@ -146,17 +169,16 @@
 
 <script>
     // 下面详情页要刷新的在此页面要监听
-    import {getjobinfobyidforteacher} from 'teacher/api/homework.js';
-    import EmptyPage from 'teacher/components/common/empty-page/empty-page.vue';
-
+    import {getmessagereadinfos} from 'teacher/api/homework.js';
+    import EmptyPage from 'teacher/components/common/empty-page/empty-page'
     export default {
         name: 'homework-students-list',
         data() {
             return {
                 wxTitle: '学生完成情况',
-                homeworkId: '00000000-0000-0000-0000-000000000000',//作业id。学生作业详情需要。
+                homeworkId:'00000000-0000-0000-0000-000000000000',//作业id。学生作业详情需要。
                 headerList: ['全部', '已提交', '未提交'],
-                stype: 0, //选项卡 0-全部 1-已交 2-未交,
+                stype: 0, //选项卡 0-全部 1-已交 2-未交 3-已评,
                 list: [],
                 listAll: [],
                 listSubmited: [],
@@ -165,6 +187,21 @@
             }
         },
         methods: {
+            _getStudentsList(id,index) {
+                getmessagereadinfos({
+                    messageid:id //作业id
+                }).then(res => {
+                    this.isLoading = false;
+                    if(res.result.code == 200){
+                        this.list = this.listAll = res.data;
+                        this.listSubmited = res.getmessagesubmitinfos;//已提交
+                        this.listSubmit = res.getmessagenotsubmitinfos;//未提交
+                    }else {
+                        app.toast('error', res.errmsg);
+                    }
+
+                })
+            },
             changeStatus(index) {
                 this.stype = index;
                 switch (index) {
@@ -182,68 +219,24 @@
             goToHomeworkEvaluatePage(studentId) {
                 this.$router.push({path: `/homeworkEvaluate/${this.homeworkId}/${studentId}`})
             },
-            handleEmit() {
+            handleEmit(){
                 this.list = [];
                 this.listAll = [];
                 this.listSubmited = [];
                 this.listSubmit = [];
                 this.stype=0;
                 this._getStudentsList(this.homeworkId)
-            },
-            judgeScore(str){
-                let flag = str.substring(0,1);
-                return Number(flag)
-            },
-            handleScore(str){
-                // score字段默认返回的是null值
-                return str.substring(2)
             }
         },
         created() {
-            this.homeworkId = this.$route.params.id;//作业id  在
-            getjobinfobyidforteacher({
-                jobid: this.$route.params.id //作业id
-            }).then(res => {
-                this.isLoading = false;
-                if (res.result.code == app.errok) {
-                    res.data = [{
-                        "id": "954debc0-f75d-4727-bd4c-4836d1123d24",
-                        "studentuserid": "954debc0-f75d-4727-bd4c-4836d1123d24",
-                        "studentname": "邹3D24",
-                        "isread": 0,
-                        "photo": "img/userpicture.png",
-                        "issubmit": 0,
-                        "iscomment": 0,
-                        "score": null
-                    }, {
-                        "id": "fea9e716-f5eb-4f08-8756-163d46e7528e",
-                        "studentuserid": "954debc0-f75d-4727-bd4c-4836d1123d24",
-                        "studentname": "jasmin3",
-                        "isread": 1,
-                        "photo": "http://thirdwx.qlogo.cn/mmopen/UNdUjEBIwfcfauJvt3QH7aGFqauicw1lI7RmpL0K152dKlsZYxEYWT81CvsRwym5Etsu3YgRmXibbj1oIbDLzISxD76CiagQG3q/132",
-                        "issubmit": 1,
-                        "iscomment": 1,
-                        "score": "1-B"
-                    }];
-                    this.list = this.listAll = res.data;
-                    res.data.forEach(item => {
-                        if(item.score){
-                            // 没有时为null
-                            item.scoreFlag = this.judgeScore(item.score);
-                            item.score = this.handleScore(item.score);
-                        }
-                        item.issubmit == 1 ? this.listSubmited.push(item) : this.listSubmit.push(item);//已交 未交
-                    })
-                } else {
-                    app.toast('error', res.result.msg);
-                }
-            })
+            this.homeworkId = this.$router.currentRoute.params.id;//作业id
+            this._getStudentsList(this.homeworkId);
         },
         mounted() {
-            app.eventDefine.on('homeworkCommentSave', this.handleEmit);
+            app.eventDefine.on('refresh-homework-student-list', this.handleEmit);
         },
         beforeDestroy() {
-            app.eventDefine.off('homeworkCommentSave', this.handleEmit);
+            app.eventDefine.off('refresh-homework-student-list', this.handleEmit);
         },
         components: {
             EmptyPage

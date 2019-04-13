@@ -1,0 +1,208 @@
+@@include('./head.html',{
+    "css":"index.css",
+    "active":"index"
+})
+<div class="container">
+    <div class="banner" onmouseenter="stopBannerMove()" onmouseover="stopBannerMove()"
+         onmouseout="continueBannerMove()">
+        <div class="banner-btn btn-left" onclick="changeBanner(-1)"></div>
+        <div class="banner-container-list">
+            <div class="banner-list-item">
+                <img src="images/banner/2.jpg" alt="">
+                <div class="btn" onclick="toRegister()">注册使用</div>
+               <!-- <div class="btn btn-video" onclick="showVideo()"><img src="images/base/video.png" alt="">校管家创始人：为什么要推出免费的校锐星
+                </div> -->
+            </div>
+            <div class="banner-list-item">
+                <img src="images/banner/1.jpg" alt="">
+                <div class="btn" onclick="toRegister()" style="left:20%">注册使用</div>
+                <!-- <div class="btn btn-video" onclick="showVideo()"><img src="images/base/video.png" alt="">校管家创始人：为什么要推出免费的校锐星
+                </div> -->
+            </div>
+        </div>
+        <div class="num"></div>
+        <div class="banner-btn btn-right" onclick="changeBanner(1)"></div>
+        <div class="banner-num-list">
+            <div class="pointer banner-num-item"></div>
+        </div>
+    </div>
+    <div class="problem">
+        <div class="title">你是否遇到这些问题？</div>
+        <div class="problem-container">
+            <div class="problem-item-container left-container">
+                <div class="problem-item left-item">
+                    招生数据杂乱无章，跟进信息无法同步，白白浪费大笔资源
+                </div>
+                <div class="problem-item left-item">
+                    招生单页不够详细，介绍挺费劲。线下报名拥挤，影响家长学生体验
+                </div>
+                <div class="problem-item left-item">
+                    学生排课教室冲突，课消情况与家长记录不符，经常扯皮
+                </div>
+                <div class="problem-item left-item">
+                    家校服务不够可视化，家长与学校的连接断断续续，转介绍积极性不高
+                </div>
+            </div>
+            <div class="problem-split-img">
+                <img src="images/base/question.png" alt="" class="questionImg">
+                <img src="images/base/problem.png" alt="">
+            </div>
+            <div class="problem-item-container right-container">
+                <div class="problem-item">
+                    完整记录所有客户资料及联系情况，客户状态及跟进情况一目了然
+                </div>
+                <div class="problem-item">
+                    在线选课报名，家长轻松完成报名与续费，节省人力成本
+                </div>
+                <div class="problem-item">
+                    信息化管理，轻松排课，解脱教务老师。上课签到情况家校同步，数据清晰
+                </div>
+                <div class="problem-item">
+                    学生上课动态一键发送，家长清楚地了解孩子在校动态，紧密连接家长
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="ability">
+        <div class="title">我们能做什么？</div>
+        <div class="ability-list">
+            <div class="ability-list-item">
+                <div class="item-icons">
+                    <div class="item-icons-container">
+                        <img src="images/base/customer.png" alt=""/>
+                    </div>
+                </div>
+                <div class="title">客户管理</div>
+                <div class="description">意向客户信息与管理</div>
+                <div class="description">意向客户沟通与轨迹</div>
+                <div class="description">招生日报表</div>
+                <div class="description">销售漏斗管理</div>
+                <div class="description">客户服务记录管理</div>
+                <div class="description">续费提醒与续费管理</div>
+            </div>
+            <div class="ability-list-item">
+                <div class="item-icons">
+                    <div class="item-icons-container">
+                        <img src="images/base/studentManage.png" alt=""/>
+                    </div>
+                </div>
+                <div class="title">学员管理</div>
+                <div class="description">学生档案管理</div>
+                <div class="description">到校离校消息推送</div>
+                <div class="description">学生上课考勤管理</div>
+                <div class="description">学生异动管理</div>
+                <div class="description">学生成绩管理</div>
+                <div class="description">学生积分管理</div>
+            </div>
+            <div class="ability-list-item">
+                <div class="item-icons">
+                    <div class="item-icons-container">
+                        <img src="images/base/moneyManage.png" alt=""/>
+                    </div>
+                </div>
+                <div class="title">学费管理</div>
+                <div class="description">收费管理</div>
+                <div class="description">收据打印</div>
+                <div class="description">退费管理</div>
+                <div class="description">学费结转</div>
+                <div class="description">电子账户管理</div>
+                <div class="description">收款账号管理</div>
+            </div>
+            <div class="ability-list-item">
+                <div class="item-icons">
+                    <div class="item-icons-container">
+                        <img src="images/base/hr.png" alt=""/>
+                    </div>
+                </div>
+                <div class="title">人事管理</div>
+                <div class="description">员工信息管理</div>
+                <div class="description">上班考勤管理</div>
+                <div class="description">绩效业绩统计</div>
+                <div class="description">课时费统计</div>
+            </div>
+            <div class="ability-list-item">
+                <div class="item-icons">
+                    <div class="item-icons-container">
+                        <img src="images/base/class.png" alt=""/>
+                    </div>
+                </div>
+                <div class="title">教务管理</div>
+                <div class="description">课程设置</div>
+                <div class="description">班级管理</div>
+                <div class="description">排课管理</div>
+                <div class="description">排课时段查询</div>
+                <div class="description">排课资源冲突检测</div>
+                <div class="description">报名选座</div>
+            </div>
+            <div class="ability-list-item">
+                <div class="item-icons">
+                    <div class="item-icons-container">
+                        <img src="images/base/charts.png" alt=""/>
+                    </div>
+                </div>
+                <div class="title">报表管理</div>
+                <div class="description">招生分析报表</div>
+                <div class="description">收费统计报表</div>
+                <div class="description">课消统计报表</div>
+                <div class="description">班级出勤率报表</div>
+                <div class="description">班级满班率报表</div>
+                <div class="description">家校服务分析报表</div>
+            </div>
+        </div>
+    </div>
+    <div class="purpose">
+        <div class="title">匠心，做好产品</div>
+        <div class="purpose-list">
+            <div class="purpose-list-item">
+                <div class="item-container">
+                    <div class="icons">
+                        <img src="images/base/star.png" alt="">
+                    </div>
+                    <div class="title">简单&nbsp;易用</div>
+                </div>
+                <div class="description">界面更简洁,操作易上手</div>
+            </div>
+            <div class="purpose-list-item">
+                <div class="item-container">
+                    <div class="icons">
+                        <img src="images/base/money.png" alt="">
+                    </div>
+                    <div class="title">高品质&nbsp;低成本</div>
+                </div>
+                <div class="description">基于校管家团队8年积累，精简而成</div>
+            </div>
+            <div class="purpose-list-item">
+                <div class="item-container">
+                    <div class="icons">
+                        <img src="images/base/customerService.png" alt="">
+                    </div>
+                    <div class="title">服务优&nbsp;响应快</div>
+                </div>
+                <div class="description">每周线上操作培训，滚动开班<br/>7-12小时在线客服热线</div>
+            </div>
+        </div>
+    </div>
+    <div class="list-tabs">
+        <div class="tabs-list-item">
+            <img src="images/base/2.png" alt="">
+            <div class="content">
+                <div class="title">让运营更简单</div>
+                <div class="description">简化和规范工作流程，同时清晰呈现各项运营指标数据和决策统计数据；
+                    有效提升管理效率，节省管理时间和管理成本30%以上。
+                </div>
+            </div>
+        </div>
+        <div class="tabs-list-item">
+            <img src="images/base/1.png" alt="">
+            <div class="content">
+                <div class="title">让家校更紧密</div>
+                <div class="description">家长随时了解学生在校动态与课堂表现，与老师之间进行高频、紧密、安全的互动交流，
+                    增强家校粘度，提升家长满意度，有效提升续费率35%以上。
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@@include('./foot.html',{
+    "js":"index.js"
+})

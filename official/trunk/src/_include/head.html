@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="校锐星，学校管理软件，培训学校管理系统，培训学校管理软件，学校管理排课软件，家校互动软件，学校管理系统">
+    <meta name="description" content="校管家教育科技有限公司，是一家专注于为教育培训学校提供信息化解决方案的软件服务商，拥有一批业内极具行业经验的系统分析、技术研发及项目实施专家。">
+    <meta name="360-site-verification" content="de02934c32b04a9352b8e1506e0a8651" />
+    <link rel="shortcut icon" href="images/base/logo.ico">
+    <link rel="shortcut icon" href="images/base/logo.ico">
+    <title>校锐星-培训学校管理系统</title>
+    <link rel="stylesheet" type="text/css" href="css/common.css">
+    <link rel="stylesheet" href="css/@@css">
+    <script>
+        var _hmt = _hmt || [];
+        (function () {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?bab52ec1d4a9ca94926cf44d7adbe7f3";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+    <script>
+        (function () {
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            } else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+    <!-- <script type="text/javascript"> var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F1c77c187521509e0be490390aef95cbe' type='text/javascript'%3E%3C/script%3E")) </script>-->
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+        /**
+         * @description 登录
+         */
+        function login() {
+            location.href = 'https://tms.xrx100.com'
+        }
+
+        /**
+         * @description 注册
+         */
+        function register() {
+            location.href = 'http://trialapply.xrx100.com/html/apply/smartapply.html'
+        }
+
+        /**
+         * @description 登录
+         */
+        function toLogin() {
+            location.href = 'https://tms.xrx100.com'
+        }
+
+        /**
+         * @description 注册
+         */
+        function toRegister() {
+            location.href = 'http://trialapply.xrx100.com/html/apply/smartapply.html'
+        }
+        /**
+         * @description 切换界面
+         * @param data
+         */
+        function changePage(data) {
+            if (data === 'help') {
+                window.open('http://help.xrx100.com');
+            } else {
+                location.href = data + '.html?1211';
+            }
+        }
+
+        function sethref() {
+            if ((window.location.href.indexOf('index') != -1 && window.location.href.indexOf('?') == -1) || window.location
+                .href.indexOf('?') == -1) {
+                location.href = 'index.html?1211'
+            }
+        }
+        sethref()
+    </script>
+</head>
+
+<body>
+    <div id="main">
+        <div class="header">
+            <div class="header-container">
+                <div class="header-logo">
+                    <img src="images/base/logo.png" alt="">
+                </div>
+                <div class="header-nav">
+                    <div class="header-nav-item pointer @@if(active==='index'){active}" onclick="changePage('index')">
+                        首页
+                        <span class="header-nav-item-border"></span>
+                    </div>
+                    <div class="header-nav-item pointer @@if(active==='business'){active}" onclick="changePage('business')">
+                        运营管理系统
+                        <span class="header-nav-item-border"></span>
+                    </div>
+                    <div class="header-nav-item pointer @@if(active==='service'){active}" onclick="changePage('service')">
+                        家校服务系统
+                        <span class="header-nav-item-border"></span>
+                    </div>
+                    <div class="header-nav-item pointer @@if(active==='joinus'){active}" onclick="changePage('joinus')">
+                        招商加盟
+                        <span class="header-nav-item-border"></span>
+                    </div>
+                    <div class="header-nav-item pointer" onclick="changePage('help')">
+                        帮助中心
+                        <span class="header-nav-item-border"></span>
+                    </div>
+                    <div class="header-nav-item pointer @@if(active==='contact'){active}" onclick="changePage('contact')">
+                        关于我们
+                        <span class="header-nav-item-border"></span>
+                    </div>
+                </div>
+                <div class="register-container">
+                    <div class="btn btn-login pointer" onclick="toLogin()">登录</div>
+                    <div class="btn btn-register pointer" onclick="toRegister()">申请使用</div>
+                </div>
+            </div>
+        </div>

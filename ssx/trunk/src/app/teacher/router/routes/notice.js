@@ -31,7 +31,7 @@ const routes = [
     	}
     },
     {
-    	path: '/noticeStudentList',
+    	path: '/noticeStudentList/:messageid/:shiftname',
     	name: 'NoticeStudentList',
     	component: routerBus,
     	meta: {

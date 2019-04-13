@@ -1,5 +1,5 @@
 <!-- 富文本区域组件 -->
-<style lang="scss" >
+<style lang="scss">
 	
 	
 	.rich-text-box {
@@ -40,11 +40,6 @@
                 width: 20%;
                 height: 100%;
                 right: 0;
-            }
-        }
-        .voice[data-type]{
-            &::after{
-                content: ''
             }
         }
         .loading {

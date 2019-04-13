@@ -186,10 +186,8 @@
 
 <script>
 	import DepartmentTreeBase from './department-tree-base';
-	
-	import Minxin from './child/common-mixin.js';
-	import { transformEmpTree, createEmpNode } from './child/tree.js';
-	
+	import Minxin from './children/common-mixin.js';
+	import { transformEmpTree, createEmpNode } from './children/tree.js';
 
 	let _tempData = null;
 	export default {
@@ -213,6 +211,11 @@
 			initData(data) {
 				this.data = (_tempData = transformEmpTree(data.DepartList, data.EmployeeList));
 				this._tempEmpList = data.EmployeeList;
+			},
+			initData2(data,_tempEmpList) {
+				
+				this.data = (_tempData = data);
+				this._tempEmpList = _tempEmpList;
 			},
 			prePage() {
 				this.$refs.treeBase.backReturn();
@@ -263,8 +266,7 @@
 			},
 		},
 		components: {
-			DepartmentTreeBase,
-			
+			DepartmentTreeBase
 		}
 	}
 

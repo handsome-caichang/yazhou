@@ -1,0 +1,195 @@
+.tips {
+    width: 100%;
+    min-width: 1200px;
+    height: 600px;
+    background: url("../images/business/1.jpg") no-repeat;
+    background-size: 100% 100%;
+}
+
+.tips .title {
+    text-align: center;
+    color: #ffffff;
+    font-size: 24px;
+    line-height: 32px;
+    padding-top: 250px;
+    font-weight: normal;
+}
+
+.tips .btn {
+    text-align: center;
+    color: #ffffff;
+    padding: 15px 0;
+    background-color: #3673ff;
+    width: 200px;
+    font-size: 20px;
+    margin: 50px auto 0;
+    letter-spacing: 0.3em;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+    transition: 0.3s ease-in-out;
+    cursor: pointer;
+}
+
+.tips .btn:hover {
+    opacity: 0.95;
+}
+
+.marketing {
+    width: 100%;
+    min-width: 1200px;
+    height: 600px;
+    background-color: #f4f6f9;
+}
+
+.marketing-container {
+    width: 1200px;
+    height: 580px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.marketing-container .left-pic {
+    width: 565px;
+    height: 478px;
+    top: 56px;
+    left: 73px;
+    position: absolute;
+    background: url("../images/business/3.jpg") no-repeat;
+}
+
+.marketing-container .right-words {
+    position: absolute;
+    top: 123px;
+    left: 691px;
+    width: 443px;
+    height: 118px;
+    min-height: 40px;
+}
+
+.marketing-container .right-words .title {
+    font-size: 30px;
+    line-height: 40px;
+    color: #000000;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #d7dce6;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.marketing-container .right-words .title .title-words {
+    border-bottom: 2px solid #3673ff;
+    margin-bottom: -2px;
+}
+
+.marketing-container .right-words .description {
+    font-size: 16px;
+    line-height: 20px;
+    color: #3e3a39;
+}
+
+.choose {
+    width: 100%;
+    min-width: 1200px;
+    background-color: #ececec;
+    height: 600px;
+}
+
+.choose .container {
+    width: 1200px;
+    height: 580px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.choose .container .left-pic {
+    width: 565px;
+    height: 396px;
+    top: 56px;
+    left: 73px;
+    position: absolute;
+    background: url("../images/business/4.jpg") no-repeat;
+}
+
+.choose .container .right-words {
+    position: absolute;
+    top: 123px;
+    left: 691px;
+    width: 443px;
+    height: 118px;
+    min-height: 40px;
+}
+
+.choose .container .right-words .description {
+    font-size: 16px;
+    line-height: 20px;
+    color: #3e3a39;
+}
+
+.choose .container .right-words .title {
+    font-size: 30px;
+    line-height: 40px;
+    color: #000000;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #d7dce6;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.choose .container .right-words .title .title-words {
+    border-bottom: 2px solid #3673ff;
+    margin-bottom: -2px;
+}
+
+.academic {
+    width: 100%;
+    min-width: 1200px;
+    height: 600px;
+    background-color: #dedede;
+}
+
+.academic .container {
+    width: 1200px;
+    height: 580px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.academic .container .left-pic {
+    width: 565px;
+    height: 416px;
+    top: 56px;
+    left: 73px;
+    position: absolute;
+    background: url("../images/business/5.jpg") no-repeat;
+}
+
+.academic .container .right-words {
+    position: absolute;
+    top: 123px;
+    left: 691px;
+    width: 443px;
+    height: 118px;
+    min-height: 40px;
+}
+
+.academic .container .right-words .title {
+    font-size: 30px;
+    line-height: 40px;
+    color: #000000;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #c3c3c3;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.academic .container .right-words .title .title-words {
+    border-bottom: 2px solid #3673ff;
+    margin-bottom: -2px;
+}
+
+.academic .container .right-words .description {
+    font-size: 16px;
+    line-height: 20px;
+    color: #3e3a39;
+}

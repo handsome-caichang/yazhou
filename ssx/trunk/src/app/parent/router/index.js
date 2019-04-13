@@ -12,9 +12,6 @@ import suggestionRouter from './routes/suggestion.js';
 import transactionRouter from './routes/transaction';
 import statisticsRouter from './routes/statistics';
 import personalCenterRouter from './routes/personal-center';
-import orderRouter from './routes/order';
-import lookClass from './routes/lookClass';
-import coupon from './routes/coupon.js';
 
 let routes = [
 	...publicRouter,
@@ -29,9 +26,7 @@ let routes = [
 	...transactionRouter,
 	...statisticsRouter,
 	...personalCenterRouter,
-    ...orderRouter,
-	...lookClass,
-	...coupon,
+
 	...noFindComponent
 ]
 

@@ -40,12 +40,12 @@
     <div class="wrapper">
         <div class="heard">
             <div class="heard-top">
-                <div class="heard-item no-border" :class="{active:activeIndex==1}" @click="changeContent(1)">待沟通{{"("+num+")"}}</div>
+                <div class="heard-item no-border" :class="{active:activeIndex==1}" @click="changeContent(1)">待沟通</div>
                 <div class="heard-item" :class="{active:activeIndex==2}" @click="changeContent(2)">已沟通</div>
             </div>
         </div>
         <div class="void"></div>
-        <component :is="activeIndex==1?coms.WaitComm:coms.HasComm" @getNum="getNum"></component>
+        <component :is="activeIndex==1?coms.WaitComm:coms.HasComm"></component>
     </div>
 </template>
 
@@ -55,34 +55,24 @@
     export default {
         data() {
             return {
-                    // wxTitle: "意向客户",
                     activeIndex: parseInt(this.$route.params.type),
                     
                     coms: {
                         WaitComm,
                         HasComm     
-                    },
-                    num: 0
+                    }
             }
         },
         computed: {
-            wxTitle() {
-                return this.activeIndex === 1 ? '今日待沟通客户' : '今日已沟通客户'
-            }
+            
         },
         methods: {
             changeContent(num) {
-                if (this.activeIndex != num) {
-                    this.$router.replace(`/commCustomer/${num}`)
-                    this.activeIndex = num
-                } 
+                if (this.activeIndex == num) return 
+                this.activeIndex = num
             },
-            getNum(num) {
-                this.num = num
-            }
         },
         created() {
-            
         },
         components: {
             WaitComm,

@@ -58,7 +58,6 @@
 </template>
 
 <script>
-    
     import {getPointsList} from 'teacher/api/homework';
 
     export default {
@@ -87,7 +86,9 @@
         },
         methods: {
             selectScore(newVal) {
+
                 this.selected = newVal;
+
                 this.$emit("homeworkLevelPoint", this.selected);
                 this.close()
             },
@@ -95,21 +96,11 @@
                 if (this.selected) {
                     return this.selected.ID == obj.ID;
                 }
-            },
-            handleEmit(){
-                this.selected=null;
             }
         },
         created() {
-        },
-        mounted() {
-            app.eventDefine.on('homeworkCommentResetPointChosed',this.handleEmit);
-        },
-        beforeDestroy() {
-            app.eventDefine.off('homeworkCommentResetPointChosed');
-        },
-        components: {
-            
+            // this._getPointsList();
+            console.log(this.levelList)
         }
     }
 </script>

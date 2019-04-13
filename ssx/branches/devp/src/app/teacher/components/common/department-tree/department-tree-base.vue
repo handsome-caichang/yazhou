@@ -69,7 +69,7 @@
 </template>
 
 <script>
-	import DepartmentTreeTemplate from './child/department-tree-template';
+	import DepartmentTreeTemplate from './children/department-tree-template';
 	export default {
 		name: "department-tree-base",
 		data() {
@@ -142,7 +142,7 @@
 					this.department = obj;
 					this.recordRouter = [{
 						data: obj,
-						title: app.sysInfo.CompanyName
+						title: '当前系统'
 					}];
 				}
 			}

@@ -61,28 +61,28 @@
             <scroller-base :data="renderData" class="scroller">
                 <div class="body">
                     <div class="card" v-show="ListScoreDetail" v-for="(item,index) in ListScoreDetail">
-                        <div class="card-text">{{item.ScopeName}}</div>
+                        <div class="card-text">{{item.scopename}}</div>
                         <div class="card-star">
                             <svg class="icon" aria-hidden="true">
-                                <use :xlink:href="item.Scope>0?'#icon-xingxingxuanzhong':'#icon-xingxingweixuanzhong'"></use>
+                                <use :xlink:href="item.scope>0?'#icon-xingxingxuanzhong':'#icon-xingxingweixuanzhong'"></use>
                             </svg>
                             <svg class="icon" aria-hidden="true">
-                                <use :xlink:href="item.Scope>1?'#icon-xingxingxuanzhong':'#icon-xingxingweixuanzhong'"></use>
+                                <use :xlink:href="item.scope>1?'#icon-xingxingxuanzhong':'#icon-xingxingweixuanzhong'"></use>
                             </svg>
                             <svg class="icon" aria-hidden="true">
-                                <use :xlink:href="item.Scope>2?'#icon-xingxingxuanzhong':'#icon-xingxingweixuanzhong'"></use>
+                                <use :xlink:href="item.scope>2?'#icon-xingxingxuanzhong':'#icon-xingxingweixuanzhong'"></use>
                             </svg>
                             <svg class="icon" aria-hidden="true">
-                                <use :xlink:href="item.Scope>3?'#icon-xingxingxuanzhong':'#icon-xingxingweixuanzhong'"></use>
+                                <use :xlink:href="item.scope>3?'#icon-xingxingxuanzhong':'#icon-xingxingweixuanzhong'"></use>
                             </svg>
                             <svg class="icon" aria-hidden="true">
-                                <use :xlink:href="item.Scope>4?'#icon-xingxingxuanzhong':'#icon-xingxingweixuanzhong'"></use>
+                                <use :xlink:href="item.scope>4?'#icon-xingxingxuanzhong':'#icon-xingxingweixuanzhong'"></use>
                             </svg>
                         </div>
                     </div>
-                    <div class="text-area" v-show="list.Content">
+                    <div class="text-area" v-show="list.content">
                         <div class="content">
-                            {{list.Content}}
+                            {{list.content}}
                         </div>
                     </div>
                 </div>
@@ -95,7 +95,6 @@
 
 <script>
     import EmptyPage from 'teacher/components/common/empty-page/empty-page';
-    
     
     export default {
         name: "comment-reply-details",
@@ -118,9 +117,6 @@
                 isLoading:true,
             }
         },
-        created() {
-
-        },
         computed: {
             renderData() {
                 return {
@@ -128,9 +124,7 @@
                 }
             }
         },
-        methods: {},
         components: {
-            
             EmptyPage
         },
         watch: {
@@ -138,7 +132,7 @@
                 if (newVal) {
                     app.tool.setDocTitle('回评详情');
                     this.list = this.detailList[this.detailIndex];
-                    this.ListScoreDetail = this.detailList[this.detailIndex].ListScoreDetail;
+                    this.ListScoreDetail = this.detailList[this.detailIndex].listscoredetail;
                     setTimeout(()=>{
                         this.isLoading = false;
                     },301)

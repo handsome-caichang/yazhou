@@ -80,10 +80,10 @@
 									<use xlink:href="#icon-shangkeshijianicon"></use>
 								</svg>
 								{{ details.starttime.split(' ')[0].substr(5)}}
-								{{ details.starttime.split(' ')[1].substr(0,5) + '-' +  details.endtime.split(' ')[1].substr(0,5)}} 
+								{{ details.starttime.split(' ')[1].substr(0,5) + '-' +  details. endtime.split(' ')[1].substr(0,5)}} 
 								{{ WEEK[new Date(details.starttime.split(' ')[0]).getDay()] }}
 							</span>
-						<span>时长：{{ details.amount }}分钟</span>
+						<span>时长：{{ details.coursetime.toFixed(0) }}分钟</span>
 						</span>
 						<!-- teacher name -->
 						<span class="item-teacher">
@@ -93,10 +93,10 @@
                       </svg>
                       {{ details.teachername}}
                     </span>
-						<span v-if="details.showconsumemoney > 0">课消金额：<span class="orange">￥{{ parseInt(details.consumemoney) > 0 ?  details.consumemoney : details.lessmoney}}</span></span>
+						<span v-if="details.showconsumemoney > 0">课消金额：<span class="orange">￥{{ details.consumemoney }}</span></span>
 						</span>
 						<!-- 欠费金额 -->
-						<span class="arrers" v-if="parseInt(details.lessmoney) < 0">欠费金额：￥{{ details.lessmoney }}</span>
+						<span class="arrers" v-if="parseInt(details.lessmoney) != 0">欠费金额：￥{{ details.lessmoney.replace('-', '') }}</span>
 					</div>
 				</div>
 			</div>
@@ -108,7 +108,7 @@
 </template>
 
 <script>
-	import {getcourseconsume} from "parent/api/statistics.js";
+	import {getcourseconsume} from "parent/api/statistics";
 	import EmptyPage from "parent/components/common/empty-page/empty-page";
 
     /**@description
@@ -129,31 +129,28 @@
 			fomateData(data) {
 				let _list = {};
 				data.forEach((item, key) => {
-					let _StartTime = item.starttime.split("T")[0];
+					let _starttime = item.starttime.split(" ")[0];
 					// 只将年月作为key
-					_StartTime = _StartTime.split('-')[0] + "年" + _StartTime.split("-")[1] + "月";
+					_starttime = _starttime.split('-')[0] + "年" + _starttime.split("-")[1] + "月";
 
 					let _some = Object.keys(_list).some(_key => {
-						return _key === _StartTime;
+						return _key === _starttime;
 					});
 					if(!_some) {
-						_list[_StartTime] = [];
+						_list[_starttime] = [];
 					}
-					_list[_StartTime].push(data[key]);
+					_list[_starttime].push(data[key]);
 				});
 				return _list;
 			}
 		},
 		created() {
-			console.log(app)
 			getcourseconsume({
-				studentid:app.sysInfo.id,
-				classid: this.$router.currentRoute.params.shiftId
+				shiftid: this.$router.currentRoute.params.shiftid
 			}).then(res => {
 				this.isLoading = false;
-				if(res.result.code === app.errok) {
+				if(res.result.code == 200) {
 					this.list = this.fomateData(res.data);
-					console.log(this.list)
 				}
 			});
 		},

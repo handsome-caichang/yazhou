@@ -1,4 +1,6 @@
 <style scoped lang="scss">
+    
+    
     .wrapper {
         .scroll {
             @include position-absolute(0, 0, 49px, 0);
@@ -72,12 +74,12 @@
                         <div class="heard-mid" @click="delItem(index)"></div>
                         <div class="heard-right" @click="delItem(index)">
                             <svg class="icon" aria-hidden="true">
-                                <use xlink:href="#icon-shanchuyuyin2"></use>
+                                <use xlink:href="#icon-youjiantou"></use>
                             </svg>
                         </div>
                     </div>
                     <div class="item-body">
-                        <div class="body-left">{{app.sysInfo.Title_Campus}}</div>
+                        <div class="body-left">校区</div>
                         <div class="body-mid" @click="openSelectCamp(index)">
                             {{item.campusObj.Value&&item.campusObj.Value.Name}}
                         </div>
@@ -122,7 +124,6 @@
         <course-filter
             :opened.sync="showCourseFilter" 
             :list="list"
-            :campusObj="list[curIndex]?list[curIndex].campusObj:{}"
             @selectCourse="selectCourse">
         </course-filter>
         <!-- 选择意向班级 -->
@@ -143,7 +144,6 @@
     export default {
         data() {
             return {
-                wxTitle: "选择意向课程",
                 list: [{
                     title: '课程',
                     campusObj: {},
@@ -173,11 +173,9 @@
                 this.list.splice(index, 1)
             },
             addItem() {
-                let id = this.$route.params.id,
-                    camObj = app.customConfigInfo.CampusList.filter(item => item.Key === id)[0],
-                    obj = {
+                let obj = {
                         title: '课程',
-                        campusObj: this.list[0]&&this.list[0].campusObj || camObj,
+                        campusObj: this.list.length > 0 ? {} : app.customConfigInfo.CampusList[0],
                         willCourse: {},
                         willClass: {},
                     }
@@ -194,14 +192,12 @@
                 }
             },
             submit() {
-                this.$router.go(-1)
+                this.$router.push({name: 'addCustomer'})
                 app.event.emit('selectData', this.list)
             },
             //选择校区回掉
             selectCampusObj(obj) {
                 this.list[this.curIndex].campusObj = obj
-                if (this.list[this.curIndex].willCourse.id) this.list[this.curIndex].willCourse = {}
-                if (this.list[this.curIndex].willClass.ID) this.list[this.curIndex].willClass = {}
                 this.showSelectCampus = false
             },
             openSelectCamp(index) {
@@ -223,19 +219,12 @@
             },
             selectWillClass(obj) {
                 this.showWillClass = false
-                this.list[this.curIndex].willClass = obj
+                this.list[this.curIndex].wullClass = obj
             }
         },
         created() {
             window.a = this
-            let arr = app.ls.get('willClass')
-            if (arr) {
-                this.list = arr
-            } else {
-                let id = this.$route.params.id,
-                    obj = app.customConfigInfo.CampusList.filter(item => item.Key === id)[0]
-                this.list[0].campusObj = obj
-            }
+            this.list[0].campusObj = app.customConfigInfo.CampusList[0]
         },
         components: {
             SelectCampus,

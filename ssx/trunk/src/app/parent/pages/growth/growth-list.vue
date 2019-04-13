@@ -10,7 +10,6 @@
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
-			background-color: #ffffff;
 			.btn-filter {
 				height: 40px;
 				line-height: 40px;
@@ -139,8 +138,8 @@
 		<div class="filter-growth">
 			<date-bar 
 				class="date" 
-				:sdate='pagingOption.params.sdate' 
-				:edate='pagingOption.params.edate' 
+				:sdate='pagingOption.params.starttime' 
+				:edate='pagingOption.params.endtime' 
 				:index="quickDateIndex" 
 				@changeDate="changeDate">
 			</date-bar>
@@ -153,7 +152,6 @@
 
 		<!-- 作业和评价 -->
 		<scroller-super 
-			
 			ref="scrollerSuper" 
 			class="body" 
 			:type="2" 
@@ -161,55 +159,51 @@
 			:pagingOption="pagingOption" 
 			@loadData="loadData">
 			<!-- 列表渲染 -->
-			<div v-if="pagingOption.params.queryType != 1" class="growth-item" v-for="item in list" :key="item.MessageID" @click="toDetail(item)">
+			<div v-if="pagingOption.params.queryType != 1" class="growth-item" v-for="(item, key) in list" :key="item.MessageID" @click="toDetail(item)">
 				<!-- 评价和作业 -->
-				<div class="common" v-if="item.Type == 2 || item.Type == 3">
+				<div class="common" v-if="item.type == 2 || item.type == 3">
 					<div class="base-info">
 						<div class="flex-left">
 							<span class="title">
-		                		<svg :class="['icon', {'icon-pingjia': item.Type == 2}, {'icon-zuoye': item.Type == 3}]" aria-hidden="true">
-		               				<use :xlink:href="item.Type == 2 ? '#icon-pingjia' : '#icon-zuoye'"></use>
-		                		</svg>{{item.ClassName}}
+		                		<svg :class="['icon', {'icon-pingjia': item.type == 2}, {'icon-zuoye': item.type == 3}]" aria-hidden="true">
+		               				<use :xlink:href="item.type == 2 ? '#icon-pingjia' : '#icon-zuoye'"></use>
+		                		</svg>{{item.classname}}
                     		</span>
 							<span>
 		                   		<svg class="icon" aria-hidden="true">
 		                    		<use xlink:href="#icon-laoshiicon1"></use>
-	                    		</svg>&nbsp;&nbsp;{{item.TeacherName}}
+	                    		</svg>&nbsp;&nbsp;{{item.teachername}}
                     		</span>
 							<span>
 		                    	<svg class="icon" aria-hidden="true">
 		                    		<use xlink:href="#icon-shangkeshijianicon"></use>
-	                    		</svg>&nbsp;&nbsp;{{item.Time}}
+	                    		</svg>&nbsp;&nbsp;{{item.time}}
                     		</span>
 						</div>
-						<div class="flex-rigth" v-if="item.Type == 2">
-							<span>{{item.AvgScope}}</span>
+						<div class="flex-rigth" v-if="item.type == 2">
+							<span>{{item.avgscope.toFixed(2)}}</span>
 							<span>综合评分</span>
 						</div>
 					</div>
 
-					<!-- 有文字描述的时候有一条分隔线 -->
-					<hr class="only-text" v-if="item.Src.length == 0 && item.Text.length > 0"></hr>
-
 					<!-- 图片 -->
-					<div class="img-box" v-if="item.Src.length > 0">
-						<div class="img-item" v-for="(item1, key) in item.Src" :key="key">
+					<div class="img-box" v-if="item.src.length > 0">
+						<div class="img-item" v-for="(item1, key) in item.src" :key="key">
 							<div :style="{'background-image':'url(' + item1 + ')'}"></div>
 						</div>
 					</div>
 
 					<!-- 文字 -->
-					<div class="text-box" v-if="item.Text.length > 0">{{item.Text | handleText}}</div>
+					<div class="text-box" v-if="item.text.length > 0" v-html="item.text"></div>
 				</div>
 			</div>
 
-			<!-- 只看图片 -->
+			<!-- 图片 -->
 			<div class="album" v-if="pagingOption.params.queryType == 1">
-				<div class="album-item" v-for="(item1, key) in list" :key="key" @click="previewImage(item1)">
+				<div class="album-item" v-for="(item1, key) in album" :key="key" @click="previewImage(item1)">
 					<div class="bg-div" :style="{'background-image':'url(' + item1 + ')'}"></div>
 				</div>
 			</div>
-			
 			<empty-page class="noData-temp" :type="6" v-if="list.length == 0 && pagingOption.params.queryType != 1"></empty-page>
 			<empty-page class="noData-temp" :type="1001" v-if="list.length == 0 && pagingOption.params.queryType == 1"></empty-page>
 		</scroller-super>
@@ -227,7 +221,7 @@
 </template>
 
 <script>
-	import { getGrowthList, getDetailInfo } from "parent/api/growth";
+	import { getstudentgrowingalbuminfo } from "parent/api/growth";
 	import FilterGrow from "./child/filter-grow";
 	import EmptyPage from "parent/components/common/empty-page/empty-page";
 	
@@ -237,26 +231,28 @@
 			return {
 				wxTitle: "我的成长",
 				list: [],
+				quickDateIndex: -1,
 				opened: false,
 				classList: null,
-                quickDateIndex:-1,
 				pagingOption: {
-					api: getGrowthList,
+					api: getstudentgrowingalbuminfo,
 					params: {
-						queryType: 0,
-						sdate: app.tool.getDatesByIndex(3, app.localTimeToServer).sdate,
-						edate: app.tool.getDatesByIndex(3, app.localTimeToServer).edate,
-						classid: ""
+						querytype: 0,
+						starttime: app.tool.getDatesByIndex(3, app.localTimeToServer).sdate,
+						endtime: app.tool.getDatesByIndex(3, app.localTimeToServer).edate,
+						classids: [],
 					},
 					pageOpt: {
+						// 是否降序排列
+						isdesc: true,
 						// 分页初始页码的'key'、'value'
-						indexKey: "PageIndex",
-						indexVal: 1,
-						// 每页请求数据长度的'key'、'value'
-						sizeKey: "PageSize",
-						sizeVal: 20,
-						// 后端返回的总页数'key'
-						countKey: "PageCount"
+                        indexKey: 'pageindex',
+                        indexVal: 1,
+                        // 每页请求数据长度的'key'、'value'
+                        sizeKey: 'pagesize',
+                        sizeVal: 20,
+                        // 后端返回的总页数'key'
+                        countKey: 'totalpage'
 					}
 				},
 				isLoading: true
@@ -266,7 +262,7 @@
 			loadData(ajaxPromise) {
 				ajaxPromise.then(res => {
 					this.isLoading = false;
-					if(res.ErrorCode === 200) {
+					if(res.result.code == 200) {
 						// 除图片外
 						if(this.pagingOption.params.queryType != 1) {
 							this.handleData(res);
@@ -288,62 +284,52 @@
 			},
 			// 日期筛选
 			changeDate(item) {
-				this.pagingOption.params.sdate = item.sdate;
-				this.pagingOption.params.edate = item.edate;
+				this.pagingOption.params.starttime = item.sdate;
+				this.pagingOption.params.endtime = item.edate;
 				this.quickDateIndex = item.index;
 				this.isLoading = true;
+
 				this.$refs.scrollerSuper.refresh(this.pagingOption.params);
 			},
 			// 列表如果有图片最多只显示4张
 			handleData(res) {
-				let _data = Object.keys(res.Data).length > 0 ? res.Data : [];
+				let _data = Object.keys(res.data).length > 0 ? res.data : [];
 
 				this.list =
-					res.PageIndex === 1 ? [].concat(_data) : this.list.concat(_data);
+					res.page.pageindex == 1 ? [].concat(_data) : this.list.concat(_data);
 
 				// 如果有图片最多显示6张
-				if(Object.keys(this.list).length > 0) {
+				if(this.list.length > 0) {
 					this.list.forEach(item => {
-						item.Src = item.Src.length > 4 ? item.Src.splice(0, 4) : item.Src;
+						item.src = item.src.length > 4 ? item.src.splice(0, 4) : item.src;
 					});
 				}
 			},
 			toDetail(item) {
-				let _name = item.Type == 3 ? 'homeworkDetail' : 'commentDetail'
-					,_param = item.Type == 2 ? {id: item.CourseID, studentId: app.sysInfo.userId} : {id: item.MessageID};
+				let _name = item.type == 3 ? 'homeworkDetail' : 'commentDetail'
+					,_param = item.type == 2 ? {courseid: item.courseid, studentid: app.sysInfo.userId} : {id: item.messageid};
 				this.$router.push({name: _name, params: _param});
 			},
 			filterGrowth() {
 				this.opened = true;
 			},
 			ok(data) {
-				// queryType: 1,只看图片；2,课堂评价；3,只看作业
-				this.pagingOption.params.queryType = data.queryType;
-				this.pagingOption.params.classid = data.classid;
-
+				// querytype: 1,只看图片；2,课堂评价；3,只看作业
+				this.pagingOption.params.querytype = data.querytype;
+				this.pagingOption.params.classids = [...data.classids];
 				this.$refs.scrollerSuper.refresh(this.pagingOption.params);
 			},
-			/* listPreViewImage(url) {
+			listPreViewImage(url) {
 				this.list = [url];
 				this.previewImage(url);
-			}, */
+			},
 			previewImage(url) {
-				app.sdk.previewImage({
+                app.sdk.previewImage({
 					current: url,
 					urls: this.list
 				});
 			}
 		},
-        filters: {
-		    // 处理值为html片段时，样式撑开的问题
-            handleText: function (value) {
-                if(!value){ return }
-                let el_div = document.createElement('div');
-                el_div.innerHTML = value;
-
-                return el_div.innerText
-            }
-        },
 		components: {
 			FilterGrow,
 			EmptyPage

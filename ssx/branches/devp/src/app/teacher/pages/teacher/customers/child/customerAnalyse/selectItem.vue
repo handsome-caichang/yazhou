@@ -248,6 +248,7 @@
                 if (obj.listTemp.length !== 6) {
                     if (obj.listTemp.length == 0) {
                         obj.isAllSelect = !obj.isAllSelect
+                        console.log(obj)
                         return
                     }
                     obj.listTemp.forEach(item => {
@@ -276,12 +277,8 @@
                         if (obj.isSelect) {
                             arr.push(obj.ID)
                         }
-                        obj.List.forEach(oobj => {
-                            oobj.isSelect = false
-                        })
-                        obj.isAllSelect = false
                     })
-                    this.$emit('selectSaleModes', arr, 0)
+                    this.$emit('selectSaleModes', arr)
                 }
                 if (this.showItem == 2) {
                     this.list.forEach(obj => {
@@ -290,20 +287,13 @@
                                 arr.push(oobj.ID)
                             }
                         })
-                        obj.isSelect = false
                     })
-                    this.$emit('selectSaleModes', arr, 1)
+                    this.$emit('selectSaleModes', arr)
                 }
             }
         },
         created() {
-            let tempArr = app.customConfigInfo.SaleMode 
-            // this.list = app.customConfigInfo.SaleMode
-            if (this.showItem == 1) {
-                this.list = app.customConfigInfo.SaleMode
-            } else {
-                this.list = tempArr.filter(obj => obj.List.length)
-            }
+            this.list = app.customConfigInfo.SaleMode
             this.list.forEach(obj => {
                 this.$set(obj, 'isSelect', false)
                 this.$set(obj, 'isAllSelect', false)

@@ -30,7 +30,7 @@
         :data="list" 
         @close="close">
         <!-- <div slot="header" class="actionsheet-hd">客户状态筛选</div> -->
-            <!-- :class="{'active':item.Id==app.sysInfo.currole.Id}" -->
+            <!-- :class="{'active':item.Id==app.sysInfo.currole.id}" -->
         <div class="wrapper">
             <div class="actionsheet-item"
                 v-for="(item, index) in list"
@@ -44,9 +44,6 @@
 </template>
 
 <script>
-    
-    
-    
     export default {
         mixins: [app.mixin.popupWindowRouteMixin],
         props: {
@@ -80,9 +77,6 @@
                     this.list = app.customConfigInfo.CampusList
                 }
             }
-        },
-        components: {
-            
         }
     }
 </script>

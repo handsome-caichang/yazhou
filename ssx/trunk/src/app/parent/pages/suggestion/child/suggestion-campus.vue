@@ -23,11 +23,11 @@
         :data="campusData">
         <div 
         	class="card"
-        	:class="curCampuId == campus.ID?'lighHeight':''"
+        	:class="curCampuId == campus.id?'lighHeight':''"
         	v-for="campus in campusList"
         	@click="changeCampus(campus)">
-            <span>{{campus.CampusName}}</span>
-            <svg v-if="curCampuId == campus.ID" class="icon" aria-hidden="true">
+            <span>{{campus.name}}</span>
+            <svg v-if="curCampuId == campus.id" class="icon" aria-hidden="true">
                 <use xlink:href="#icon-danxuan"></use>
             </svg>
         </div>
@@ -67,7 +67,7 @@
         },
         methods: {
             changeCampus(card){
-                this.curCampuId = card.ID;
+                this.curCampuId = card.id;
                 this.$emit('suggestionCampu',card);
                 this.close();
             }

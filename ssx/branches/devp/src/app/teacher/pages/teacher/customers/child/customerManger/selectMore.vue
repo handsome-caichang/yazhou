@@ -3,7 +3,6 @@
     
     .role-actionsheet {
         @include position-absolute;
-        z-index: 1000;
         .container {
             padding: 0 15px;
             .item {
@@ -18,10 +17,10 @@
                     height: 31px;
                     line-height: 31px;
                     font-size: 12px;
-                    color: #BBBBBB;
+                    color: $color-9;
                     display: flex;
                     .item-bottom-left, .item-bottom-right {
-                        border: 1px solid #EEF1F6;
+                        border: 1px solid $color-9;
                         flex: 1;
                         text-align: center;
                     }
@@ -68,7 +67,7 @@
             text-align: center;
             display: flex;
             .bottom-left {
-                border-top: 1px solid #EBEBEB;
+                border-top: 1px solid $color-9;
                 flex: 1;
                 color: $color-9;
             }
@@ -185,8 +184,6 @@
 </template>
 
 <script>
-    
-    
     export default {
         mixins: [app.mixin.popupWindowRouteMixin],
         props: {
@@ -254,16 +251,14 @@
                 })
             },
             clearData() {
-                if (app.tool.op('CustomerFilter')) {//对只能根据电话号码精确查找权限处理
-                    this.statusObj = {}
-                    this.mainPerson = {}
-                    this.followStaTime = ''
-                    this.followEndTime = ''
-                    this.enterStaTime = ''
-                    this.enterEndTime = ''
-                    this.comStaTime = ''
-                    this.comEndTime = ''
-                }
+                this.statusObj = {}
+                this.mainPerson = {}
+                this.followStaTime = ''
+                this.followEndTime = ''
+                this.enterStaTime = ''
+                this.enterEndTime = ''
+                this.comStaTime = ''
+                this.comEndTime = ''
             },
             emit() {
                 this.$emit('selectMore', {
@@ -279,9 +274,6 @@
                 })
             }
         },
-        created() {
-           
-        },
         watch: {
             opened(val) {
                this.changeStep(1)
@@ -291,9 +283,6 @@
                     this.list = app.customConfigInfo.CustomerStatus
                 }
             }
-        },
-        components: {
-            
         }
     }
 </script>

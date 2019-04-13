@@ -1,5 +1,7 @@
-<!--工作统计=>上课率-->
+<!--工作统计 上课率-->
 <style scoped lang="scss">
+	
+	
 	.workinfo-details-container {
 		background-color: $color-assist-1;
 		.scroller {
@@ -21,7 +23,7 @@
 					margin: 3px 0 5px;
 				}
 				.count-box {
-                    color: $color-9;
+					display: flex;
 					@include flex-center;
 					.unit {
 						width: 66px;
@@ -32,15 +34,6 @@
 					.less {
 						flex: 1;
 					}
-                    .unit-s,.amount-s{
-                        color: $color-3;
-                    }
-                    .cost-s{
-                        color: #83C44E;
-                    }
-                    .less-s{
-                        color: #E74C3C;
-                    }
 				}
 			}
 		}
@@ -97,13 +90,13 @@
 				<div class="time" v-if="item.unit=='天'">{{item.starttime.substring(5,10).replace(/-/g,'.')}}</div>
 				<div class="time" v-else>{{item.starttime.substring(0,16).replace(/-/g,'.')}}</div>
 				<div class="count-box">
-					<div class="unit">单位：<span class="unit-s">{{item.unit}}</span></div>
-					<div class="amount">数量：<span class="amount-s">{{item.amount}}</span></div>
-					<div class="cost">计费：<span class="cost-s">{{item.studentcountcost}}</span></div>
-					<div class="less">欠费：<span class="less-s">{{item.studentcountless}}</span></div>
+					<div class="unit">单位：{{item.unit}}</div>
+					<div class="amount">数量：{{item.amount}}</div>
+					<div class="cost">计费：{{item.studentcountcost}}</div>
+					<div class="less">欠费：{{item.studentcountless}}</div>
 				</div>
 			</div>
-			<empty-page class="noData-temp" v-if="list.length == 0" text="还没有课时统计记录~" :type="7"></empty-page>
+			<empty-page class="noData-temp" v-if="list.length == 0" :type="1001"></empty-page>
 		</scroller-super>
 		<workinfoTotal 
 			class="as-total" 
@@ -125,9 +118,9 @@
 </template>
 
 <script>
-	import {getworkdetailinfo} from 'teacher/api/personal-center.js';
-	import workinfoTotal from './child/workinfo-total-details.vue';
-	import EmptyPage from 'teacher/components/common/empty-page/empty-page.vue';
+	import { getworkdetailinfo } from 'teacher/api/workinfo';
+	import EmptyPage from 'teacher/components/common/empty-page/empty-page';
+	import workinfoTotal from './child/workinfo-total-details';
 
 	export default {
 		name: "workinfo-course-details",
@@ -141,29 +134,14 @@
 				pagingOption: {
 					api: getworkdetailinfo,
 					params: {
-						starttime: '',
-						endtime: '',
-						type:1,
-						// page:{
-						// 	sortfield:'',
-						// 	isdesc:'',
-						// 	pageindex:1,
-						// 	pagesize:20,
-						// },
-					},
-
-					pageOpt:{
-						isdesc:false,
-						// 分页初始页码的'key'、'value'
-						indexKey: 'pageindex',
-						sortfield:'',
-                        indexVal: 1,
-                        // 每页请求数据长度的'key'、'value'
-                        sizeKey: 'pagesize',
-                        sizeVal: 20,
-                        // 后端返回的总页数'key'
-                        countKey: 'totalpage'
+						uid:app.sysInfo.id,
+						userrole:'',
+						starttime:'',
+						endtime:'',
+                        type:1
+									
 					}
+					
 				}
 			}
 		},
@@ -171,12 +149,8 @@
 			loadData(ajaxPromise) {
 				ajaxPromise.then(res => {
 					this.isLoading = false;
-					console.log(res)
 					if(res.result.code == app.errok) {
-                        if (res.page.pageindex === 1) {
-							this.list = [];
-						}
-						this.list = this.list.concat(res.data.classstudentinfos);
+						this.list = res.page.pageindex == 1 ? res.data.classstudentinfos : [].concat(this.list, res.data.classstudentinfos);
 						this.footerData = res.data.totalcountinfo;
 					} else {
 						app.toast('error', res.result.msg);
@@ -190,6 +164,15 @@
         created(){
             this.pagingOption.params.starttime = this.$route.params.sdate;
             this.pagingOption.params.endtime = this.$route.params.edate;
+            // 1学管师 2班主任 3老师
+            let role = '';
+            if(app.sysInfo.currole.id==4){
+                this.pagingOption.params.userrole=3
+            }else if(app.sysInfo.currole.id==32){
+                this.pagingOption.params.userrole=2
+            }else if(app.sysInfo.currole.id==16){
+                this.pagingOption.params.userrole=1;
+            }
         },
 		components: {
 			EmptyPage,

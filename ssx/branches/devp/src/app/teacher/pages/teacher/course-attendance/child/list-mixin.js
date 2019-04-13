@@ -16,35 +16,44 @@ export default {
 	methods:{
 		//值为0或1,正选反选
 		checkAttend(item){
+            if (item.studentstatus == '已删除'){
+                this.showMsg && app.toast("info","该学员已删除,不能操作");
+                return;
+            }
+
+
 			if (!this.CFG.lessEnableAttend && item.isAttend == 0 && !this.judge(item)){
 				return;
-            }
-			// item.isAttend = +!item.isAttend;
+			}
+			item.isAttend = +!item.isAttend;
 			
-			// //如果attend,去除缺勤原因
-			// if (item.isAttend){
-			// 	item.absentCauseName = '';
-			// 	item.absentCauseID = '00000000-0000-0000-0000-000000000000';
-			// } 
+			//如果attend,去除缺勤原因
+			if (item.isAttend){
+				item.absentCauseName = '';
+				item.absentCauseID = '00000000-0000-0000-0000-000000000000';
+			} 
 			
-			// if (this.CFG.enableAutoCharge && item.isCost>0 && item.IsAttendStauts == 0){	//开启了自动出勤计费,不能修改计费(除非是请假的)
-			// 	return;
-			// }
-			// //让attend和cost保持一致
-			// if ((item.isAttend == 0 && item.isCost > 0)	|| 
-			// 	(item.isAttend > 0 && item.isCost == 0)){
-			// 	if (this.data.isDynamicConsume == 0){
-			// 		this.checkCost(item);
-			// 	} else {
-			// 		this.checkCostDynamic(item,item.isAttend>0 ? this.data.costConsumeAmount : 0);
-			// 	}
-            // }
-            
-            //TODO:打开出勤状态弹窗
-            this.$emit("openAttend", item);
+			if (this.CFG.enableAutoCharge && item.isCost>0 && item.IsAttendStauts == 0){	//开启了自动出勤计费,不能修改计费(除非是请假的)
+				return;
+			}
+			//让attend和cost保持一致
+			if (	(item.isAttend == 0 && item.isCost > 0)	|| 
+					(item.isAttend > 0 && item.isCost == 0)  ){
+				if (this.data.isDynamicConsume == 0){
+					this.checkCost(item);
+				} else {
+					this.checkCostDynamic(item,item.isAttend>0 ? this.data.costConsumeAmount : 0);
+				}
+			}
 		},
 		//有可能正选反选(0,1),也可能需要计费动态课消,值为数字(0或设定好的课消数量)		isCost==0是未勾选.
 		checkCost(item){
+            if (item.studentstatus == '已删除'){
+                this.showMsg && app.toast("info","该学员已删除,不能操作");
+                return;
+            }
+
+
 			if (!this.CFG.lessEnableCost && item.isCost == 0 && !this.judge(item)){	//欠费不能勾选计费
 				return;
 			}
@@ -55,16 +64,19 @@ export default {
 			//正选反选.
 			item.isCost =  item.isCost == 0 ? this.data.costConsumeAmount : 0;
 		},
-		checkCostDynamic(item,changeVal){	//changeVal:要修改为的值(有可能超过剩余费用)
+        checkCostDynamic(item,changeVal){	//changeVal:要修改为的值(有可能超过剩余费用)
+            if (item.studentstatus == '已删除'){
+                this.showMsg && app.toast("info","该学员已删除,不能操作");
+                return;
+            }
+
 			if (changeVal === undefined){		//通过点击修改费用弹窗动态修改计费
 				if (!this.CFG.lessEnableCost && item.isCost == 0 && !this.judge(item)){	//欠费不能勾选计费
 					return;
-                }
-                
-				if (this.CFG.enableAutoCharge3 && item.isCost>0 && item.IsAttendStauts == 0){	//开启了动态课消自动出勤计费,不能修改计费(除非是请假的)
-                    app.toast("info","已开启自动计费，不能更改。");
-                    return;
-                }
+				}
+				/*if (this.CFG.enableAutoCharge && this.data.finished ==1 && item.isCost>0){	//开启了自动出勤计费,如果已经点名,不能修改计费
+					return;
+				}*/
 				//打开修改弹窗.
 				this.$emit("openDynamic",{
 					initVal:item.isCost,
@@ -86,9 +98,13 @@ export default {
 			}
 		},
 		checkTry(item){
+            if (item.studentstatus == '已删除'){
+                app.toast("info","该学员已删除,不能操作");
+                return;
+            }
 			item.isTry = +!item.isTry;
 		},
-        checkAllAttend(firstTime){ //需求:跳过提前请假的学生. firstTime:是否自动点名时初始化
+		checkAllAttend(firstTime){ //需求:跳过提前请假的学生. firstTime:是否自动点名时初始化
 			this.showMsg = false;		//全选不弹窗.
 			if (this.isCheckAllAttend){
 				this.listClone.forEach(val=>{
@@ -126,16 +142,18 @@ export default {
 					initVal:this.data.costConsumeAmount,
 					limitVal: -1
 			},res=>{
+                this.showMsg = false;
 				this.listClone.forEach(item=>{
 					this.checkCostDynamic(item,res);
 				})
-				this.$emit('amountChange',this.listClone);
+                this.$emit('amountChange',this.listClone);
+                this.showMsg = true;
 			});
 		},
 		//判断能不能勾选(出勤或计费) 一定是勾选才进入这个判断
 		judge(item){
 			let unitText = this.data.unit == '小时' ? '课时' : 
-								app.sysInfo.Title_CourseUnit_2 == '课时' ? '课时' : '课次',
+								app.sysInfo.title_courseunit_2 == '课时' ? '课时' : '课次',
 				tipStr = !this.CFG.lessEnableAttend ? '出勤计费' : '计费';
 			if ( (item.isCost + item.remainAmountToUnit - this.data.costConsumeAmount < 0 && this.data.isDynamicConsume == 0) ||
 				 (item.isCost + item.remainAmountToUnit <= 0 && this.data.isDynamicConsume == 1) ){
@@ -155,7 +173,7 @@ export default {
 				return (item.isAttend!=0 || item.isCost!=0 || item.isTry!=0 || (item.absentCauseID!='' && item.absentCauseID!="00000000-0000-0000-0000-000000000000"));				
 			});
 			if (!flag){
-				app.toast('info',"请选择学员的出勤、计费等状态");
+				app.toast('info',"请选择学员的出勤、计费等状态。");
 				return false;
 			}
 			
@@ -165,11 +183,11 @@ export default {
 				if (item.isAttend==1){
 					checkList.push(item);
 				}
-				return item.id + "|" + item.isAttend + "|" + item.isCost + "|" + item.isTry + "|" + item.absentCauseID + "|" + item.remainAmount;
+				return item
 			});
 			return {
 				checkIDs:checkList.map(item=>item.id).join(','),
-				data:submitData.join(',')
+				data:submitData
 			}
 		},
 	}

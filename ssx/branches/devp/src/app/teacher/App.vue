@@ -19,7 +19,7 @@
 
 <template>
     <div id='app'>
-        <custom-router-view class="page-veiw"></custom-router-view>
+        <custom-router-view class="page-veiw" v-if="!systemOverdue"></custom-router-view>
         
         <global-dom-plugin class="plugins-view"></global-dom-plugin>
     </div>
@@ -33,8 +33,11 @@
         mounted() {
             app.teacherApp = this;
         },
+        computed: {
+            ...Vuex.mapState(['systemOverdue'])
+        },
         components: {
             GlobalDomPlugin
-        },
+        }
     };
 </script>

@@ -17,12 +17,8 @@
         color: $color-3-s;
         @include ellipsis-single;
         @include flex-between;
-        @include border-bottom;
         &.lighHeight{
             color: $color-primary;
-        }
-        &:nth-last-child{
-            border-bottom: 0;
         }
     }
 </style>
@@ -33,13 +29,13 @@
             @close="close"
             :position="position"
             :data="campusData">
-        <div class="header" slot="header">选择{{app.sysInfo.Title_Campus}}</div>
+            <div class="header" slot="header">选择{{app.sysInfo.title_campus}}</div>
         <div class="card"
-             :class="curCampuId == campus.CampusID?'lighHeight':''"
+             :class="curCampuId == campus.id?'lighHeight':''"
              v-for="campus in campusList"
              @click="changeCampus(campus)">
-            <span>{{campus.CampusName}}</span>
-            <svg v-if="curCampuId == campus.CampusID" class="icon" aria-hidden="true">
+            <span>{{campus.name}}</span>
+            <svg v-if="curCampuId == campus.id" class="icon" aria-hidden="true">
                 <use xlink:href="#icon-danxuan"></use>
             </svg>
         </div>
@@ -47,7 +43,6 @@
 </template>
 
 <script>
-
     export default {
         name: 'course-attendance-campus',
         mixins: [app.mixin.popupWindowRouteMixin],
@@ -80,13 +75,10 @@
         },
         methods: {
             changeCampus(card){
-                this.curCampuId = card.CampusID;
+                this.curCampuId = card.id;
                 this.$emit('courseAttendanceCampus',card);
                 this.close();
             }
-        },
-        components: {
-            
         }
     }
 </script>

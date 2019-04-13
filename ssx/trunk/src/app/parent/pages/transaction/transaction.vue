@@ -1,5 +1,7 @@
 <!-- 交易记录 -->
 <style lang="scss" scoped>
+	
+	
 	.course-transaction {
 		.body {
 			@include position-absolute(0, 0, 50px, 0);
@@ -16,6 +18,9 @@
 					height: 34px;
 					padding: 0 12px;
 					@include border-bottom;
+					&::after {
+						transform: scale(1, 0.5);
+					}
 					display: flex;
 					justify-content: space-between;
 					align-items: center;
@@ -33,45 +38,18 @@
 						padding: 10px 0;
 						.t-d-title {
 							width: 100%;
-							color: #333333;
 							display: flex;
-    						justify-content: space-between;
-							.t-d-container {
-								display: flex;
-								flex-direction: column;
-								justify-content: center;
-								width: 70%;
+							justify-content: space-between;
+							color:#333333;
+							.course-name {
 								@include ellipsis-single;
-								.course-name {
-									@include ellipsis-single;
-									max-width: 80%;
-								}
-								.t-d-unit {
-									margin-top: 8px;
-									color: rgba(153, 153, 153, 1);
-									font-size: 12px;
-									>span {
-										color: rgba(244, 156, 135, 1);
-									}
-								}
+								max-width: 80%;
 							}
-							.t-d-moeny {
-								display: flex;
-								flex-direction: column;
-    							justify-content: space-between;
-								width: 30%;
-								@include ellipsis-single;
-								.payFactSub {
-									margin-bottom: 8px;
-								}
-								>span {
-									text-align: right;
-									@include ellipsis-single;
-								}
-								.t-d-amount {
-									color: #999;
-									font-size: 12px;
-								}
+						}
+						.t-d-unit {
+							color: rgba(153, 153, 153, 1);
+							>span {
+								color: rgba(244, 156, 135, 1);
 							}
 						}
 					}
@@ -115,36 +93,33 @@
 	<div class="course-transaction">
 		<scroller-base class="body" :data="list">
 			<!-- 消费明细 -->
-			<div class="transaction-itme" v-for="(item,key) in list" :key="key">
+			<div class="transaction-itme" v-for="(item,key) in list" :key="item.receiptno">
 				<!-- 交易日期和金额 -->
 				<div class="t-type">
 					<span class="t-date">
 						<svg class="icon" aria-hidden="true">
-							<use :xlink:href="useHref(item)"></use>
-						</svg> {{item[0].date.replace(/-/g, '.')}}
+							<use :xlink:href="(item[0].flag === -1 || item[0].flag === 4) ? '#icon-tuifei' : '#icon-jiaoyi'"></use>
+						</svg> {{item[0].date}}
 					</span>
-					<span class="amount">￥{{item[0].payFact}}</span>
+					<span class="amount">￥{{item[0].payfact|formatNumber}}</span>
 				</div>
 
 				<!-- 交易明细列表 -->
-				<div class="t-details" v-for="(details, key1) in item" :key="key1" v-if="details.flag != 3 && details.flag != 4">
+				<div class="t-details" v-for="(details, key1) in item" :key="key1" v-if="details.flag != 2 && details.flag != 4 && details.itemname">
 					<div class="t-d-item">
 						<span class="t-d-title">
-							<div class="t-d-container">
-								<span class="course-name">{{details.flag == 5 ? "预存电子钱包" : details.shiftName}}
-									<svg class="icon" aria-hidden="true" v-if="details.isFreeRecord == 1">
-										<use xlink:href="#icon-zengsong"></use>
-									</svg>
-								</span>
-								<span class="t-d-unit" v-if="details.outDate">有效期至{{ details.outDate}}<span v-if="details.IsOut===1">(已过期)</span></span>
-							</div>
-							<div class="t-d-moeny">
-								<span  v-if="details.flag != 5 && details.payFactSub" class="payFactSub">￥{{details.payFactSub}}</span>
-								<span  v-if="details.flag != 5" class="t-d-amount">{{details.amount}}</span>
-							</div>
+							<span class="course-name">
+								{{details.itemname}}
+								<svg class="icon" aria-hidden="true" v-if="details.isfreerecord == 1">
+									<use xlink:href="#icon-zengsong"></use>
+								</svg>
+							</span>
+						<span>{{details.amount + details.unit}}</span>
 						</span>
+						<span class="t-d-unit" v-if="details.outdate">有效期至{{ details.outdate}}<span v-if="details.isout===1">(已过期)</span></span>
 					</div>
 				</div>
+
 			</div>
 			<div style="height: 10px"></div>
 		</scroller-base>
@@ -152,10 +127,10 @@
 		<!-- 底部汇总信息 -->
 		<div class="transaction-summary">
 			<span class="e-wallet">
-	            <span>我的电子钱包</span><span class="wallet">￥{{this.ReserveMoney}}</span>
+	            <span>我的电子钱包</span><span class="wallet">￥{{this.reservemoney|formatNumber}}</span>
 			</span>
 			<span class="total-expenses">
-            	<span>总支出</span><span class="amount">￥{{this.totalMoney}}</span>
+            	<span>总支出</span><span class="amount">￥{{this.totalmoney|formatNumber}}</span>
 			</span>
 		</div>
 
@@ -165,13 +140,9 @@
 </template>
 
 <script>
-	import { processCPost } from "parent/api/common.js";
-	import EmptyPage from "parent/components/common/empty-page/empty-page.vue";
+	import { getstudentfeeinfos } from "parent/api/transaction.js";
+	import EmptyPage from "parent/components/common/empty-page/empty-page";
 
-	/**@description
-	 * flag==3:续费（列表不展示）
-	 * flag==-1||flag==4退费（列表不展示）
-	 */
 	export default {
 		name: "transaction",
 		data() {
@@ -179,8 +150,8 @@
 				wxTitle: "交费记录",
 				chooseDate: "2018年01月",
 				list: [],
-				ReserveMoney: null,
-				totalMoney: null,
+				reservemoney: null,
+				totalmoney: null,
 				params: {
 					pname: "feeRecord"
 				},
@@ -189,38 +160,31 @@
 		},
 		methods: {
 			loadData() {
-				processCPost(this.params).then(res => {
+				getstudentfeeinfos(this.params).then(res => {
 					this.isLoading = false;
-					if(res.errcode === 200) {
-						this.list = this.fomateData(res.data.data);
-						this.ReserveMoney = res.data.ReserveMoney;
-						this.totalMoney = res.data.totalMoney;
+					if(res.result.code === 200) {
+						this.list = this.fomateData(res.data.studentfeeinfo);
+						this.reservemoney = res.data.reservemoney;
+						this.totalmoney = res.data.totalmoney;
 					}
 				});
 			},
 			fomateData(data) {
 				let _list = {};
-				Object.keys(data).forEach(key => {
-					let _receiptNo = data[key].receiptNo;
-					let _some = Object.keys(_list).some(_key => {
+				data.forEach((item,key) => {
+					let _receiptNo = item.receiptno;
+					let _some = Object.keys(_list).some((_key) => {
 						return _key === _receiptNo;
 					});
+					// 截取年月日
+					item.date = item.date.split(' ')[0].replace(/-/g, '.');
 					if(!_some) {
 						_list[_receiptNo] = [];
 					}
-					_list[_receiptNo].push(data[key]);
+					_list[_receiptNo].push(item);
 				});
-				console.log(_list);
+				// console.log('format data---->', _list);
 				return _list;
-			},
-			useHref(item) {
-				if (item[0].flag === -1 || item[0].flag === 4) {
-					return '#icon-tuifei'; 
-				}else if (item[0].flag === 5){
-					return '#icon-yuchongdianziqianbao';
-				}else {
-					return '#icon-jiaoyi';
-				}  
 			}
 		},
 		created() {

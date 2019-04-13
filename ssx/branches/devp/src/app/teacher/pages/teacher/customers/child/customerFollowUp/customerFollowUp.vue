@@ -54,7 +54,6 @@
     export default {
         data() {
             return {
-                wxTitle: '客户跟进统计',
                 activeIndex: 1,
                 coms: {
                     CommCount,

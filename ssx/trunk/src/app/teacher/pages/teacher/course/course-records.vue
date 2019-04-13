@@ -135,36 +135,36 @@
             <div class="item" v-for="item in list" :key="item.id">
                 <div class="word-area">
                     <div class="name-area" @click="seeTel(item)">
-                        <div class="name" :class="{'narrow':item.showTel||item.IsAttendStauts==1}">{{item.name}}</div>
+                        <div class="name" :class="{'narrow':item.showTel||item.isattendstauts==1}">{{item.name}}</div>
                         <div class="svg-area" v-if="item.showTel">
                             <svg class="icon" aria-hidden="true">
                                 <use :xlink:href="item.telSwitch==true?'#icon-sanjiaoxing2':'#icon-sanjiaoxing1'"></use>
                             </svg>
                         </div>
-                        <div class="leave" v-if="item.IsAttendStauts==1">
+                        <div class="leave" v-if="item.isattendstauts==1">
                             <div class="jia">请假</div>
                         </div>
                     </div>
                     <div class="hook">
-                        <div v-if="item.isAttend==1">
+                        <div v-if="item.isattend==1">
                             <svg class="icon" aria-hidden="true">
                                 <use xlink:href="#icon-gouxuan"></use>
                             </svg>
                         </div>
-                        <div class="absent" v-else-if="item.isAttend==0">
-                            {{item.absentCauseName}}
+                        <div class="absent" v-else-if="item.isattend==0">
+                            {{item.absentcausename}}
                         </div>
                     </div>
                     <div class="hook">
-                        <div v-if="item.isCost>0">
+                        <div v-if="item.iscost>0">
                             <svg class="icon" aria-hidden="true">
                                 <use xlink:href="#icon-gouxuan"></use>
                             </svg>
                         </div>
                     </div>
                 </div>
-                <a :href="'tel:'+item.phone" class="tel-area" v-show="item.showTel&&item.telSwitch">
-                    <div class="tel">电话：{{item.phone}}</div>
+                <a :href="'tel:'+item.smstel" class="tel-area" v-show="item.showTel&&item.telSwitch">
+                    <div class="tel">电话：{{item.smstel}}</div>
                     <div class="tel-logo">
                         <svg class="icon" aria-hidden="true">
                             <use xlink:href="#icon-bodadianhua"></use>
@@ -184,7 +184,7 @@
 </template>
 
 <script>
-    import {processGet} from "teacher/api/common";
+    import {getattendance} from "teacher/api/course";
     import EmptyPage from "teacher/components/common/empty-page/empty-page";
     export default {
         name: "course-records",
@@ -208,22 +208,20 @@
         },
         methods: {
             getData(id) {
-                processGet({
-                    pname: "courseAttendance_detail",
-                    id: id
+                getattendance({
+                    courseid: id
                 }).then(res => {
                     this.isLoading = false;
-                    if (res.errcode == app.errok) {
-                        res.data.studentList.length>0&&res.data.studentList.forEach(item=>{
-                            // item.showTel = app.sysInfo.ShowTelWhenCourseConfirm==1; ////配置项
-                            item.showTel = app.sysInfo.ShowTelWhenCourseConfirm==1;//有没有权限查看电话号码(配置项控制)
+                    if (res.result.code == app.errok) {
+                        res.data.students.length>0&&res.data.students.forEach(item=>{
+                            item.showTel = app.sysInfo.showtelwhencourseconfirm==1;//有没有权限查看电话号码(配置项控制)
                             item.telSwitch = false;//展示电话的开关
-                            item.isAttend==1&&this.shidao++;//出勤数量统计
-                            item.isCost>0&&this.jifei++;//计费数量统计
+                            item.isattend==1&&this.shidao++;//出勤数量统计
+                            item.iscost>0&&this.jifei++;//计费数量统计
                         });
-                        this.list = res.data.studentList;
+                        this.list = res.data.students;
                     } else {
-                        app.toast('error', res.errmsg)
+                        app.toast('error', res.result.msg)
                     }
                 })
             },

@@ -56,7 +56,7 @@
         :position="'sideRight'"
         :scrollerConfig="scrollerConfig"
         :data="list" 
-        v-if="opened" 
+        v-show="opened" 
         @close="close">
         <div class="container">
             <div class="card-wrapper" v-for="heard in list">
@@ -83,9 +83,8 @@
 </template>
 
 <script>
+    import {getCommunicationMode} from 'teacher/api/customers';
     
-    
-    import {getCustomers} from 'teacher/api/customers'
     export default {
         mixins: [app.mixin.popupWindowRouteMixin],
         props: {
@@ -94,13 +93,7 @@
                 default: false
             },
             sourceArr: {
-                type: [Object, Array]
-            },
-            campusid: {
-                type: String
-            },
-            sourceKey: {
-                type: String
+                type: Array
             }
         },
         data() {
@@ -110,8 +103,7 @@
                 scrollerConfig:{
                     tag: 'base'
                 },
-                num: 0,
-                
+                num: 0
             }
         },
         computed: {
@@ -127,20 +119,7 @@
         },
         methods: {
             select(obj) {
-                if (this.sourceKey == 'selectSourceArr') {
-                    obj.isSelect = !obj.isSelect
-                }
-                if (this.sourceKey == 'marketInfoTwoArr') {
-                    this.list.forEach(item => {
-                        item.List.forEach(iitem => {
-                            if (obj.ID !== iitem.ID) {
-                                iitem.isSelect = false
-                            } else {
-                                iitem.isSelect = true
-                            }
-                        })
-                    })
-                } 
+                obj.isSelect = !obj.isSelect
             },
             selectSource() {
                 let arr = []
@@ -154,45 +133,27 @@
                 })
                 this.$emit('selectSource', arr)
             },
-            bindSelect() {
-                this.num = 0
-                let arr = this.sourceArr.map(obj => {
-                    return obj.ID
-                })
-                this.list.forEach(obj => {
-                    obj.List.length && obj.List.forEach(oobj => {
-                        this.num ++
-                        if (arr.indexOf(oobj.ID) > -1) {
-                            this.$set(oobj, 'isSelect', true)
-                        } else {
-                            this.$set(oobj, 'isSelect', false)
-                        }
-                    })
-                })
-            }
-        },
-        created() {
-           
         },
         watch: {
             opened(val) {
+                this.list = app.customConfigInfo.SaleMode
+                let arr = this.sourceArr.map(obj => {
+                    return obj.ID
+                })
                 if (val) {
-                    if (app.sysInfo.EnableSaleModeGrant === '1') {
-                        getCustomers({pname: 'getsalemode', campusid: this.campusid}).then(res => {
-                           if (res.errcode === app.errok) {
-                                this.list = res.data
-                                this.bindSelect()
-                           }
+                    this.num = 0
+                    this.list.forEach(obj => {
+                        obj.List.length && obj.List.forEach(oobj => {
+                            this.num ++
+                            if (arr.indexOf(oobj.ID) > -1) {
+                                this.$set(oobj, 'isSelect', true)
+                            } else {
+                                this.$set(oobj, 'isSelect', false)
+                            }
                         })
-                    } else {
-                        this.list = app.customConfigInfo.SaleMode
-                        this.bindSelect()
-                    }
+                    })
                 }
             }
-        },
-        components: {
-            
         }
     }
 </script>

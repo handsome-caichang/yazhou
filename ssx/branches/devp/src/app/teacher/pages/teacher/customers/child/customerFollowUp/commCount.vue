@@ -132,7 +132,7 @@
             </div>
             <div class="heard-bottom">
                 <div class="heard-bottom-left">
-                    选择{{app.sysInfo.Title_Campus}}
+                    选择校区
                 </div>
                 <div class="heard-bottom-mid" @click="emit">
                     {{campusObj.Value&&campusObj.Value.Name}}
@@ -151,39 +151,38 @@
                             <span class="number">{{item.Serial}}</span>
                         </div>
                         <div class="top-right">
-                            完成率:&nbsp&nbsp{{completionRate(item)}}
+                            完成率:&nbsp&nbsp80%
                         </div>
                     </div>
                     <div class="item-body">
                         <div class="body-li">
                             <div class="body-li-left">
-                                意向客户：<span class="spec">{{item.IsFollowNum}}人</span>
+                                意向客户：<span class="spec">{{item.CustomerCount}}人</span>
                             </div>
                             <div class="body-li-right">
-                                新增客户: <span class="spec">{{item.NewCustomerNum}}人</span>
+                                新增客户: <span class="spec">10人</span>
                             </div>
                         </div>
                         <div class="body-li">
                             <div class="body-li-left">
-                                拟沟通：<span class="spec">{{item.QuasiCommunication}}人</span>
+                                沟通：<span class="spec">10人</span>
                             </div>
                             <div class="body-li-right">
-                                已经沟通: <span class="spec">{{item.HasCommunication}}人</span>
+                                已经沟通: <span class="spec">10人</span>
                             </div>
                         </div>
                         <div class="body-li">
                             <div class="body-li-left">
-                                有效沟通：<span class="spec">{{item.IsValidCount}}次</span>
+                                有效沟通：<span class="spec">10人</span>
                             </div>
                             <div class="body-li-right">
-                                无效沟通: <span class="spec">{{item.NoValidCount}}次</span>
+                                无效沟通: <span class="spec">10人</span>
                             </div>
                         </div>
                     </div>
                     <div class="void"></div>
                 </div>
             </div>
-            <loading class="loading" v-show="isLoading" :bgType='bgType'></loading>
     </scroller-super>
 </template>
 
@@ -195,15 +194,12 @@
                 type: Object
             }
         },
-
         data() {
             return {
-                isLoading: true,
-                bgType: 0,
                 list: [],
                 dateObj:{
-                    sdate:app.tool.getDatesByIndex(3, app.localTimeToServer).sdate,
-                    edate:app.tool.getDatesByIndex(0, app.localTimeToServer).sdate
+                    // sdate:app.tool.getDatesByIndex(3, app.localTimeToServer).sdate,
+                    // edate:app.tool.getDatesByIndex(3, app.localTimeToServer).sdate,
                 },
                 quickDateIndex:-1,
                 pagingOption: {
@@ -211,9 +207,9 @@
                     params: {
                         pname: 'querycommunreport',
                         campusID: this.campusObj.Key,
-                        sdate: app.tool.getDatesByIndex(3, app.localTimeToServer).sdate,
-                        edate: app.tool.getDatesByIndex(0, app.localTimeToServer).sdate,
-                        others: this.othersNum
+                        others: 1,
+                        // sdate: app.tool.getDatesByIndex(3, app.localTimeToServer).sdate,
+                        // edate: app.tool.getDatesByIndex(3, app.localTimeToServer).edate
                     },
                     pageOpt: {
                         // 分页初始页码的'key'、'value'
@@ -226,14 +222,11 @@
                         countKey: 'pageCount'
                     }
                 },
-                othersNum: 0
+                othersNum: 1
             }
         },
         methods: {
             changeDate(obj){
-                this.dateObj.sdate = obj.sdate;
-                this.dateObj.edate = obj.edate;
-                this.quickDateIndex = obj.index;
                 this.$refs.scroll.refresh({
                     sdate: obj.sdate,
                     edate: obj.edate
@@ -241,7 +234,7 @@
             },
             loadData(ajaxPromise) {
                 ajaxPromise.then(res => {
-                    this.isLoading = false
+                    // this.isLoading = false
                     if (res.errcode == app.errok) {
                         if (res.pageIndex === 1) {
                             this.list = []
@@ -256,11 +249,7 @@
             },
             emit() {
                 this.$emit('openSelectCamp')
-            },
-            completionRate(obj) {
-                return obj.QuasiCommunication == 0 ? '0.00%' : (obj.HasCommunication/obj.QuasiCommunication*100).toFixed(2) + '%'
             }
-        
         },
         watch: {
             campusObj(val) {

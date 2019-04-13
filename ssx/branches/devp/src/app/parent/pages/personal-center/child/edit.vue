@@ -99,8 +99,8 @@
 </template>
 
 <script>
-    import {savePost} from "parent/api/common";
-    
+    import {opstudentinfoforwx} from 'parent/api/personal-center.js';
+
     export default {
         name: "edit",
         mixins: [app.mixin.popupWindowRouteMixin],
@@ -135,18 +135,14 @@
                     return
                 }
                 let type = parseInt(this.titleType);
-                savePost(type==0?{
-                    saveFlag:"modifiedPersonalInfo",
-                    QQ:this.text
+                opstudentinfoforwx(type==0?{
+                    qq:this.text
                 }:type==1?{
-                    saveFlag:"modifiedPersonalInfo",
-                    LivePlace:this.text
+                    liveplace:this.text
                 }:{
-                    saveFlag:"modifiedPersonalInfo",
-                    ClassName:this.text
+                    classname:this.text
                 }).then(res=>{
-                    if (res.errcode == app.errok) {
-                        app.toast('success','修改成功')
+                    if (res.result.code == app.errok) {
                         if (type == 0) {
                             this.$emit('informationQQ', this.text);
                         }else if(type == 1){
@@ -157,7 +153,7 @@
                         this.close();
                         this.clearText();
                     }else{
-                        app.toast('error', res.errmsg)
+                        app.toast('error', res.result.msg)
                     }
                 });
 
@@ -170,8 +166,8 @@
             text: function () {
                 this.showClearIcon = this.text == '' ? false : true;
             },
-            opened:function(newVal,oldVal){
-                if(newVal){
+            opened:function(){
+                if(this.opened){
                     this.text = this.editText;
                     if (this.titleType == 0) {
                         app.tool.setDocTitle('QQ号码')
@@ -180,12 +176,10 @@
                     }else{
                         app.tool.setDocTitle('就读班级')
                     }
-                    //不用nexttick是由于微信浏览器兼容问题
-                    setTimeout(()=>{this.$refs.focuEl.focus();},501)
                 }
-
-
-
+                this.$nextTick(function () {
+                    this.$refs.focuEl.focus();
+                })
             }
 
         }

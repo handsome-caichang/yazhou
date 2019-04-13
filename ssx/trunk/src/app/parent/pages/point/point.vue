@@ -9,6 +9,7 @@
 		/*头部:有背景的积分展示*/
 		.point-header{
 			height:140px;
+			/* @include background-img('../../assets/img/point/point-bg.jpg');*/
 			@include flex-center;
 			color:$color-white;
 			.point-show-box{
@@ -131,7 +132,7 @@
 			width:100%;
 			background:#EDF1F7;
 		}
-
+		
 		.noData-temp{
 			margin-top: calc(50% - 80px);
 		}
@@ -155,7 +156,7 @@
 		</div>
 			
 		<!--总加分,总减分-->
-		<div class="point-plus-reduce" v-if="app.sysInfo.App_ShowPointSum==1">
+		<!-- <div class="point-plus-reduce" >
 			<div>
 				<span>总加分</span>
 				<span class="score">{{pointInfo.pointAdd}}</span>
@@ -164,7 +165,7 @@
 				<span>总减分 </span>
 				<span class="score">{{pointInfo.pointReduce}}</span>
 			</div>
-		</div>
+		</div> -->
 		
 		<!--选项卡-->
 		<div class="point-tab" @click="changeTab">
@@ -180,11 +181,10 @@
 		</div>
 		
 		<!--积分列表-->
-		<scroller-load class="point-list-scroller" 
+		<scroller-load class="point-list-scroller show-sum" 
 			:type="1" 
 			:data="list" 
 			:pagingOption="pagingOption"
-            :class="{'show-sum':app.sysInfo.App_ShowPointSum==1}"
 			ref="myScroller"
 			@loadData="loadData">
 				<div v-for="monthItem in listShow" v-if="monthItem.itemList.length>0" :key="monthItem.monthData.Date">
@@ -193,21 +193,21 @@
 						<div class="point-month-title">{{monthItem.monthData.DateName}}</div>
 						<div class="point-month-record">
 							<div v-if="pagingOption.params.type == 0 || pagingOption.params.type == 1">
-								加分：<span class="plus">{{monthItem.monthData.Point_Add || 0}}</span>
+								加分：<span class="plus">{{monthItem.monthData.addpoint || 0}}</span>
 							</div>
 							<div v-if="pagingOption.params.type == 0 || pagingOption.params.type == -1">
-								减分：<span class="reduce">{{monthItem.monthData.Point_Reduce || 0}}</span>
+								减分：<span class="reduce">{{monthItem.monthData.deductionpoint || 0}}</span>
 							</div>
 						</div>
 					</div>
 					
 					<div class="point-list-item" v-for="item in monthItem.itemList">
 						<div>
-							<div>{{item.PointName}}</div>
-							<div>{{item.UpdateTime | formatDatetime('yyyy.MM.dd')}}</div>
+							<div>{{item.settingname}}</div>
+							<div>{{item.updatetime | formatDatetime('yyyy.MM.dd')}}</div>
 						</div>
-						<div :class="{'plus':item.Type == 1,'reduce':item.Type==-1}">
-							{{item.Type == 1 ? '+': '-'}}{{item.Point}}分
+						<div :class="{'plus':item.type == 1,'reduce':item.type==-1}">
+							{{item.type == 1 ? '+': ''}}{{item.point}}分
 						</div>
 					</div>
 				</div>
@@ -221,7 +221,7 @@
 </template>
 
 <script>
-	import {processGet} from 'parent/api/common';
+	import {getstudentpointinfo,gettotalpointloginfos} from 'parent/api/point';
 	import EmptyPage from 'parent/components/common/empty-page/empty-page';
     
     /**@description
@@ -237,8 +237,8 @@
 		}
 		i > 0 && i--;  
 		tempItemList.forEach((item)=>{
-			let itemDate = new Date(item.UpdateTime.split(' ')[0]),
-				monthDate = new Date(list[i].monthData.Date);
+			let itemDate = new Date(item.updatetime.split(' ')[0]),
+				monthDate = new Date(list[i].monthData.time);
 			if ( itemDate.getFullYear() == monthDate.getFullYear() && itemDate.getMonth() == monthDate.getMonth()){
 				list[i].itemList.push(item);
 			} else {
@@ -250,9 +250,8 @@
 	
 	function initList(monthList){
 		let list = [];
-		monthList.reverse();		//排序月份.
 		monthList.forEach(item=>{
-			let month = new Date(item.Date),
+			let month = new Date(item.time),
 				today = app.localTimeToServer;
 			if (month.getFullYear() == today.getFullYear() && month.getMonth() == today.getMonth()){
 				item.DateName = '本月';				
@@ -264,6 +263,8 @@
 				itemList:[]		//放置该月的所有积分项.	
 			})
 		});
+		//TODO monthList还需排序(降序)
+		
 		return list;
 	}
 	
@@ -281,20 +282,12 @@
 					pointReduce:0
 				},
 				pagingOption: {
-					api: processGet,
+					api: gettotalpointloginfos,
 					params: {
-						pname: "pointLog",
-						type: 0,
-					},
-					pageOpt: {
-                        indexKey: 'page', // 分页初始页码的'key'、'value'
-                        indexVal: 1,
-                        sizeKey: 'pageSize', // 每页请求数据长度的'key'、'value'
-                        sizeVal: 20,
-                        countKey: 'pageCount', // 后端返回的总页数'key'
-                    }
-                },
-				pointBg: require('./img/point-bg.jpg'),                
+						type:0
+					}
+				},
+                pointBg: require('./img/point-bg.jpg'),    
 			}
 		},
 		methods:{
@@ -304,7 +297,7 @@
 					parentEl = el.parentElement;
 				if ((type = el.dataset.type) !== undefined || (type = parentEl.dataset.type) !== undefined){
 					this.activeType = type; 
-					this.pagingOption.params.type = type;
+					this.pagingOption.params.type = +type;
 					this.$refs.myScroller.pagingRefresh(this.pagingOption.params);
 				}
 			},
@@ -312,12 +305,18 @@
 			loadData(ajaxPromise){
 				ajaxPromise.then(res => {
 					this.isLoading = false;
-					if (res.errcode == app.errok) {
-						if (res.pageIndex === 1) {
+					if (res.result.code == app.errok) {
+						if (res.page.pageindex === 1) {
 							this.list = [];
-							this.listShow = initList(res.data.sum);
+							this.listShow = [];
 						}
-						let data = res.data.data;
+						
+						//从monthList里剔除在listShow里已经存在的月份
+						let monthList = res.data.pointtotalinfo.filter(item=>this.listShow.every(val=>val.monthData.time != item.time));
+						//listShow进行月分组,如果有新的月份统计,那么push到listShow里
+						this.listShow.push(...initList(monthList));
+						console.log(this.listShow);
+						let data = res.data.pointloginfos;
 						this.list = this.list.concat(data);
 						classify(this.listShow,data);
 					}
@@ -327,21 +326,18 @@
 		created(){
 			let param = app.tool.parseHash();
             this.pointInfo = param.query;
-
             //解决积分入口进入无法获取总加分/总减分的问题
-            if (app.tool.isEmptyObject(this.pointInfo)) {
-                processGet({
-					pname: 'parentAccount'
-				}).then(res => {
-					if (res.errcode === app.errok) {
+            //if (app.tool.isEmptyObject(this.pointInfo)) {
+                getstudentpointinfo({}).then(res => {
+					if (res.result.code === app.errok) {
 						this.pointInfo = {
                             point: res.data.point,
-                            pointAdd: res.data.Point_Add,
-                            pointReduce: res.data.Point_Reduce
+                            pointAdd: res.data.point_add,
+                            pointReduce: res.data.point_reduce
                         }
 					}
 				})
-            }
+            //}
 		},
 		components:{
 			EmptyPage

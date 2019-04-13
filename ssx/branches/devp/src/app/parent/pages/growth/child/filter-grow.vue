@@ -156,8 +156,8 @@
 				list: null,
 				open: false,
 				tempList: null,
-				classid: '',
-				queryType: 0,
+				classids: [],
+				querytype: 0,
 				itemFlag: {
 					flag1: false,
 					flag2: false,
@@ -173,25 +173,25 @@
 			closeClassAction() {
 				this.$emit("update:opened", false);
 			},
-			chooseType(queryType) {
+			chooseType(querytype) {
 				// 1.图片， 2.只看课堂评价，3，只看作业
-				if(queryType === 1) {
+				if(querytype === 1) {
 					this.itemFlag.flag2 = false;
 					this.itemFlag.flag3 = false;
 					this.itemFlag.flag1 = !this.itemFlag.flag1;
-					queryType = !this.itemFlag.flag1 ? 0 : queryType;
-				} else if(queryType === 2) {
+					querytype = !this.itemFlag.flag1 ? 0 : querytype;
+				} else if(querytype === 2) {
 					this.itemFlag.flag1 = false;
 					this.itemFlag.flag3 = false;
 					this.itemFlag.flag2 = !this.itemFlag.flag2;
-					queryType = !this.itemFlag.flag2 ? 0 : queryType;
-				} else if(queryType === 3) {
+					querytype = !this.itemFlag.flag2 ? 0 : querytype;
+				} else if(querytype === 3) {
 					this.itemFlag.flag1 = false;
 					this.itemFlag.flag2 = false;
 					this.itemFlag.flag3 = !this.itemFlag.flag3;
-					queryType = !this.itemFlag.flag3 ? 0 : queryType;
+					querytype = !this.itemFlag.flag3 ? 0 : querytype;
 				}
-				this.queryType = queryType;
+				this.querytype = querytype;
 			},
 			selectClass() {
 				this.open = true;
@@ -200,10 +200,10 @@
 				this.itemFlag.flag1 = false;
 				this.itemFlag.flag2 = false;
 				this.itemFlag.flag3 = false;
-				this.classid = "";
+				this.classids = [];
 				this.className = "";
 
-				this.queryType = 0;
+				this.querytype = 0;
 				this.setParams();
 			},
 			ok() {
@@ -213,8 +213,8 @@
 			},
 			setParams() {
 				this.$emit("ok", {
-					queryType: this.queryType,
-					classid: this.classid,
+					querytype: this.querytype,
+					classids: this.classids,
 				});
 			},
 			getStudentList(item) {
@@ -222,12 +222,13 @@
 					_idArr = [];
 				item.list.forEach(item => {
 					if(item.checked) {
-						_str.push(item.ClassName);
-						_idArr.push(item.ID);
+						_str.push(item.name);
+						_idArr.push(item.id);
 					}
 				});
 				this.className = _str.join(",");
-				this.classid = _idArr.join(",");
+				// this.classid = _idArr.join(",");
+				this.classids = [..._idArr];
 			}
 		},
 		watch: {

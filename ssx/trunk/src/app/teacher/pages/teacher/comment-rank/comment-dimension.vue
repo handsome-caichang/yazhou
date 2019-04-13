@@ -43,8 +43,8 @@
 						}
 					}
 					.comment-list {
-						height: calc(100vh - 380px);
-						position: relative;
+						// height: calc(100vh - 380px);
+						// position: relative;
 						.to-detail {
 							padding: 10px 12px;
 							display: flex;
@@ -112,15 +112,15 @@
 					<div class="comment-list">
 						<div 
 							class="to-detail"
-							@click="toDimensionAvg(item.CourseCommentScopeSettingID,item.Scope,item.ItemName)" 
+							@click="toDimensionAvg(item.itemvalue,item.scope,item.itemname)" 
 							v-for="item in list" 
-							:key="item.ItemValue">
-							<span>{{ item.ItemName }}</span>
+							:key="item.itemvalue">
+							<span>{{ item.itemname }}</span>
 							<span class="span">
-								<span>{{ item.Scope }}</span>
+								<span>{{ item.scope }}</span>
 								<!-- 给1,2,3名设置不同的颜色样式 -->
-								<span :class="{'lanse':item.MyDimension==1,'juse':item.MyDimension==2,'zise':item.MyDimension == 3}">
-                          			{{ item.MyRank }}
+								<span :class="{'lanse':item.myrank==1,'juse':item.myrank==2,'zise':item.myrank == 3}">
+                          			{{ item.myrank }}
 			                        <svg class="icon card-next" aria-hidden="true">
 			                    		<use xlink:href="#icon-youjiantou"></use>
 			                        </svg>
@@ -138,7 +138,7 @@
 </template>
 
 <script>
-	import { getCommentDimension } from "teacher/api/comment-rank";
+	import { getteachercoursecommentscope } from "teacher/api/comment-rank";
 	import EmptyPage from "teacher/components/common/empty-page/empty-page";
 	import Echarts from "./radar/Echarts";
 
@@ -218,24 +218,27 @@
 		},
 		computed: {
 			getparams() {
-				return this.$router.currentRoute.query;
+				let param = this.$router.currentRoute.query;
+				param.campusids = JSON.parse(param.campusids);
+				param.type = parseInt(param.type);
+				return param;
 			}
 		},
 		methods: {
 			_getCommentDimension() {
-				getCommentDimension(this.getparams).then(res => {
+				getteachercoursecommentscope(this.getparams).then(res => {
 					this.isLoading = false;
-					if(res.ErrorCode == 200) {
-						this.list = [].concat(res.Data);
+					if(res.result.code == 200) {
+						this.list = [].concat(res.data);
 
 						let _dimension = [],
 							_data = [];
 						this.list.forEach(item => {
 							_dimension.push({
-								name: item.ItemName,
+								name: item.itemname,
 								max: 5
 							});
-							_data.push(item.Scope);
+							_data.push(item.scope);
 						})
 						// 维度
 						this.setOption.radar.indicator = [].concat(_dimension);
@@ -244,24 +247,10 @@
 					}
 				});
 			},
-			toDimensionAvg(CourseCommentScopeSettingID, passScope, itemName) {
-				let _params = { ...this.getparams
-				};
-				_params.typeValue = this.getparams.itemValue;
-				_params.CourseCommentScopeSettingID = CourseCommentScopeSettingID;
-				_params.passScope = passScope;
-				_params.itemName = itemName;
-
-				// 移除不需要的参数
-				delete _params.itemValue;
-				delete _params.desc;
-				delete _params.sort;
-
-				this.$router.push({
-					path: "/dimensionAVG",
-					query: { ..._params
-					}
-				});
+			toDimensionAvg(coursecommnetsettingid, passScope, itemname) {
+				let _params = { ...this.getparams, coursecommnetsettingid: coursecommnetsettingid, passScope: passScope ,itemName: itemname};
+				_params.campusids = JSON.stringify(_params.campusids);
+				this.$router.push({	path: "/dimensionAVG", query: _params });
 			}
 		},
 		created() {

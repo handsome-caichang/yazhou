@@ -29,10 +29,12 @@
         v-show="opened" 
         :data="list" 
         @close="close">
+        <!-- <div slot="header" class="actionsheet-hd">客户状态筛选</div> -->
+            <!-- :class="{'active':item.Id==app.sysInfo.currole.id}" -->
         <div class="wrapper">
             <div class="actionsheet-item"
-                :class="{'active':campusObj.Key==item.Key}"
                 v-for="(item, index) in list"
+                :class="{'active':campusObj.Key==item.Key}"
                 @click="select(item)"
                 >
                 {{item.Value.Name}}
@@ -42,9 +44,6 @@
 </template>
 
 <script>
-    
-    
-    
     export default {
         mixins: [app.mixin.popupWindowRouteMixin],
         props: {
@@ -70,7 +69,6 @@
         methods: {
             select(item) {
                 this.$emit('selectCampusObj', item)
-                this.close()
             }
         },
         watch: {
@@ -79,9 +77,6 @@
                     this.list = app.customConfigInfo.CampusList
                 }
             }
-        },
-        components: {
-            
         }
     }
 </script>

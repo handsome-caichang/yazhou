@@ -45,9 +45,8 @@
 </template>
 
 <script>
+    import {getShiftType, getCustomers} from 'teacher/api/customers';
     
-    
-    import {getShiftType, getCustomers} from 'teacher/api/customers'
     export default {
         mixins: [app.mixin.popupWindowRouteMixin],
         props: {
@@ -67,10 +66,6 @@
                 }
             },
         },
-        data() {
-            return {
-            }
-        },
         methods: {
             isActive() {
                 let flag = true
@@ -88,17 +83,7 @@
                     }
                 }
                 this.$emit('selectItem', obj)
-            },
-            
-        },
-        created() {
-           
-        },
-        watch: {
-            
-        },
-        components: {
-            
+            }
         }
     }
 </script>

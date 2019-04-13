@@ -5,14 +5,6 @@
     .as-body {
         @include position-absolute;
         font-size: 15px;
-        .header{
-            color: #999;
-            font-size: 15px;
-            height: 50px;
-            line-height: 50px;
-            text-align: center;
-            @include border-bottom;
-        }
         .item {
             @include flex-between;
             @include border-bottom;
@@ -26,19 +18,16 @@
                 max-width: 90%;
                 @include ellipsis-single;
             }
-            &:nth-last-child{
-                border-bottom: 0;
-            }
         }
     }
 </style>
 
 <template>
     <action-sheet class="as-body" v-show="opened" @close="close" :data="classroomsData">
-        <div class="header" slot="header">选择上课教室</div>
-        <div :class="{active:item.ID==currentId}" class="item" @click="changeType(item)" v-for="item in classroomList">
-            <div class="name">{{item.Name}}</div>
-            <div v-show="item.ID==currentId">
+
+        <div :class="{active:item.id==currentId}" class="item" @click="changeType(item)" v-for="item in classroomList">
+            <div class="name">{{item.name}}</div>
+            <div v-show="item.id==currentId">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-gouxuan"></use>
                 </svg>
@@ -48,8 +37,6 @@
 </template>
 
 <script>
-    
-
     export default {
         name: "newcourse-details-classrooms",
         mixins: [app.mixin.popupWindowRouteMixin],
@@ -76,15 +63,12 @@
         },
         methods: {
             changeType(item) {
-                if (this.currentId !== item.ID) {
-                    this.currentId = item.ID;
+                if (this.currentId !== item.id) {
+                    this.currentId = item.id;
                     this.$emit('newcourseDetailsClassroomsItem', item);
                     this.close()
                 }
             }
-        },
-        components: {
-            
         },
         watch: {
             opened: function (newVal, oldVal) {

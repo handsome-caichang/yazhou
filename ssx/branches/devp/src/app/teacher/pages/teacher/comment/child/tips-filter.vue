@@ -52,9 +52,6 @@
 </template>
 
 <script>
-    
-    
-
     export default {
         name: "tips-filter",
         mixins: [app.mixin.popupWindowRouteMixin],
@@ -77,9 +74,6 @@
             gotIt(){
                 this.close()
             }
-        },
-        components: {
-            
         }
     }
 </script>

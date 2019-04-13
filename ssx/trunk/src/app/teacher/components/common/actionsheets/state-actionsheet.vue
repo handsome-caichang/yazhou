@@ -17,7 +17,7 @@
             height: 44px;
             line-height: 44px;
             padding: 0 12px;
-            &.active {
+            &.active{
                 color: $color-primary;
             }
         }
@@ -29,8 +29,7 @@
         <div class="header" v-if="stateTitle">
             {{stateTitle}}
         </div>
-        <div :class="{active:index==currentIndex}" class="item" @click="changeType(index)"
-             v-for="(name,index) in stateList">
+        <div :class="{active:index==currentIndex}" class="item" @click="changeType(index)" v-for="(name,index) in stateList">
             <div>
                 <svg class="icon" aria-hidden="true" v-if="(iconType!==0)&&(index==0)">
                     <use xlink:href="#icon-paixu-moren"></use>
@@ -52,9 +51,9 @@
 <script>
 
     /*******
-     *******  适合少于等于5项的简单分类筛选
-     ******   注意type值不是连续的数值时，记得在调用此组件的文件里加判断
-     *****/
+    *******  适合少于等于5项的简单分类筛选
+    ******   注意type值不是连续的数值时，记得在调用此组件的文件里加判断
+    *****/
     /*
     * 1.引入并注册 ：import StateFilter from 'teacher/components/common/actionsheets/state-actionsheet.vue';
     * 2.<state-actionsheet
@@ -74,26 +73,23 @@
         },
     *4.通过传递的type来继续操作
     * */
-    
-    
-
     export default {
         name: "state-actionsheet",
         mixins: [app.mixin.popupWindowRouteMixin],
         props: {
             opened: {},
-            stateTitle: {
-                type: String,
-                default: null
+            stateTitle:{
+                type:String,
+                default:null
             },
-            stateList: {
-                type: Array,
-                default: null
+            stateList:{
+                type:Array,
+                default:null
             },
             //默认高亮第type项
-            curState: {
-                type: Number,
-                default: 0
+            curState:{
+                type:Number,
+                default:0
             },
             //图标类型 默认无图标
             iconType: {
@@ -112,7 +108,7 @@
             changeType(index) {
                 if (this.currentIndex !== index) {
                     this.currentIndex = index;
-                    this.$emit('stateType', parseInt(index));
+                    this.$emit('stateType',parseInt(index));
                     this.close()
                 }
             },
@@ -130,9 +126,6 @@
             return {
                 currentIndex: this.curState
             }
-        },
-        components: {
-            
         }
     }
 </script>

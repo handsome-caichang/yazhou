@@ -89,7 +89,9 @@
 			}
 		}
 		.student-item-absent {
-			padding: 12px $padding;
+			padding: 0 $padding;
+			height: 40px;
+			line-height: 40px;
 			font-size: 13px;
 			color: $color-6;
 			text-align: right;
@@ -100,15 +102,7 @@
 			font-size: 13px;
 			background-color: #eef1f6;
 			color: #999;
-            display: flex;
-            align-items: center;
-            .flex-item{
-                flex: 1;
-            }
-            .tel{
-                text-align: right;
-                flex: 1.8;
-            }
+			@include flex-between;
 			.icon {
 				vertical-align: -0.2em;
 			}
@@ -116,7 +110,6 @@
 				text-decoration: none;
     			color: inherit;
 			}
-
 		}
 		/*过期费用*/
 		.outAmount-tip{
@@ -175,7 +168,7 @@
 				</svg>
 				
 			</div>
-			<div class="column-4" v-if="data.unitCode!=3">试听</div>
+			<!-- <div class="column-4" v-if="data.unitCode!=3">试听</div> -->
 			<div class="column-5">缺勤原因</div>
 		</div>
 		<!--学员列表-->
@@ -249,11 +242,11 @@
 		                </span>
 					</div>
 
-					<div class="column-4 data" :data-identy="'Try-' + index" v-if="data.unitCode!=3">
+					<!-- <div class="column-4 data" :data-identy="'Try-' + index" v-if="data.unitCode!=3">
 						<svg class="icon" aria-hidden="true">
 							<use :xlink:href="item.isTry == 1 ? yesCheck : noCheck"></use>
 						</svg>
-					</div>
+					</div> -->
 					<div class="column-5" @click="emitOpenAbsent(index)">
 						<svg class="icon" aria-hidden="true" v-show="!item.isAttend">
 							<use :xlink:href="item.absentCauseName ? '#icon-queqinyixuan' : '#icon-queqin'"></use>
@@ -268,32 +261,24 @@
 				</div>
 
 				<!--每一条的删除框-->
-                <div class="student-item-delete" v-show="item.isShowDelete">
-                    <div class="data flex-item" :data-deletestu="index" v-if="CFG.courseStudentEdit">
-                        移除学员
-                        <svg class="icon" aria-hidden="true">
-                            <use xlink:href="#icon-shanchuxueyuan"></use>
-                        </svg>
-                    </div>
-                    <div class="flex-item" v-else></div>
+				<div class="student-item-delete" v-show="item.isShowDelete" v-if="(CFG.courseStudentEdit && item.studentstatus != '已删除') || CFG.enableShowTel">
+					<div class="data" :data-deletestu="index" v-if="CFG.courseStudentEdit && item.studentstatus != '已删除'">
+						移除学员
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#icon-shanchuxueyuan"></use>
+						</svg>
+					</div>
+					<div v-else></div>
 
-                    <div class="absence-count flex-item" @click="emitCountOfAbsence(item)">
-                        {{item.AbsentCauseCount}}次缺勤
-                        <svg class="icon" aria-hidden="true" v-if="item.AbsentCauseCount>0">
-                            <use xlink:href="#icon-queqintongjiqianwang"></use>
-                        </svg>
-                    </div>
-
-                    <div class="flex-item tel" v-if="CFG.enableShowTel">
-                        <a :href="'tel:'+item.phone">
-                            电话:{{item.phone}}
-                            <svg class="icon" aria-hidden="true">
-                                <use xlink:href="#icon-bodadianhua"></use>
-                            </svg>
-                        </a>
-                    </div>
-                    <div class="flex-item" v-else></div>
-                </div>
+					<div v-if="CFG.enableShowTel">
+						<a :href="'tel:'+item.phone">
+							电话:{{item.phone}}
+							<svg class="icon" aria-hidden="true">
+								<use xlink:href="#icon-bodadianhua"></use>
+							</svg>
+						</a>
+					</div>
+				</div>
 			</div>
 		</div>
 		<!--过期费用提示框-->
@@ -305,7 +290,7 @@
 
 <script>
 	import ListMixin from './list-mixin.js';
-	import { removeStudent, reduceStudent, removeTryStudent, getMachineAttend } from "teacher/api/course-attendance";
+	import { optempcorsestudent } from "teacher/api/course-attendance";
 
 	export default {
 		name: "course-attendance-list-part",
@@ -336,7 +321,6 @@
 				yesCheck: '#icon-duoxuan',
 				noCheck: '#icon-duoxuan-weixuanze',
 				outAmountTip:'',//过期费用
-                currentItem:''//当前item （缺勤选中的学员对象）
 			};
 		},
 		computed: {
@@ -351,20 +335,18 @@
 						)
 			},
 			emitOpenAbsent(index) {
+                if (this.listClone[index].studentstatus == '已删除'){
+                    !this.listClone[index].isAttend && app.toast("info","该学员已删除,不能操作");
+                    return;
+                }
 				//如果未勾选出勤,才可选择缺勤方式.
 				if(this.listClone[index].isAttend) {
-					app.toast('info', '已标记出勤');
+					app.toast('info', '已标记出勤。');
 				} else {
 					this.$emit("openAbsent", this.listClone[index]);
 				}
 			},
-            emitCountOfAbsence(item){
-			    if(item.AbsentCauseCount<1){
-			        return
-                }
-                this.currentItem = item;
-			    this.$emit('openCountOfAbsence',item)
-            },
+			
 			//显示过期费用
 			warnOutAmount(event, item){
 				event.stopPropagation();
@@ -416,11 +398,11 @@
 			//自动处理:考勤打卡或自动出勤计费
 			autoCharge() {
 				//开启了自动勾选出勤计费
-				if(this.CFG.enableAutoCharge && !this.isCheckAllAttend && this.data.finished == 0) {
+				if(this.CFG.enableAutoCharge && !this.isCheckAllAttend) {
 					this.checkAllAttend('firstTime');
 				} else if(this.CFG.enableMachineAttend && this.listClone.length > 0) {
 					//开启了打卡签到
-					let params = {
+					/*let params = {
 						CourseID: this.data.id,
 						StudentIDs: this.listClone.map(item => item.id).join(',')
 					}
@@ -440,7 +422,7 @@
 						} else {
 							app.toast('error', res.ErrorMsg);
 						}
-					})
+					})*/
 				}
 			},
 
@@ -448,7 +430,7 @@
 			postDeleteStu(index) {
 				let deleteStu = this.listClone[index];
 				let params,send,tip;
-				if (deleteStu.AdjustFlag == 3){//临加
+				/*if (deleteStu.AdjustFlag == 3){//临加
 					tip = `确定从当前上课记录中移除${deleteStu.name}学员吗?`;
 					params = {
 						id: this.data.id,
@@ -458,26 +440,36 @@
 				} else {	//一般学员,临调和试听.
 					tip = `确定将学员“${deleteStu.name}”从该堂课中移除（可在临时调课功能中撤销）？`;
 					params = {
-						id: this.data.id,
-						students: deleteStu.id
+						CourseId: this.data.id,
+						StudentIds: [deleteStu.id],
+						UpdateTime:this.data.updateTime
 					};
 					if (deleteStu.AdjustFlag == 2 || deleteStu.isTry == 1){
 						send = removeTryStudent;
 						params.type = deleteStu.AdjustFlag == 2 ? 0 : 1;
 					} else {
-						send = reduceStudent;
+						send = optempcorsestudent;
 					}
-				}
+				}*/
+				
+				tip = `确定从当前上课记录中移除${deleteStu.name}学员吗?`;
+				params = {
+					CourseId: this.data.id,
+					StudentIds: [deleteStu.id],
+					UpdateTime:this.data.updateTime
+				};
+				send = optempcorsestudent;
+				
 				app.confirm(tip).then(flag => {
 					if(flag) {
 						send(params).then(res => {
-							if(res.ErrorCode == 200) {
+							if(res.result.code == 200) {
 								this.listClone.splice(index, 1);
-								this.$emit('amountChange', this.listClone);
+								this.$emit('amountChange', this.listClone,res.data);
 								this.$emit("refreshScroller");
 								app.toast('success', '移除学员成功。');
 							} else {
-								app.toast('error', res.ErrorMsg);
+								app.toast('error', res.result.msg);
 							}
 						});
 					}
@@ -489,15 +481,11 @@
 				return Object.assign({
 					isShowDelete: false,
 					orderIdx: index, //记录默认排序
-					nameHighlight: item.name, //搜索高亮显示
+					nameHighlight: item.name + (item.studentstatus == '已删除' ? '[已删除]' : ''), //搜索高亮显示
 					//剩余数量标准化处理
 					remainAmountToUnit: amount
 				}, item);
-			},
-            //缺勤次数清除之后点名界面缺勤次数更新
-            handleEmit(){
-                this.currentItem.AbsentCauseCount = app.ls.getStorage('deleteCountOfAbsence').Count;
-            }
+			}
 		},
 		created() {
 
@@ -508,11 +496,7 @@
 			});
 			this.autoCharge();
 			this.$emit('amountChange', this.listClone);
-            app.eventDefine.on('deleteCountOfAbsence', this.handleEmit);
 		},
-        beforeDestroy() {
-            app.eventDefine.off('deleteCountOfAbsence', this.handleEmit);
-        },
 		components: {},
 		watch: {
 			list(newList) {

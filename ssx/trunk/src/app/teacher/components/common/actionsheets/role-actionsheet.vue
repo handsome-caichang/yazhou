@@ -1,5 +1,8 @@
 <!-- 切换身份 -->
 <style lang="scss" scoped>
+	
+	
+	
 	.role-actionsheet {
 		@include position-absolute;
 		font-size: $fs-normal-x;
@@ -27,14 +30,14 @@
 	<action-sheet 
         class="role-actionsheet"
         v-show="opened" 
-        :data="app.sysInfo.RoleList" 
+        :data="app.sysInfo.roles" 
         @close="close">
 		<div slot="header" class="actionsheet-hd">身份切换</div>
 		<div class="actionsheet-item"
             @click="select(item)"
-            :class="{'active':item.Id==app.sysInfo.currole.Id}"
-            v-for="item in app.sysInfo.RoleList">{{item.Name}}
-			<svg class="icon" aria-hidden="true" v-show="item.Id==app.sysInfo.currole.Id">
+            :class="{'active':item.id==currole.id}"
+            v-for="item in app.sysInfo.roles">{{item.name}}
+			<svg class="icon" aria-hidden="true" v-show="item.id==currole.id">
                 <use xlink:href="#icon-danxuan"></use>
             </svg>
 		</div>
@@ -42,7 +45,7 @@
 </template>
 
 <script>
-    import {processGet} from 'teacher/api/common.js';    
+    import {userchangerole} from 'teacher/api/personal-center';    
 
 	export default {
 		name: 'role-actionsheet',
@@ -53,38 +56,35 @@
                 default: false
             }
         },
+        computed: {
+            ...Vuex.mapState(['currole'])
+        },
 		methods: {
             ...Vuex.mapMutations([
                 'set_currole'
             ]),
 			select(params) {
                 this.close();
-                if (params.Id != app.sysInfo.currole.Id) {
+                if (params.id != this.currole.id) {
                     this.$emit('changeLoading', true);
-                    processGet({
-                        pname: 'main',
-                        currole: params.Id
+                    userchangerole({
+                        role: params.id.toString()
                     }).then(res => {
                         this.$emit('changeLoading', false);
-                        if (res.errcode === app.errok) {
+                        if (res.result.code === app.errok) {
                             this.set_currole(params);
-                            app.sysInfo = Object.assign(app.sysInfo,res.data,{
-                                currole: params,
-                                changePassword: res.changePassword,
-                                parentMessageTo: res.parentMessageTo
-                            });
-                            window.teacherHome.$refs.scrollBar.scroller.scrollToElement(window.teacherHome.$refs.userRole);
+                            app.sysInfo.currrole = params.id;
+                            app.sysInfo.currole = params;
                         }
                     });
                 }
 			}
 		},
         watch:{
-		    opened(oldVal,newVal){
-		        if(!oldVal){
+            opened(oldVal,newVal){
+                if(!oldVal){
                     app.eventDefine.emit('roleActionSheetChangeArrow');
                 }
-
             }
         }
 	}

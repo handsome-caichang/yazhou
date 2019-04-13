@@ -67,7 +67,7 @@
 </template>
 
 <script>
-    import {savePost} from "parent/api/common";
+    import {opstudentinfoforwx} from 'parent/api/personal-center.js';
 
     export default {
         name: "sex-actionsheet",
@@ -81,17 +81,15 @@
         },
         methods: {
             changeSex(sex) {
-                let paraSex = sex == 1 ? '男' : '女';
-                savePost({
-                    saveFlag:"modifiedPersonalInfo",
-                    Sex:sex
+                let paraSex = sex;
+                opstudentinfoforwx({
+                    sex:sex
                 }).then(res=>{
-                    if (res.errcode == app.errok) {
-                        app.toast('success','修改成功')
+                    if (res.result.code == app.errok) {
                         this.$emit('informationSex', paraSex);
                         this.close();
                     }else{
-                        app.toast('error', res.errmsg)
+                        app.toast('error', res.result.msg)
                     }
                 })
 

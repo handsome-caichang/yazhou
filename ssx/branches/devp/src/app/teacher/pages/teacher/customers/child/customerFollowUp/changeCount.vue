@@ -117,8 +117,8 @@
              <div class="heard-mid">
                 <div class="mid-left">
                     <date-bar
-                            :sdate='pagingOption.params.sdate'
-                            :edate='pagingOption.params.edate'
+                            :sdate='dateObj.sdate'
+                            :edate='dateObj.edate'
                             :index="quickDateIndex"
                             @changeDate="changeDate">
                     </date-bar>
@@ -126,7 +126,7 @@
             </div>
             <div class="heard-bottom">
                 <div class="heard-bottom-left">
-                    选择{{app.sysInfo.Title_Campus}}
+                    选择校区
                 </div>
                 <div class="heard-bottom-mid" @click="emit">
                     {{campusObj.Value&&campusObj.Value.Name}}
@@ -168,7 +168,6 @@
                     <div class="void"></div>
                 </div>
             </div>
-            <loading class="loading" v-show="isLoading" :bgType='bgType'></loading>
     </scroller-super>
 </template>
 
@@ -182,17 +181,19 @@
         },
         data() {
             return {
-                isLoading: true,
-                bgType: 0,
                 list: [],
+                dateObj:{
+                    // sdate:app.tool.getDatesByIndex(3, app.localTimeToServer).sdate,
+                    // edate:app.tool.getDatesByIndex(3, app.localTimeToServer).sdate,
+                },
                 quickDateIndex:-1,
                 pagingOption: {
                     api: getCustomers,
                     params: {
                         pname: 'querytranratereport',
                         campusID: this.campusObj.Key,
-                        sdate: app.tool.getDatesByIndex(3, app.localTimeToServer).sdate,
-                        edate: app.tool.getDatesByIndex(3, app.localTimeToServer).edate
+                        // sdate: app.tool.getDatesByIndex(3, app.localTimeToServer).sdate,
+                        // edate: app.tool.getDatesByIndex(3, app.localTimeToServer).edate
                     },
                     pageOpt: {
                         // 分页初始页码的'key'、'value'
@@ -217,7 +218,7 @@
             },
             loadData(ajaxPromise) {
                 ajaxPromise.then(res => {
-                    this.isLoading = false
+                    // this.isLoading = false
                     if (res.errcode == app.errok) {
                         if (res.pageIndex === 1) {
                             this.list = []

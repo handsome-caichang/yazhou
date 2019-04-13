@@ -11,7 +11,7 @@ const routes = [{
 		page: CommentList
 	}
 },{
-	path: '/commentDetail/:id/:studentId',
+	path: '/commentDetail/:courseid',
 	name: 'commentDetail',
 	component: routerBus,
 	meta: {

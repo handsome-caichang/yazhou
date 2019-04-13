@@ -106,7 +106,7 @@
             :fullParent="true">
             <div class="course-heard-wrapper" slot="header">
                 <div class="course-heard">
-                    <input type="text" class="input" v-model="searchText" placeholder="课程名称">
+                    <input type="text" class="input" v-model="searchText" placeholder="班级名称">
                     <div class="text" @click="init()">搜索</div>
                 </div>
                 <div class="app-course">
@@ -136,9 +136,8 @@
 </template>
 
 <script>
-    import {getShiftType, getCustomers} from 'teacher/api/customers'
-    import SelectItem from './selectItem'
-    
+    import {getShiftType, getCustomers} from 'teacher/api/customers';
+    import SelectItem from './selectItem';
     
     export default {
         mixins: [app.mixin.popupWindowRouteMixin],
@@ -149,9 +148,6 @@
             },
             list: {
                 type: Array
-            },
-            campusObj: {
-                type: Object
             }
         },
         computed: {
@@ -239,7 +235,7 @@
                     //类型
                     Category: this.getSelectItem('SHIFT_CAT'),
                     Query: this.searchText,
-                    campus: this.campusObj.Key,
+                    campus: this.$route.params.id,
                     shiftType: 0,
                     //期段
                     Term: this.getSelectItem('CLASS_TERM'),
@@ -294,8 +290,7 @@
             }
         },
         components: {
-            SelectItem,
-            
+            SelectItem
         }
     }
 </script>

@@ -22,12 +22,12 @@ export default {
 			this.absentStuSelect.absentCauseID = item.id;
 			this.absentStuSelect.absentCauseName = 
 				item.id == "00000000-0000-0000-0000-000000000000" ? '' : item.name;
-			this.closeAbsent();
+			this.openedAbsent = false;
 			this.refreshScroller();
 		},
 		closeAbsent(){
 			this.openedAbsent = false;
-			app.tool.setDocTitle('学生列表');	
+			app.tool.setDocTitle('学生列表');		
 		},
 	}
 }

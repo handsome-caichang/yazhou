@@ -14,7 +14,6 @@
             .actionsheet-item {
                 padding: 15px;
                 color: $color-3;
-                word-break: break-word;
                 @include flex-between;
                 &:not(:last-child){
                     @include border-bottom;
@@ -35,7 +34,7 @@
         :data="list" 
         @close="close">
         <div slot="header" class="actionsheet-hd">沟通方式选择</div>
-            <!-- :class="{'active':item.Id==app.sysInfo.currole.Id}" -->
+            <!-- :class="{'active':item.Id==app.sysInfo.currole.id}" -->
         <div class="wrapper">
             <div class="actionsheet-item"
                 v-for="(item, index) in list"
@@ -49,9 +48,6 @@
 </template>
 
 <script>
-    
-    
-    
     export default {
         mixins: [app.mixin.popupWindowRouteMixin],
         props: {
@@ -98,7 +94,6 @@
                 } else {
                     this.$emit('selectNextCommType', item)
                 }
-                this.close()
             }
         },
         watch: {
@@ -107,9 +102,6 @@
                     this.list = app.customConfigInfo.CommMode
                 }
             }
-        },
-        components: {
-            
         }
     }
 </script>

@@ -72,18 +72,18 @@
 				<div>
 					<div class="date-item" v-for="(details, key1) in item" :key="key1">
 						<!-- 班级名称 -->
-						<span class="d-item-title">{{ details.ClassName }}</span>
+						<span class="d-item-title">{{ details.classname }}</span>
 						<!-- 时间段 -->
-						<span class="time-slot" v-if="details.Unit != 3">
+						<span class="time-slot" v-if="details.unit != 3">
 							<span>
 								<svg class="icon" aria-hidden="true">
 									<use xlink:href="#icon-shangkeshijianicon"></use>
 								</svg>
-								{{ details.StartTime.split('T')[0].substr(5)}}
-								{{ details.StartTime.split('T')[1].substr(0,5) + '-' +  details.EndTime.split('T')[1].substr(0,5)}} 
-								{{ WEEK[new Date(details.StartTime.split('T')[0]).getDay()] }}
+								{{ details.starttime.split(' ')[0].substr(5)}}
+								{{ details.starttime.split(' ')[1].substr(0,5) + '-' +  details. endtime.split(' ')[1].substr(0,5)}} 
+								{{ WEEK[new Date(details.starttime.split(' ')[0]).getDay()] }}
 							</span>
-						<span>时长：{{ details.Amount }}分钟</span>
+						<span>时长：{{ details.coursetime.toFixed(0) }}分钟</span>
 						</span>
 						<!-- teacher name -->
 						<span class="item-teacher">
@@ -91,12 +91,12 @@
                       <svg class="icon" aria-hidden="true">
                         <use xlink:href="#icon-laoshiicon1"></use>
                       </svg>
-                      {{ details.TeacherName}}
+                      {{ details.teachername}}
                     </span>
-						<span v-if="details.ShowConsumeMoney > 0">课消金额：<span class="orange">￥{{ parseInt(details.ConsumeMoney) > 0 ?  details.ConsumeMoney : details.LessMoney.replace('-', '')}}</span></span>
+						<span v-if="details.showconsumemoney > 0">课消金额：<span class="orange">￥{{ details.consumemoney }}</span></span>
 						</span>
 						<!-- 欠费金额 -->
-						<span class="arrers" v-if="parseInt(details.LessMoney) < 0">欠费金额：￥{{ details.LessMoney.replace('-', '') }}</span>
+						<span class="arrers" v-if="parseInt(details.lessmoney) != 0">欠费金额：￥{{ details.lessmoney.replace('-', '') }}</span>
 					</div>
 				</div>
 			</div>
@@ -108,7 +108,7 @@
 </template>
 
 <script>
-	import {processGet} from "parent/api/common";
+	import {getcourseconsume} from "parent/api/statistics";
 	import EmptyPage from "parent/components/common/empty-page/empty-page";
 
     /**@description
@@ -129,28 +129,27 @@
 			fomateData(data) {
 				let _list = {};
 				data.forEach((item, key) => {
-					let _StartTime = item.StartTime.split("T")[0];
+					let _starttime = item.starttime.split(" ")[0];
 					// 只将年月作为key
-					_StartTime = _StartTime.split('-')[0] + "年" + _StartTime.split("-")[1] + "月";
+					_starttime = _starttime.split('-')[0] + "年" + _starttime.split("-")[1] + "月";
 
 					let _some = Object.keys(_list).some(_key => {
-						return _key === _StartTime;
+						return _key === _starttime;
 					});
 					if(!_some) {
-						_list[_StartTime] = [];
+						_list[_starttime] = [];
 					}
-					_list[_StartTime].push(data[key]);
+					_list[_starttime].push(data[key]);
 				});
 				return _list;
 			}
 		},
 		created() {
-			processGet({
-				pname: "courseConsume",
-				shiftId: this.$router.currentRoute.params.shiftId
+			getcourseconsume({
+				shiftid: this.$router.currentRoute.params.shiftid
 			}).then(res => {
 				this.isLoading = false;
-				if(res.errcode === app.errok) {
+				if(res.result.code == 200) {
 					this.list = this.fomateData(res.data);
 				}
 			});

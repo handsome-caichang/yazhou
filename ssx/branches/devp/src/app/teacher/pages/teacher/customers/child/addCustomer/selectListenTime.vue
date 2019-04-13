@@ -91,8 +91,8 @@
                 type: Boolean,
                 default: false
             },
-            tryTime: {
-                type: Object
+            whosVocation: {
+                type: String
             }
         },
         computed: {
@@ -120,25 +120,11 @@
         },
         created() {
             this.weekList.forEach(obj => {
-                if (this.tryTime.value.indexOf(obj.value) > -1) {
-                    this.$set(obj, 'isSelect', true)
-                } else {
-                    this.$set(obj, 'isSelect', false)
-                }
+                this.$set(obj, 'isSelect', false)
             })
             this.timeList.forEach(obj => {
-                if (this.tryTime.value.indexOf(obj.value) > -1) {
-                    this.$set(obj, 'isSelect', true)
-                } else {
-                    this.$set(obj, 'isSelect', false)
-                }
+                this.$set(obj, 'isSelect', false)
             })
-        },
-        watch: {
-            
-        },
-        components: {
-            
         }
     }
 </script>

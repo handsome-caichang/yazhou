@@ -1,5 +1,7 @@
 <!--作业列表页-->
 <style scoped lang="scss">
+	
+	
 	.homework-list{
 		.header{
 			@include border-bottom;
@@ -59,16 +61,35 @@
                     font-size: 12px;
 					align-items: center;
 					justify-content: flex-end; 
-                    &.status0{ //未交
+					.not-read{
+						position: absolute;
+						right: 0;
+						top: 0;
+						bottom: 0;
+						width: 9px;
+						height: 9px;
+						margin: auto 0;
+						border-radius: 9px;
+						background-color: #e93a0e;
+					}
+					.not-submit{ //未交
                         color: #FF4A22;
                     }
-                    &.status1{ //已交
-                        color: #CCCCCC;
-                    }
-                    &.status2{ //分数
+                    .isevaluateed{ //分数
                         color: #F5A206;
                     }
 				}
+                .card-read{
+                    position: absolute;
+					right: 30px;
+					top: 0;
+					bottom: 0;
+                    width: 9px;
+                    height: 9px;
+                    margin: auto 0;
+                    border-radius: 9px;
+                    background-color: #e93a0e;
+                }
 				.card-next{
 					position: absolute;
 					top: 0;
@@ -89,8 +110,8 @@
 		<!-- 头部日期筛选 -->
 		<div class="header">
 			<date-bar 
-				:sdate='pagingOption.params.sdate' 
-				:edate='pagingOption.params.edate' 
+				:sdate='pagingOption.params.starttime' 
+				:edate='pagingOption.params.endtime' 
 				:index="quickDateIndex" 
 				@changeDate="changeDate">
 			</date-bar>
@@ -103,8 +124,8 @@
 			:pagingOption="pagingOption"
 			@loadData="loadData"
             ref="scroller">
-            <div v-for="item in list">
-                <router-link tag="div" class="card" :to="`/homeworkDetail/${item.jobid}`" :key="item.jobid">
+			<div tag="div" v-for="item in list" :key="item.messageid">
+                <div class="card" @click="goto(item)">
                     <div class="card-hd">
                         <div class="name">{{item.title}}</div>
                         <svg class="icon" aria-hidden="true" v-if="item.isfile==1">
@@ -115,15 +136,20 @@
                         <span class="time">{{item.createtime|formatDatetime('MM.dd hh:mm')}}</span>
                         <span class="cname">{{item.classname}}</span>
                     </div>
-                    <div class="card-badge" :class="{'status0':item.issubmit==0,'status1':(item.issubmit==1&&!item.score),'status2':(item.issubmit==1&&item.score)}">
-                        {{item.issubmit==0?'未交':(item.score?item.score:'已交')}}
+                    <div class="card-badge" v-if="item.isread==0">
+						<div class="not-read"></div>
+                    </div>
+                    <div class="card-badge">
+						<span v-if="item.isread==1&&item.issubmited==0" class="not-submit">未提交</span>
+						<span v-if="item.isevaluateed==0&&item.issubmited==1">未评价</span>
+						<span v-if="item.isevaluateed==1" class="isevaluateed">{{item.score}}分</span>
                     </div>
                     <svg class="icon card-next" aria-hidden="true">
                         <use xlink:href="#icon-youjiantou"></use>
                     </svg>
-                </router-link>
+                </div>
                 <div class="void"></div>
-            </div>
+			</div>
 			<empty-page class="noData-temp" :type="2" v-if="list.length == 0"></empty-page>
 		</scroller-super>
 		<loading class="loading" v-show="isLoading"></loading>
@@ -131,7 +157,7 @@
 </template>
 
 <script>
-    import {getjoblistforstudent} from 'parent/api/homework.js';
+    import {gethomeworkinfos} from 'parent/api/homework';
 	import EmptyPage from 'parent/components/common/empty-page/empty-page';
 	
 	export default {
@@ -142,19 +168,14 @@
 				list: [],
 				quickDateIndex: -1,
 				pagingOption: {
-					api: getjoblistforstudent,
+					api: gethomeworkinfos,
 					params: {
-						sdate: app.tool.getDatesByIndex(3,app.localTimeToServer).sdate,
-                        edate: app.tool.getDatesByIndex(3,app.localTimeToServer).edate
+						starttime: app.tool.getDatesByIndex(3,app.localTimeToServer).sdate,
+                        endtime: app.tool.getDatesByIndex(3,app.localTimeToServer).edate
 					}
 				},
 				isLoading: true
 			}
-        },
-        computed: {
-			...Vuex.mapState([
-				'homeworkDetailRefreshFlag'
-            ])
         },
 		methods: {
 			loadData(ajaxPromise){
@@ -164,35 +185,31 @@
 						if (res.page.pageindex === 1) {
 							this.list = [];
 						}
-                        //TODO:改：暂时没有分数字段
-						// this.list = this.list.concat(this.handlerScore(res.data));
-						this.list = this.list.concat(res.data);
+                        this.list = this.list.concat(res.data);
 					}
 				})
 			},
-            handlerScore(arr){
-                arr.forEach(ele => {
-                    let scoreArr = ele.score.split('-');
-                    ele.score = scoreArr[1];
-                    if (scoreArr[0]=='0') {
-                        ele.score = ele.score+'分';
-                    }
-                });
-                return arr;
-            },
 			changeDate(params){
                 this.quickDateIndex = params.index;
-                this.$refs.scroller.refresh({
-                    sdate: params.sdate,
-                    edate: params.edate
-                });
-			}
-        },
-        watch: {
-			homeworkDetailRefreshFlag() {
+                this.pagingOption.params.starttime = params.sdate;
+                this.pagingOption.params.endtime = params.edate;
+				this.isLoading = true;
                 this.$refs.scroller.refresh(this.pagingOption.params);
-            }
+			},
+            goto(message){
+                this.$router.push(`/homeworkDetail/${message.messageid}`);
+                message.isread =1;
+			},
+			handleEmit(){
+				this.$refs.scroller.refresh();
+			}
 		},
+		mounted() {
+            app.eventDefine.on('homeworkSave', this.handleEmit);
+        },
+        beforeDestroy() {
+            app.eventDefine.off('homeworkSave');
+        },
 		components: {
 			EmptyPage
 		}

@@ -78,14 +78,13 @@
                 padding-bottom: 20px;
                 .record {
                     height: 22px;
-                    line-height: 21px;
+                    line-height: 22px;
                     width: 85px;
                     font-size: 12px;
                     text-align: center;
                     margin: 0 auto;
                     border: 1px solid #CCCCCC;
-                    color: #999999;
-                    border-radius: 3px;
+                    color: #717171;
                 }
             }
         }
@@ -99,7 +98,7 @@
     <div class="suggestion">
         <scroller-base class="scroller" ref="myScroller" :data="renderData">
             <div class="select-campus">
-                <div class="describe">选择{{app.sysInfo.Title_Campus}}<span class="point">*</span></div>
+                <div class="describe">选择{{app.sysInfo.title_campus}}<span class="point">*</span></div>
                 <div class="campus" @click="openCampusActionsheet">
                     <div class="campus-name">{{campuName}}</div>
                     <svg class="icon" aria-hidden="true">
@@ -121,7 +120,8 @@
             <div class="img-content">
                 <img-area
                         :imageMaxNum=3
-                        @imageFinished="imgUpload">
+                        @imageFinished="imageFinished"
+                        @imageLoaded="imageLoaded">
                 </img-area>
                 <div class="limit" v-show="imgs.length<1">限3张</div>
             </div>
@@ -141,15 +141,14 @@
 </template>
 
 <script>
-    import {getCampusList} from 'parent/api/suggestion';
-    import {savePost} from 'parent/api/common';
     import SuggestionCampus from './child/suggestion-campus';
+    import {addsuggestion,getallcampusidsbysid} from 'parent/api/suggestion.js';
 
     export default {
         name: "suggestion",
         data() {
             return {
-                wxTitle: app.sysInfo.Title_SSX_Suggest,
+                wxTitle: app.sysInfo.title_ssx_suggest,
                 openAsCampus: false, //是否展开‘校区选择’组件
                 campuName: null,
                 campusList: null,
@@ -176,11 +175,14 @@
             },
             campuAction(obj) {
                 this.checkedCampu = obj;
-                this.campuName = obj.CampusName;
-                this.campusid = obj.ID;
+                this.campuName = obj.name;
+                this.campusid = obj.id;
             },
-            imgUpload(arr) {
+            imageFinished(arr) {
                 this.imgs = arr;
+                // this.scrollRefreshNum++;
+            },
+            imageLoaded(){
                 this.scrollRefreshNum++;
             },
             submit() {
@@ -208,32 +210,30 @@
                         })
                         this.imgids = ls_imgids.join(",");
                         this.send();
-                    }).catch(rej => {
-                        app.toast('error','上传附件失败，请在网络畅通时重新尝试。');
-                        return;
-                    });
+                    })
                 }
+
             },
             send() {
-                savePost({
-                    saveFlag: 'SUGGESTION_PARENT',
+                addsuggestion({
+                    // saveFlag: 'SUGGESTION_PARENT',
                     content: app.tool.arrowFilter(this.suggestionContent),
-                    campusid: this.campusid,
-                    media_ids: this.imgids
+                    campusId: this.campusid,
+                    mediaIds: this.imgids
                 }).then(res => {
-                    if (res.errcode == app.errok) {
+                    if (res.result.code == app.errok) {
                         this.$router.go(-1);
-                        app.toast('success', '您的宝贵意见已提交。');
+                        app.toast('success', '您的宝贵意见已提交。')
                     }else{
-                        app.toast('error',res.errmsg)
+                        app.toast('error', res.result.msg)
                     }
                     this.isLoading = false;
                 })
             }
         },
         created() {
-            getCampusList().then(res => {
-                this.campusList = res.Data;
+            getallcampusidsbysid().then(res => {
+                this.campusList = res.data;
             })
         },
         watch: {

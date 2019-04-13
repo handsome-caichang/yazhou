@@ -1,4 +1,6 @@
 <style scoped lang="scss">
+	
+	
 	$bgcolor : #EEF1F6;
 	$padding : 15px;
 	.course-atds-main {
@@ -19,8 +21,7 @@
 		.course-atds-students {
 			@include position-absolute;
 			bottom: 50px;
-			// background: $color-white;
-            background-color: #f3f3f3;
+			background: $color-white;
 			.course-time {
 				@extend %same;
 				border-bottom: 1px solid $bgcolor;
@@ -41,34 +42,6 @@
 					}
 				}
 			}
-            .name-swiper {
-                padding: 0 15px;
-                background-color: $color-white;
-                border-bottom: 1px solid #f0f1f9;
-                .name-box {
-                    .name-item {
-                        position: relative;
-                        height: 40px;
-                        line-height: 40px;
-                        @include ellipsis-single;
-                        &:last-child {
-                            padding-right: 15px;
-                        }
-                        &.active {
-                            color: #1e88f5;
-                        }
-                        &.active:after {
-                            content: "";
-                            position: absolute;
-                            left: 25%;
-                            bottom: 0;
-                            width: 50%;
-                            height: 2px;
-                            background-color: #1e88f5;
-                        }
-                    }
-                }
-            }
 			.operation-container {
 				height: 50px;
 				background: $color-white;
@@ -76,7 +49,6 @@
 				padding: 0 $padding;
 				font-size: 13px;
 				color: $color-6;
-                border-bottom: 1px solid #f0f1f9;
 				.search-container {
 					height: 28px;
 					position: relative;
@@ -161,14 +133,14 @@
 				}
 			}
 		}
-		.attend-action-sheet,
 		.absent-action-sheet,
 		.sort-action-sheet {
 			@include position-absolute;
 			.same-item-container {
 				.same-item {
+					height: 44px;
 					@include flex-between;
-					padding: 12px $padding;
+					padding: 0 $padding;
 					border-bottom: 1px solid $bgcolor;
 					.icon {
 						display: none;
@@ -185,10 +157,6 @@
 						justify-content: center;
 						height: 50px;
 					}
-                    .item-name{
-                        max-width: 90%;
-                        word-break: break-all;
-                    }
 				}
 			}
 		}
@@ -214,7 +182,7 @@
 					height: 50px;
 					@include flex-between;
 					width: 100%;
-			        background: $color-white;
+					background-color: #fff;
 					border-top: 1px solid #ccc;
 					>div {
 						flex: 1;
@@ -228,9 +196,6 @@
 				}
 			}
 		}
-        .count-of-absence{
-            @include position-absolute;
-        }
 	}
 </style>
 
@@ -250,7 +215,7 @@
 			<div class="course-time" v-show="data.unitCode!=3" @click="showChangeTime">
 				<div>
 					上课时间：
-					<span class="course-time-detail">
+					<span class="course-time-detail" v-if="data.startTime">
 						{{data.startTime | formatDatetime('hh:mm')}}~{{data.endTime | formatDatetime('hh:mm')}},
 						时长{{data.courseDetail.duration}}
 					</span>
@@ -272,17 +237,7 @@
 					<use xlink:href="#icon-youjiantou"></use>
 				</svg>
 			</div>
-            <!-- 班级名字区域，可横向滚动 -->
-            <swiper :itemMinWidth="80" class="name-swiper">
-                <div class="name-box">
-                    <div class="name-item active">高一语文冲刺班</div>
-                    <div class="name-item">高一语文培训班</div>
-                    <div class="name-item">高一语文晋升班</div>
-                    <div class="name-item">高一语文冲刺班</div>
-                    <div class="name-item">高一语文培训班</div>
-                    <div class="name-item">高一语文晋升班</div>
-                </div>
-            </swiper>
+
 			<!--搜索和排序和操作-->
 			<div class="operation-container">
 				<div class="search-container">
@@ -298,82 +253,47 @@
 					</svg>
 					<span>排序</span>
 				</div>
-				<div class="operate-btn" @click="showAddStudents" v-if="CFG.courseStudentEdit && data.unitCode!=3">
+				<div class="operate-btn" @click="showAddStudents" v-if="CFG.courseStudentEdit">
 					<span>添加学员</span>
 				</div>
 			</div>
 			
-			<!--点名界面
+			<!--点名界面-->
 			<student-list 
 				v-if="data.unit !== null" 
 				:list="data.studentList" 
 				:data="courseInfo" 
 				:CFG="CFG" 
 				class="student-list-container" 
-				@openCountOfAbsence="openCountOfAbsence"
-				@openAbsent="openAbsent"
-				@openDynamic="openDynamic"
+				@openAbsent="openAbsent" 
+				@openDynamic="openDynamic" 
 				@amountChange="amountChange" 
 				@refreshScroller="refreshScroller" 
 				ref="listComponent">
 			</student-list>
-            -->
-            <!-- wx点名界面 -->
-            <student-list 
-                v-if="data.unit !== null" 
-				:list="data.studentList" 
-				:data="courseInfo" 
-				:CFG="CFG" 
-				class="student-list-container" 
-				@openCountOfAbsence="openCountOfAbsence"
-				@openAbsent="openAbsent"
-                @openAttend="openAttend"
-				@openDynamic="openDynamic"
-				@amountChange="amountChange" 
-				@refreshScroller="refreshScroller" 
-				ref="listComponent">
-            </student-list>
 		</scroller-base>
 		
 		<!--统计人数,点名上课-->
 		<div class="count-and-submit">
 			<div class="count-desc">
-				<div style="width:100%">共<span class="high-light">{{amountCount.studentCount}}</span>人</div>
+				<div>共
+					<span class="high-light">{{amountCount.studentCount}}</span>人
+				</div>
 				<div>出勤:{{amountCount.attendCount}}</div>
 				<div>计费:{{amountCount.costCount}}</div>
+				<div v-if="data.unitCode !=3">试听:{{amountCount.tryCount}}</div>
 			</div>
-			<div class="btn cancel" @click="cancelCourse" v-if="CFG.courseCancel">取消上课</div>
+			<!-- <div class="btn cancel" @click="cancelCourse" v-if="CFG.courseCancel">取消上课</div> -->
 			<div class="btn cancel" @click="revokeCourse" v-if="CFG.courseRevoke">撤销上课</div>
 			<div class="btn" v-if="CFG.courseSubmit" @click="submitCourse">点名上课</div>
 		</div>
-
-        <!--出勤原因 attend-mixin-->
-		<action-sheet 
-			:data="attendCauseList" 
-			v-show="openedAttend" 
-			class="attend-action-sheet" 
-			@close="closeAttend" 
-			ref="attendComponent">
-			<div class="same-item-container">
-				<div 
-					class="same-item" 
-					v-for="(item,index) in attendCauseList"
-					:class="{active:item.id == absentStuSelect.absentCauseID}" 
-					@click="selectAttendCause(item)">
-					<span class="item-name">{{item.name}}</span>
-					<svg class="icon" aria-hidden="true">
-						<use xlink:href="#icon-gouxuan"></use>
-					</svg>
-				</div>
-			</div>
-		</action-sheet>
 
 		<!--缺勤原因 absent-mixin-->
 		<action-sheet 
 			:data="data.absentCauseList" 
 			v-show="openedAbsent" 
 			class="absent-action-sheet" 
-			@close="closeAbsent"
+			@close="closeAbsent" 
 			ref="absentComponent">
 			<div class="same-item-container">
 				<div 
@@ -381,7 +301,7 @@
 					v-for="(item,index) in data.absentCauseList" 
 					:class="{active:item.id == absentStuSelect.absentCauseID}" 
 					@click="selectAbsentCause(item)">
-					<span class="item-name">{{item.name}}</span>
+					<span>{{item.name}}</span>
 					<svg class="icon" aria-hidden="true">
 						<use xlink:href="#icon-gouxuan"></use>
 					</svg>
@@ -397,6 +317,7 @@
 			:title="'学生列表排序选择'"
 			:initType="'0-0'">
 		</sort-sheet>
+
 
 		<!-- <action-sheet 
 			v-show="openedSort" 
@@ -458,40 +379,26 @@
 			@datetimePro="changeDateTime">
 		</datetime-pro>
 
-        <!--缺勤次数统计 删除缺勤次数-->
-        <count-of-absence
-            class="count-of-absence"
-            :opened.sync="openedCause"
-            :causeParams="causeParams">
-        </count-of-absence>
-
 		<loading class="loading" v-show="isLoading"></loading>
 	</div>
 </template>
 
 <script>
-    import {postCourse, postCheckConflict, updateCourseTime} from "teacher/api/course-attendance";
-    import {processPost} from 'teacher/api/common';
-	// import studentList from './child/list.vue';
+    import {setAttendance,  opcourse,getcourseattendancedetailwx} from "teacher/api/course-attendance";
+	import studentList from './child/list.vue';
 	import emptyPage from 'teacher/components/common/empty-page/empty-page.vue';
 	import DatetimePro from 'teacher/components/common/datetime-pro/datetime-pro.vue';
-	import submitInfo from './child/submit-info.vue';
-	import addStudents from './child/add-students.vue';
-	import studentList from './child/student-list.vue';
-	import SortMixin from "./child/sort-mixin.js";
-	import AbsentMixin from './child/absent-mixin.js';
-	import AttendMixin from './child/attend-mixin.js';
-	import CountOfAbsence from './child/count-of-absence.vue';
 	import DynamicMixin from './child/dynamic-dialog-mixin.js';
-	import CountOfAbsenceMixin from "./child/count-of-absence-mixin.js";
-
-	var Filters = Vue.options.filters
+	import AbsentMixin from './child/absent-mixin.js';
+	import addStudents from './child/add-students.vue';
+	import submitInfo from './child/submit-info.vue';
+	import SortMixin from "./child/sort-mixin.js";
 
 	const Pname = 'courseAttendance_detail';
 
 	export default {
 		name: "course-attendance-students",
-		mixins: [AttendMixin, AbsentMixin, SortMixin, DynamicMixin,CountOfAbsenceMixin],
+		mixins: [AbsentMixin, SortMixin, DynamicMixin],
 		data() {
 			return {
 				wxTitle: "学生列表",
@@ -507,7 +414,8 @@
 					courseDetail: {
 						duration: '',
 						finished: 0,
-					}
+					},
+					updateTime:'',
 				},
 				openPicktime: false, //修改上课时间
 				jinduTitle: '', //进度,需要显示在上课内容前面,
@@ -517,8 +425,7 @@
 					courseCancel: true,
 					courseRevoke: false,
 					courseStudentEdit: true,
-					courseSubmit: true,
-					courseTimeEdit:true
+					courseSubmit: true
 				}, //相关配置.
 				scheduleSave: {},
 				costConsumeAmount: '', //一次性课消计数
@@ -527,13 +434,14 @@
 					studentCount: 0,
 					attendCount: 0,
 					costCount: 0,
+					tryCount: 0,
 				},
 			};
 		},
 		computed: {
 			timeObj() {
 				return {
-					stimepro: Filters.formatDatetime(this.data.startTime, 'hh:mm'),
+					stimepro: app.filters.formatDatetime(this.data.startTime, 'hh:mm'),
 					dtimepro: this.data.courseDetail.duration,
 				}
 			}
@@ -543,16 +451,19 @@
 			getAjaxData(id) {
 				this.isLoading = true;
 				let param = {
-					pname: Pname,
-					id
+					courseid:id,
+					role:1
 				}
-				processPost(param).then(res => {
+				getcourseattendancedetailwx(param).then(res => {
 					this.isLoading = false;
-					res.data.absentCauseList.splice(0, 0, {
+					let transData = res.courseattendancdetailwx;
+					//对字段大小写进行转化
+					transData = dfsReplace(transData,keyMap);
+					transData.absentCauseList.splice(0, 0, {
 						id: "00000000-0000-0000-0000-000000000000",
 						name: '无',
 					})
-					this.data = res.data;
+					this.data = transData;
 					this.initData();
 					this.refreshScroller();
 					if(!this.headerDOM) {
@@ -565,7 +476,17 @@
 				//1.计算课消数量
 				let detail = this.data.courseDetail,
 					duraArr = detail.duration.split(":");
+
+
 				this.costConsumeAmount = detail.consumeAmount * 1;
+				this.dynamicCostUnitShow = '';
+				
+				//如果是动态课消,直接置为1
+				if (detail.IsDynamicConsume == 1){
+					detail.consumeAmount = 1; 
+					this.costConsumeAmount = 1;
+				}
+
 				this.dynamicCostUnitShow = '';
 				if(this.data.unitCode == 2) { //按次计费
 					if(detail.MinutesToTimes == 1) { //按次按时长扣费
@@ -579,26 +500,28 @@
 					this.dynamicCostUnitShow = this.costConsumeAmount + '分钟';
 				}
 
+
 				//2.初始化上课进度,必须有设置上课进度
 				if(this.data.shiftScheduleList.length > 0) {
 					let scheduleList = this.data.shiftScheduleList,
 						data = this.data;
 
 					if(data.shiftAmount == '') { //未上课点名
-						if(app.sysInfo.EnableAddCourse_ShiftSchedule == 0) { //没有自动设置课程进度,进行常规处理.否则由后台自动处理完成
-							//常规处理流程:如果在此之前的排课有设置了上课进度(classShiftAmount),那么本次的上课进度自动设置为classShiftAmount+1的进度						
-							if(data.classShiftAmount != '') {
-								data.shiftAmount = data.classShiftAmount;
-								let zIndex = 0;
-								scheduleList.forEach((item, index) => {
-									item.ShiftAmount == data.shiftAmount && (zIndex = index);
-								})
-								zIndex < scheduleList.length - 1 && zIndex++;
-								data.shiftAmount = scheduleList[zIndex].ShiftAmount;
-								data.content = scheduleList[zIndex].Content;
-								this.jinduTitle = scheduleList[zIndex].Title;
-							}
-						}
+						//没有该配置项
+						// if(app.sysInfo.enableaddcourse_shiftschedule == 0) { //没有自动设置课程进度,进行常规处理.否则由后台自动处理完成
+						// 	//常规处理流程:如果在此之前的排课有设置了上课进度(classShiftAmount),那么本次的上课进度自动设置为classShiftAmount+1的进度						
+						// 	if(data.classShiftAmount != '') {
+						// 		data.shiftAmount = data.classShiftAmount;
+						// 		let zIndex = 0;
+						// 		scheduleList.forEach((item, index) => {
+						// 			item.ShiftAmount == data.shiftAmount && (zIndex = index);
+						// 		})
+						// 		zIndex < scheduleList.length - 1 && zIndex++;
+						// 		data.shiftAmount = scheduleList[zIndex].ShiftAmount;
+						// 		data.content = scheduleList[zIndex].Content;
+						// 		this.jinduTitle = scheduleList[zIndex].Title;
+						// 	}
+						// }
 					} else if(data.shiftAmount == '0') { //shiftAmount 为空是未上课点名,点名后未选进度是0
 						this.jinduTitle = '';
 					} else {
@@ -619,27 +542,27 @@
 					id: this.data.courseDetail.id,
 					finished: this.data.courseDetail.finished,
 					costConsumeAmount: this.costConsumeAmount,
-					dynamicCostUnitShow: this.dynamicCostUnitShow
+					dynamicCostUnitShow: this.dynamicCostUnitShow,
+					updateTime:this.data.updateTime,
 				};
 
 				//4.初始化相关配置项和权限(整理组合)
 				this.CFG = {
-					lessEnableAttend: app.sysInfo.EnableCourseConfirmWhenLess != 2, //欠费时能否点击出勤
-					lessEnableCost: app.sysInfo.EnableCourseConfirmWhenLess == 1, //欠费时能否点击计费
-					enableMachineAttend: app.sysInfo.EnableMachineAttendance == 1, //是否开启考勤打卡(开启的话,要额外的从后台获取打卡信息,根据打卡信息来进行出勤处理),和自动出勤计费互斥
-					enableShowTel: app.sysInfo.ShowTelWhenCourseConfirm == 1, //是否显示手机号
-					enableFeeOut: app.sysInfo.EnableFeeOutDate == 1, //是否开启过期
-					checkStuAttendConflict: app.sysInfo.CheckStudentAttendanceConflict == 1, //是否开启检查上课冲突,这个配置项在提交上课点名后,让用户做一次确认
-                    enableAutoCharge: this.data.IsOneToOne == 0 && app.sysInfo.ClassAutoCharge != 0, //是否自动出勤计费
-                    enableAutoCharge3: this.data.IsOneToOne == 0 && app.sysInfo.ClassAutoCharge == 3, //动态集体班不可以修改计费。
-					courseStudentEdit: app.tool.op('CourseStudentEdit'), //是否有添加和移除学员的权限
-					enableAddSchedule: app.sysInfo.EnableAddCourse_ShiftSchedule == 0, //在排课时,是否根据课程上设置的上课进度自动生成每一节课的上课进度
+					lessEnableAttend: true,//app.sysInfo.enablecourseconfirmwhenless != 2, //欠费时能否点击出勤
+					lessEnableCost: app.sysInfo.enablecourseconfirmwhenless == 1, //欠费时能否点击计费,0不能点击计费，1才可以欠费点击计费
+					enableMachineAttend: false,//app.sysInfo.enablemachineattendance == 1, //是否开启考勤打卡(开启的话,要额外的从后台获取打卡信息,根据打卡信息来进行出勤处理),和自动出勤计费互斥
+					enableShowTel: app.sysInfo.showtelwhencourseconfirm == 1, //是否显示手机号
+					enableFeeOut: app.sysInfo.enablefeeoutdate == 1, //是否开启过期
+					checkStuAttendConflict: false,// app.sysInfo.CheckStudentAttendanceConflict == 1, //是否开启检查上课冲突,这个配置项在提交上课点名后,让用户做一次确认
+					enableAutoCharge: false,//this.data.IsOneToOne == 0 && app.sysInfo.classautocharge == 1, //是否自动出勤计费
+					courseStudentEdit: true, //是否有添加和移除学员的权限
+					enableAddSchedule: false,//app.sysInfo.enableaddcourse_shiftschedule == 0, //在排课时,是否根据课程上设置的上课进度自动生成每一节课的上课进度
 					//是否有取消上课的权限
-					courseCancel: app.tool.op('CourseCancel') && (app.sysInfo.EnableTeacherCancelCourse == 1) && (this.data.courseDetail.finished == 0),
+					courseCancel: false,
 					//是否有撤销上课的权限.
-					courseRevoke: app.tool.op('CourseBeginCancel') && this.data.courseDetail.finished == 1,
-					courseSubmit: app.tool.op("CourseBegin") || app.tool.op("CourseBeginLimit"),
-					courseTimeEdit: app.tool.op("CourseBeginTimeEdit"),
+					courseRevoke: (this.data.courseDetail.finished == 1) && (app.sysInfo.enableteachercancelcourse == 1),
+					courseSubmit: true,//app.tool.op("CourseBegin") && app.tool.op("CourseBeginLimit"),
+					courseTimeEdit: true,//app.tool.op("CourseBeginTimeEdit"),
 					
 				}
 
@@ -651,6 +574,7 @@
 					ShiftAmount:this.data.shiftAmount,
 					ID:this.data.shiftScheduleList[this.data.shiftAmount - 1] && this.data.shiftScheduleList[this.data.shiftAmount - 1].ID
 				}
+
 			},
 			refreshScroller() {
 				this.$nextTick(() => {
@@ -671,7 +595,7 @@
 				});
 			},
 			//取消上课
-			cancelCourse() {
+/*			cancelCourse() {
 				this.$refs.submitInfo.openSubmitInfo(1, {
 					name: this.data.courseDetail.name
 				}).then(result => {
@@ -692,24 +616,23 @@
 						})
 					}
 				});
-			},
+			},*/
 			//撤销上课
 			revokeCourse() {
 				let params = {
-					id: this.courseInfo.id,
-					opt: -1,
-					memo: '',
+					courseid: this.courseInfo.id,
+					action:-1,
 					LastClasstime: getLastTime(this.data.startTime, this.data.endTime),
 				}
 				this.isLoading = true;
-				postCourse(params).then(res => {
+				setAttendance(params).then(res => {
 					this.isLoading = false;
-					if(res.errcode == 200) {
+					if(res.result.code == 200) {
 						app.toast('success', '撤销上课成功。');
 						this.$router.back();
 						app.eventDefine.emit('refresh_course_attendance_list');
 					} else {
-						app.toast('error', res.errmsg || '撤销上课失败。');
+						app.toast('error', res.result.msg || '撤销上课失败。');
 					}
 				})
 			},
@@ -739,7 +662,7 @@
 								} else {
 									let names = res.Data.ConflictResult.map(item => item.StudentName).join('<br/>');
 									if(this.CFG.checkStuAttendConflict) {
-										app.confirm({html:'检测到以下学员上课时间有冲突，是否继续点名？<br/>' + names}).then(flag => {	
+										app.confirm({html:'检测到以下学员上课时间有冲突，是否继续点名？<br/>' + names}).then(flag => { 
 											if(flag) resolve();
 										});
 									} else {
@@ -755,28 +678,26 @@
 
 				pro.then(res => {
 					let params = {
-						id: this.courseInfo.id,
+						courseid: this.courseInfo.id,
 						students: result.data,
-						opt: 1,
-						memo: this.data.describe,
-						shiftAmount: this.scheduleSave.ShiftAmount, //本次所选的上课进度
-						ShiftScheduleID: this.scheduleSave.ID,
-						Content: this.data.content,
-						LastClasstime: getLastTime(this.data.startTime, this.data.endTime),
-						UpdateTime: this.data.updateTime
+						action: 1,
+						describe: this.data.describe,
+						weixin:1,
+//						shiftAmount: this.scheduleSave.ShiftAmount, //本次所选的上课进度
+//						ShiftScheduleID: this.scheduleSave.ID,
+						content: this.data.content,
+						updateTime: this.data.updateTime
 					}
 					//提交上课点名.
 					this.isLoading = true;
-					postCourse(params).then(res => {
+					setAttendance(params).then(res => {
 						this.isLoading = false;
-						if(res.errcode == 200) {
+						if(res.result.code == 200) {
 							app.toast('success', '点名成功。');
 							this.$router.back();
 							app.eventDefine.emit('refresh_course_attendance_list');
-						} else if(res.errcode == 0) {
-							app.toast('info', '未修改任何数据。');
 						} else {
-							app.toast('error', res.errmsg);
+							app.toast('error', res.result.msg);
 						}
 					});
 				});
@@ -785,12 +706,13 @@
 			showAddStudents() {
 				this.$refs.addstu.show({
 					id: this.data.courseDetail.id,
-					classId: this.data.courseDetail.classId
+					classId: this.data.courseDetail.classId,
+					updatetime: this.data.updateTime
 				});
 			},
 			//添加学员成功
 			addSucc() {
-				app.toast('success', '添加学员成功');
+				app.toast('success', '添加学员成功。');
 				this.getAjaxData(this.$route.query.id);
 			},
 
@@ -802,63 +724,106 @@
 			},
 			//修改上课时间
 			changeDateTime(res) {
-				let startTime = this.data.startTime.split('T')[0] + "T" + res.stimepro,
-					endTime = this.data.endTime.split('T')[0] + "T" + res.etimepro,
+				//拼接params
+				let startTime = this.data.startTime.split(' ')[0] + " " + res.stimepro,
+					endTime = this.data.endTime.split(' ')[0] + " " + res.etimepro,
 					duration = res.dtimepro,
-					tid = this.data.teacherids.map(val=>val.ID).join(",");
-				
+					tid = this.data.teacherids.map(val=>val.id).join(",");
 				let params = {
-					sdate:Filters.formatDatetime(startTime,'yyyy-MM-dd hh:mm:ss'),
-					edate:Filters.formatDatetime(endTime,'yyyy-MM-dd hh:mm:ss'),
-					courseID: this.courseInfo.id,
-					teacherids:tid,
-					classroomid:this.data.courseDetail.classRoomID
+					checkconflict:1,
+					optype:2,
+					course:{
+						starttime:app.filters.formatDatetime(startTime,'yyyy-MM-dd hh:mm:ss'),
+						endtime:app.filters.formatDatetime(endTime,'yyyy-MM-dd hh:mm:ss'),
+						id: this.courseInfo.id,
+						teacherid:tid,
+						classroomid:this.data.courseDetail.classRoomID,
+						classid:this.data.courseDetail.classId,
+						assistteacherids:this.data.assistteacherids.map(item=>item.id),
+					}
 				}
-				this.isLoading = true;
-				updateCourseTime(params).then(res=>{
-					this.isLoading = false;
-					if (res.ErrorCode == 200){
-						app.toast("success",'修改上课时间时长成功。');
-						this.data.endTime = endTime;
-						this.data.startTime = startTime;
-						this.data.courseDetail.duration = duration;
-						this.initData();
 
-						let courseDetail = this.data.courseDetail;
-						if (courseDetail.IsDynamicConsume == 0 && courseDetail.finished == 0 && this.data.unitCode == 1){
-							//更新一下非动态课消,且是按小时(课时)的计费数据(根据修改后的上课时长来修改)
-							this.$refs.listComponent.listClone.forEach(item=>{
-								item.isCost != 0 && (item.isCost = this.courseInfo.costConsumeAmount);
-							})
+
+				//执行ajax和冲突检查
+				let pro = new Promise((resolve,reject)=>{
+					this.isLoading = true;
+					opcourse(params).then(res=>{
+						this.isLoading = false;
+						if (res.result.code == 200){
+							resolve(res);
+						} else if (res.result.code == 240){	//有冲突
+							let rdata = res.data,
+								html = `检测到冲突：
+										<br>时间：${getToastTime(rdata.starttime,rdata.endtime)}${rdata.type==1?'[冲突]':''}
+										<br>老师：${rdata.teachername}${rdata.type==3?'[冲突]':''}
+										<br>班级：${rdata.classname}
+										<br>教室：${rdata.classroomname}${rdata.type==2?'[冲突]':''}`
+							app.confirm({
+								html,
+								btns:[{
+										text:'仍保存',
+										action:true,
+									},{
+										text:'取消',
+										style:{color:'#1E88F5'},
+										action:false,
+								}]
+							}).then(sel=>{
+								if (sel){
+									params.checkconflict = 0;		//不检查冲突。
+									this.isLoading = true;
+									opcourse(params).then(res=>{
+										this.isLoading = false;
+										if (res.result.code == 200){
+											resolve(res);
+										} else {
+											app.toast("error",res.result.msg);
+										}
+									})
+								}
+							});
+						} else {
+							app.toast("error",res.result.msg);
 						}
-					} else if (res.ErrorCode == 421){	//有冲突
-						app.alert({
-							html:res.ErrorMsg,
-							btn:{
-								text: '知道了',
-								style: {
-		                            color: '#1E88F5'
-		                        },
-		                        action: true
-							}
-						});
-					} else {
-						app.toast("error",res.ErrorMsg);
+					});
+				});
+
+				//注册成功后的处理
+				pro.then(res=>{
+					app.toast("success",'修改上课时间时长成功。');
+					this.data.endTime = endTime;
+					this.data.startTime = startTime;
+					this.data.courseDetail.duration = duration;
+					this.initData();
+
+					this.data.updateTime = res.data.updatetime;
+					let courseDetail = this.data.courseDetail;
+					if (courseDetail.IsDynamicConsume == 0 && courseDetail.finished == 0 && this.data.unitCode == 1){
+						//更新一下非动态课消,且是按小时(课时)的计费数据(根据修改后的上课时长来修改)
+						this.$refs.listComponent.listClone.forEach(item=>{
+							item.isCost != 0 && (item.isCost = this.courseInfo.costConsumeAmount);
+						})
 					}
 				});
 			},
 
 			//即时计算人数统计(出勤,计费等)
-			amountChange(listNew) {
+			amountChange(listNew,updateTime) {
 				let amountCount = this.amountCount;
 				amountCount.studentCount = listNew.length;
 				amountCount.attendCount = 0;
 				amountCount.costCount = 0;
+				amountCount.tryCount = 0;
 				listNew.forEach(item => {
 					item.isAttend == 1 && amountCount.attendCount++;
 					item.isCost > 0 && amountCount.costCount++;
+					item.isTry == 1 && amountCount.tryCount++;
 				});
-			},
+				if (updateTime){
+					this.data.updateTime = updateTime;
+					this.courseInfo.updateTime = updateTime;
+				}
+			}
 		},
 		mounted() {
 			let s = this.$refs.scroller,
@@ -878,30 +843,58 @@
 		},
 		created() {
 			this.getAjaxData(this.$route.query.id);
-            app.ls.setStorage('courseAttendanceStudentsClassid', {
-                classId: this.$route.query.classId
-            });
 		},
-        beforeDestroy(){
-            app.ls.remove('courseAttendanceStudentsClassid');
-        },
 		components: {
 			emptyPage,
 			studentList,
-            CountOfAbsence,
-
 			addStudents,
 			submitInfo,
 			DatetimePro
 		},
 	}
+	
+		
+	const keyMap = {"shiftschedulelist":"shiftScheduleList","_shiftschedulelist_":{"id":"ID","createtime":"CreateTime","updatetime":"UpdateTime","companyid":"CompanyID","shiftid":"ShiftID","shiftamount":"ShiftAmount","title":"Title","content":"Content","status":"Status"},"studentlist":"studentList","_studentlist_":{"istry":"isTry","isattend":"isAttend","iscost":"isCost","absentcauseid":"absentCauseID","absentcausename":"absentCauseName","defaultattend":"defaultAttend","remainamount":"remainAmount","outamount":"OutAmount","photo":"Photo","isattendstauts":"IsAttendStauts","ismend":"IsMend","adjustflag":"AdjustFlag"},"absentcauselist":"absentCauseList","_absentcauselist_":{},"_teacherids_":{"id":"ID"},"unitcode":"unitCode","shiftamount":"shiftAmount","countshiftamount":"countShiftAmount","lastshiftamount":"lastShiftAmount","classshiftamount":"classShiftAmount","starttime":"startTime","endtime":"endTime","shiftid":"shiftID","shiftname":"shiftName","updatetime":"updateTime","classroomid":"classroomID","isonetoone":"IsOneToOne","coursedetail":"courseDetail","_coursedetail":{"courseid":"id","teachernames":"teacherNames","classroomid":"classRoomID","starttime":"startTime","endtime":"endTime","studentcount":"studentCount","attendancecount":"attendanceCount","consumeamount":"consumeAmount","subjectname":"subjectName","isdynamicconsume":"IsDynamicConsume","classid":"classId","minutestotimes":"MinutesToTimes","standardminutes":"StandardMinutes","campusid":"CampusID"}};
+	
+	function dfsReplace(obj,mapping){
+		let cloneObj = {};
+		Object.keys(obj).forEach(key=>{
+			let oldKey = mapping[key] || key;		//cloneObj应该增加的键值
+			//检查值,是否是对象
+			if ( (typeof obj[key] === 'object') && mapping[key] !== undefined){
+				if (Array.isArray(obj[key])){
+					//对数组的每个项应用转化.
+					cloneObj[oldKey] = [];
+					obj[key].forEach( (item,index)=>{
+						cloneObj[oldKey][index] = dfsReplace(item,mapping['_'+key.toLowerCase()+'_']);
+					})
+				} else {
+					cloneObj[oldKey] = obj[key] === null ? null : dfsReplace(obj[key],mapping['_'+key.toLowerCase()]);
+				}
+			} else {
+				cloneObj[oldKey] = obj[key];
+			}
+	
+		});
+		return cloneObj;
+	}
+
 
 	function getLastTime(startTime, endTime) {
 		let start = new Date(startTime.replace('T', ' ').replace(/-/g,'\/')),
 			starttime = startTime.slice(0,10),
 			end = new Date(endTime.replace('T', ' ').replace(/-/g,'\/')),
-			week = ["[周日]", "[周一]", "[周二]", "[周三]", "[周四]", "[周五]", "[周六]"],
+			week = ["[周日]", "[周一]","[周二]", "[周三]", "[周四]", "[周五]", "[周六]"],
 			day = new Date(startTime.replace('T', ' ').replace(/-/g,'\/')).getDay();
-		return starttime + Filters.formatDatetime(start, 'hh:mm') + "-" + Filters.formatDatetime(end, 'hh:mm') + week[day];
+		return starttime + app.filters.formatDatetime(start, 'hh:mm') + "-" + app.filters.formatDatetime(end, 'hh:mm') + week[day];
+	}
+
+	function getToastTime(startTime, endTime) {
+		let start = new Date(startTime.replace('T', ' ').replace(/-/g,'\/')),
+			starttime = startTime.slice(0,10),
+			end = new Date(endTime.replace('T', ' ').replace(/-/g,'\/')),
+			week = ["(周日)", "(周一)","(周二)", "(周三)", "(周四)", "(周五)", "(周六)"],
+			day = new Date(startTime.replace('T', ' ').replace(/-/g,'\/')).getDay();
+		return starttime + week[day] + ' ' + app.filters.formatDatetime(start, 'hh:mm') + "~" + app.filters.formatDatetime(end, 'hh:mm') ;
 	}
 </script>

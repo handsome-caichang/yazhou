@@ -133,12 +133,12 @@
                         上课班级
                     </div>
                     <div class="val">
-                        {{detailsObj.Name}}
+                        {{detailsObj.name}}
                     </div>
                 </div>
 
                 <!--全科科目-->
-                <div class="item" v-if="detailsObj.EnableSubject==1" @click="openSubjectAS">
+                <!--<div class="item" v-if="detailsObj.enablesubject==1" @click="openSubjectAS">
                     <div class="describe">
                         科目<span class="star">*</span>
                     </div>
@@ -152,7 +152,7 @@
                             </svg>
                         </div>
                     </div>
-                </div>
+                </div>-->
                 <!--任课老师-->
                 <div class="item" @click="selectTeacher">
                     <div class="describe">
@@ -160,10 +160,10 @@
                         <span class="star">*</span>
                     </div>
                     <div class="item-con">
-                        <div class="content" :class="app.sysInfo.currole.Id!=4?'blue':''">
+                        <div class="content" :class="app.sysInfo.currole.id!=4?'blue':''">
                             {{dealTeacherResult}}
                         </div>
-                        <div class="arrow" v-show="app.sysInfo.currole.Id!=4">
+                        <div class="arrow" v-show="app.sysInfo.currole.id!=4">
                             <svg class="icon" aria-hidden="true">
                                 <use xlink:href="#icon-youjiantou"></use>
                             </svg>
@@ -207,12 +207,12 @@
                 <!--上课时长-->
                 <div class="item" @click="openPicktimeAS">
                     <div class="describe">
-                        上课时长
+            上课时长
                         <span class="star">*</span>
                     </div>
                     <div class="item-con">
                         <div class="content blue">
-                            {{detailsObj.TimeLong}}
+                            {{timeLong}}
                         </div>
                         <div class="arrow">
                             <svg class="icon" aria-hidden="true">
@@ -239,7 +239,7 @@
                     </div>
                 </div>
                 <!--检查上课冲突-->
-                <div class="conflict" @click="selectCheckConflict" v-show="app.tool.op('IngoreCourseConflict')">
+                <!--<div class="conflict" @click="selectCheckConflict" v-show="app.tool.op('IngoreCourseConflict')">
                     <div class="describe">
                         检查上课冲突
                     </div>
@@ -248,7 +248,7 @@
                             <use :xlink:href="checkConflict==1?'#icon-duoxuan':'#icon-duoxuan-weixuanze'"></use>
                         </svg>
                     </div>
-                </div>
+                </div>-->
 
             </div>
             <div class="footer">
@@ -286,8 +286,7 @@
 
 <script>
     
-    import {processPost} from "teacher/api/common";
-    import {subjectPost, classroomPost, classAddBatch} from "teacher/api/course-attendance";
+    import {getclassroomlist, addcoursebatchfromwx} from "teacher/api/course-attendance";
     import NewcourseDetailsClassrooms from './child/newcourse-details-classrooms.vue';
     import NewcourseDetailsSubject from './child/newcourse-details-subject.vue';
     import DatetimePro from 'teacher/components/common/datetime-pro/datetime-pro.vue';
@@ -307,6 +306,7 @@
                 today: '',
                 nowTime: '',//开始时间
                 endTime: '',//结束时间
+                timeLong:'',//时长
                 timeObj: {
                     stimepro: '',
                     dtimepro: ''
@@ -346,27 +346,6 @@
             prevStep() {
                 this.$emit('backToNewcourse')
             },
-            //处理上课时长
-            getCourseTime(type, day, start, dura, end) {
-                var dayArr = day.split('-'),
-                    startArr = start.split(':'),
-                    duraArr = dura.split(':'),
-                    endArr = end && end.split(':'),
-                    date = new Date();
-
-                if (type == 0) { //0：修改开始时间/修改上课时长
-                    let sTime = new Date(dayArr[0], parseInt(dayArr[1]) - 1, dayArr[2], startArr[0], startArr[1]),
-                        dTime = duraArr[0] * 3600 * 1000 + duraArr[1] * 60 * 1000;
-
-                    date.setTime(sTime.getTime() + dTime);
-                    return this.formatDate(date, 'hh:mm');
-                } else if (type == 1) { //：1计算上课时长
-                    let sTime = new Date(dayArr[0], parseInt(dayArr[1]) - 1, dayArr[2], startArr[0], startArr[1]),
-                        eTime = new Date(dayArr[0], parseInt(dayArr[1]) - 1, dayArr[2], endArr[0], endArr[1]);
-
-                    return eTime.getTime() - sTime.getTime();
-                }
-            },
             //格式化时间
             formatDate(date, format) {
                 let o =
@@ -392,11 +371,11 @@
                 //2.非全科科目，根据Role 1为老师 2为助教
                 this.teacherResult = [];
                 this.teacherAssResult = [];
-                if (this.detailsObj.Teachers.length > 0) {
-                    this.detailsObj.Teachers.forEach(item => {
+                if (this.detailsObj.classteachers.length > 0) {
+                    this.detailsObj.classteachers.forEach(item => {
                         let teaObj = {
-                            id: item.ID,
-                            name: item.Name
+                            id: item.id,
+                            name: item.name
                         }
                         if (subjectID) {
                             if (item.SubjectID == subjectID) {
@@ -407,9 +386,9 @@
                                 }
                             }
                         } else {
-                            if (item.Role == 1) { //老师
+                            if (item.role == 1) { //老师
                                 this.teacherResult.push(teaObj);
-                            } else if (item.Role == 2) { //助教
+                            } else if (item.role == 2) { //助教
                                 this.teacherAssResult.push(teaObj);
                             }
                         }
@@ -433,60 +412,53 @@
                 this.today = this.formatDate(new Date(), 'yyyy-MM-dd');
                 this.nowTime = this.formatDate(new Date(), 'hh:mm');
             },
-            //获取科目参数
-            getSubject() {
-                subjectPost({
-                    type: 'SUBJECT'
-                }).then(res => {
-                    this.subjectListSpare = res.Data;
-                })
-            },
+
             //获取教室参数
             getClassroom() {
-                classroomPost({
-                    campusId: this.detailsObj.CampusID
+                this.classroomMsg.name = this.classroomMsg.id = '';
+                getclassroomlist({
+                    campusId: this.detailsObj.campusid
                 }).then(res => {
-                    this.classroomList = res.Data;
+                    this.classroomList = res.data;
                     //初始化教室信息
-                    if (this.detailsObj.ClassRoomId != '00000000-0000-0000-0000-000000000000') {
-                        this.classroomList.forEach(item => {
-                            if (item.ID == this.detailsObj.ClassRoomId) {
-                                this.classroomMsg.id = item.ID;//回显教室信息的参数
-                                this.classroomMsg.name = item.Name;//回显教室信息的参数
-                                return
+                    if (this.detailsObj.classroomid != '00000000-0000-0000-0000-000000000000') {
+                        this.classroomList.some(item => {
+                            if (item.id == this.detailsObj.classroomid) {
+                                this.classroomMsg.id = item.id;//回显教室信息的参数
+                                this.classroomMsg.name = item.name;//回显教室信息的参数
                             }
                         })
                     }
                 })
             },
             //检查上课冲突
-            selectCheckConflict() {
-                if (this.checkConflict == 1) {
-                    this.checkConflict = 0;
-                } else {
-                    this.checkConflict = 1;
-                }
-            },
+//          selectCheckConflict() {
+//              if (this.checkConflict == 1) {
+//                  this.checkConflict = 0;
+//              } else {
+//                  this.checkConflict = 1;
+//              }
+//          },
             //打开'全科科目'开关
-            openSubjectAS() {
-                if (!this.openSubject) {
-                    this.subjectList = this.detailsObj.ShiftSubject;
-                    if ((this.detailsObj.ShiftSubject.IsOneToOne == 1) && (this.detailsObj.ShiftSubject.length == 0)) {
-                        this.subjectList = this.subjectListSpare;
-                    }
-                    if (this.subjectList.length == 0) {
-                        app.toast('info', '请在班级设置中添加科目。');
-                        return
-                    }
-                    this.openSubject = !this.openSubject;
-                }
-            },
+//          openSubjectAS() {
+//              if (!this.openSubject) {
+//                  this.subjectList = this.detailsObj.ShiftSubject;
+//                  if ((this.detailsObj.ShiftSubject.IsOneToOne == 1) && (this.detailsObj.ShiftSubject.length == 0)) {
+//                      this.subjectList = this.subjectListSpare;
+//                  }
+//                  if (this.subjectList.length == 0) {
+//                      app.toast('info', '请在班级设置中添加科目。');
+//                      return
+//                  }
+//                  this.openSubject = !this.openSubject;
+//              }
+//          },
             //接收科目信息
-            acceptSubject(item) {
-                this.subjectMsg.id = item.SubjectID || item.ID;//界面显示
-                this.subjectMsg.name = item.SubjectName || item.Value;//界面显示
-                this.initTeachers(item.SubjectID);
-            },
+//          acceptSubject(item) {
+//              this.subjectMsg.id = item.SubjectID || item.ID;//界面显示
+//              this.subjectMsg.name = item.SubjectName || item.Value;//界面显示
+//              this.initTeachers(item.SubjectID);
+//          },
             //打开'教室'开关
             openClassroomAS() {
                 if (this.classroomList.length == 0) {
@@ -497,27 +469,26 @@
             },
             //接收教室信息
             acceptClassrooms(item) {
-                this.classroomMsg.name = item.Name;//界面显示
-                this.classroomMsg.id = item.ID;//界面显示
+                this.classroomMsg.name = item.name;//界面显示
+                this.classroomMsg.id = item.id;//界面显示
             },
             //关于老师的初始化显示
             getTeacherMsg() {
-                if (this.detailsObj.EnableSubject == 1) {//全科科目条件
-                    if (this.detailsObj.ShiftSubject.length > 0) {
-                        this.subjectMsg.id = this.detailsObj.ShiftSubject[0].SubjectID;
-                        this.subjectMsg.name = this.detailsObj.ShiftSubject[0].SubjectName;
-                        this.initTeachers(this.detailsObj.ShiftSubject[0].SubjectID);
-                    }
-                }
-                else {
-                    this.initTeachers()
-                }
-
-
+//              if (this.detailsObj.EnableSubject == 1) {//全科科目条件
+//                  if (this.detailsObj.ShiftSubject.length > 0) {
+//                      this.subjectMsg.id = this.detailsObj.ShiftSubject[0].SubjectID;
+//                      this.subjectMsg.name = this.detailsObj.ShiftSubject[0].SubjectName;
+//                      this.initTeachers(this.detailsObj.ShiftSubject[0].SubjectID);
+//                  }
+//              }
+//              else {
+//                  this.initTeachers()
+//              }
+				this.initTeachers();
             },
             //选择老师 (1.只能单选；2.角色4不能修改)
             selectTeacher() {
-                if (app.sysInfo.currole.Id == 4) {
+                if (app.sysInfo.currole.id == 4) {
                     return
                 }
                 let arr = [];//arr传已选择的员工的id数组,用于初始化选择员工列表,如['id1','id2','id3'],也可不传.
@@ -602,25 +573,31 @@
             },
             //初始化结束时间
             initEndTime() {
-                if (this.detailsObj.TimeLong) {
-                    let todayArr = this.today.split('-');
-                    let time = this.detailsObj.TimeLong.split(':');
-                    this.detailsObj.TimeLong = this.formatDate(new Date(todayArr[0], todayArr[1], todayArr[2], time[0], time[1]), 'hh:mm');
-                    this.endTime = this.getCourseTime(0, this.today, this.nowTime, this.detailsObj.TimeLong);
-                }
+            	let plan = this.detailsObj.classplaninfos;
+            	if (plan.length>0 && plan[0].starttime && plan[0].endtime){
+            		//计算上课时长
+            		let start = new Date('1990/01/01 '+plan[0].starttime),
+            			end= new Date('1990/01/01 '+plan[0].endtime);
+            		this.timeLong = new Date( new Date('1990/01/01 00:00:00').getTime() + end.getTime() - start.getTime());
+            		this.timeLong = this.formatDate(this.timeLong ,'hh:mm');
+            		this.endTime = new Date(new Date('1990/01/01 '+this.nowTime + ':00').getTime() + end.getTime() - start.getTime());
+            		this.endTime = this.formatDate(this.endTime,'hh:mm');
+            	} else {
+            		this.timeLong = this.endTime = '';
+            	}
             },
             //打开 开始时间 上课时长开关
             openPicktimeAS() {
                 this.openPicktime = !this.openPicktime;
                 if (this.openPicktime) {
                     this.timeObj.stimepro = this.nowTime;
-                    this.timeObj.dtimepro = this.detailsObj.TimeLong;
+                    this.timeObj.dtimepro = this.timeLong;
                 }
             },
             // 监听 开始时间 上课时长 emit出来的参数
             acceptDatetimePro(obj) {
                 this.nowTime = obj.stimepro;//开始时间  (展示&&接口参数)
-                this.detailsObj.TimeLong = obj.dtimepro;//时长  (展示)
+                this.timeLong = obj.dtimepro;//时长  (展示)
                 this.endTime = obj.etimepro;//结束时间  （接口参数）
             },
             render() {
@@ -644,7 +621,7 @@
                     app.toast('info', '开始时间不能为空。');
                     return
                 }
-                if (this.detailsObj.TimeLong == '' || this.detailsObj.TimeLong == null) {
+                if (this.endTime == '') {
                     app.toast('info', '上课时长不能为空。');
                     return
                 }
@@ -653,27 +630,24 @@
                     return
                 }
 
-                let selTeacher = [],
-                    duraTime = this.detailsObj.TimeLong,
-                    duraMin = duraTime.split(':');
-
-                duraMin = duraMin[0] * 60 + duraMin[1] * 1;
-
+                let selTeacher = [];
+                    
                 this.teacherResult.forEach(tea => {
                     selTeacher.push({
-                        ID: tea.id,
-                        Name: tea.name,
+                        TeacherId: tea.id,
+                        TeacherName: tea.name,
                         Role: 1
                     })
                 });
                 this.teacherAssResult.forEach(tea => {
                     selTeacher.push({
-                        ID: tea.id,
-                        Name: tea.name,
+                        TeacherId: tea.id,
+                        TeacherName: tea.name,
                         Role: 2
                     })
                 });
-                let dayIndex = [7, 1, 2, 3, 4, 5, 6];
+                let dayIndex = [7, 1, 2, 3, 4, 5, 6],
+                	weekname = ['','星期一','星期二','星期三','星期四','星期五','星期六','星期天'];
                 let submitObj = {
                     StartDate: this.today,//开始时间
                     EndDate: this.today,//结束时间(这里和开始时间一样)
@@ -683,51 +657,86 @@
                         EndTime: this.endTime,//结束时间
                         ClassroomID: this.classroomMsg.id,//教室id
                         ClassroomName: this.classroomMsg.name,//教室名称
-                        interval: duraMin,//时长
                         Weekday: dayIndex[new Date().getDay()],//星期一就传1 ...星期天就传7
+                        Weekname: weekname[dayIndex[new Date().getDay()]],
                     }],
                     SubjectID: this.subjectMsg.id != '' ? this.subjectMsg.id : '',//科目ID
+                    StudentID: this.detailsObj.classstudentinfo && this.detailsObj.classstudentinfo.studenuserid,
+                    PlanID:this.detailsObj.courseid,
                     Teachers: selTeacher,// 任课老师 助教
-                    ShiftName: this.detailsObj.ShiftName,//课程名称
-                    ShiftID: this.detailsObj.ShiftID,//课程ID
+                    ShiftName: this.detailsObj.shiftname,//课程名称
+                    ShiftID: this.detailsObj.shiftid,//课程ID
                     CheckConflict: this.checkConflict,//是否检查排课冲突（1是，0否） 没有权限时默认检查排课冲突(1)
-                    IsOneToOne: this.detailsObj.IsOneToOne,//0集体班课程，1一对一课程，2一对多课程
-                    ClassId: this.detailsObj.ID
+                    IsOneToOne: this.detailsObj.isonetoone,//0集体班课程，1一对一课程，2一对多课程
+                    ClassId: this.detailsObj.id,
+                    CampusId:this.detailsObj.campusid
                 };
                 let _that = this;
                 //打开遮罩
                 _that.isLoading = true;
-                classAddBatch({
-                    data: JSON.stringify(submitObj)
-                }).then(function (data) {
-                    if (data.ErrorCode == app.errok) {
-                        app.toast('success', '保存成功。');
-                        processPost({
-                            pname: 'courseAttendance_detail',
-                            id: data.Data.CourseId
-                        }).then(function (data) {
-                            let info = data.data.courseDetail;
-                            _that.opened = false;//关闭当前
-                            _that.$emit('courseAttendanceNewcourseReplace',info.id);
-                        }, function () {
-                            app.toast('error', '获取数据出错，请稍后再试。');
-                            //关闭遮罩
-                            _that.isLoading = false;
-                        })
-                        //触发点名页面刷新
-                        app.eventDefine.emit('refresh_course_attendance_list');
-                    } else if (data.ErrorCode == 421) {
-                        setTimeout(() => {
-                            app.alert({
-                                html: data.ErrorMsg,
-                                btn: {'text': '知道了', 'style': {}, 'action': true}
+
+
+                function succ(data){
+                    app.toast('success', '保存成功。');
+                        let info = data.data.courseid && data.data.courseid[0];
+                        if (!info){
+                        	app.toast('error','未返回正确的排课记录');
+                        	_that.isLoading = false;
+                        } else{
+                            _that.$router.push({
+                                    path: 'courseAttendanceStudents',
+                                    query: {id: info}
                             });
                             //关闭遮罩
-                            _that.isLoading = false;
-                        }, 301);
+                            setTimeout(() => {
+                                _that.isLoading = false;
+                            }, 301);
+                        }
+                        //触发点名页面刷新
+                        app.eventDefine.emit('refresh_course_attendance_list');
+                }
 
+                addcoursebatchfromwx(submitObj).then(function (data) {
+                    if (data.result.code == app.errok) {
+                        succ(data);
+                    } else if (data.result.code == 240) {
+                        debugger;
+                        let info = data.data,
+                            html =   
+                        `检测到冲突:<br>
+                        时间：${getToastTime(info.starttime,info.endtime)}<br>
+                        老师：${info.teachername}${info.type==3?'[冲突]':''}<br>
+                        班级：${info.classname}${info.type==1?'[冲突]':''}<br>
+                        教室：${info.classroomname}${info.type==2?'[冲突]':''}<br>`;
+                        app.confirm({
+                            html,
+                            btns:[{
+                                    text:'仍保存',
+                                    action:true,
+                                },{
+                                    text:'取消',
+                                    style:{color:'#1E88F5'},
+                                    action:false,
+                            }]
+                        }).then(sel=>{
+                            if (!sel){
+                                 _that.isLoading = false;
+                                return;
+                            }
+                            _that.isLoading = true;
+                            submitObj.CheckConflict = 0;
+                            addcoursebatchfromwx(submitObj).then(data=>{
+                                if (data.result.code == app.errok) {
+                                    succ(data);
+                                }else {
+                                    app.toast('error', data.result.msg);
+                                    //关闭遮罩
+                                    _that.isLoading = false;
+                                    }
+                            });
+                        });
                     } else {
-                        app.toast('error', data.ErrorMsg);
+                        app.toast('error', data.result.msg);
                         //关闭遮罩
                         _that.isLoading = false;
                     }
@@ -736,7 +745,6 @@
         },
         created() {
             this.getToday();//获取今天的时间( 开始时间默认为用户点击“快速排课点名”的时间；)
-            this.getSubject();//科目
         },
         components: {
             NewcourseDetailsClassrooms,
@@ -754,5 +762,14 @@
             }
         }
     }
+
+    function getToastTime(startTime, endTime) {
+		let start = new Date(startTime.replace('T', ' ').replace(/-/g,'\/')),
+			starttime = startTime.slice(0,10),
+			end = new Date(endTime.replace('T', ' ').replace(/-/g,'\/')),
+			week = ["(周日)", "(周一)","(周二)", "(周三)", "(周四)", "(周五)", "(周六)"],
+			day = new Date(startTime.replace('T', ' ').replace(/-/g,'\/')).getDay();
+		return starttime + week[day] + ' ' + app.filters.formatDatetime(start, 'hh:mm') + "~" + app.filters.formatDatetime(end, 'hh:mm') ;
+	}
 </script>
 

@@ -30,7 +30,6 @@
             }
         }
         .scroller {
-            background-color: $color-assist-1;
             @include position-absolute(0, 0, 49px, 0);
             .title {
                 padding: 0 15px;
@@ -91,30 +90,6 @@
                     }
 
                 }
-                .detail{
-                    font-size: 12px;
-                    color: $color-9;
-                    padding: 12px 20px;
-                    margin-top: 10px;
-                    background-color: #F4F6F8;
-                    position: relative;
-                    .triangle{
-                        position: absolute;
-                        top: -9px;
-                        left: 23px;
-                        @include triangle($color:#F4F6F8);
-                    }
-                    .item{
-                        margin-bottom: 8px;
-                        &:last-child{
-                            margin: 0;
-                        }
-                    }
-                    &:before{
-
-                    }
-
-                }
             }
         }
         .void {
@@ -147,8 +122,7 @@
     <div class="workinfo-container">
         <scroller-base class="scroller" :data="renderData">
             <!--已上课时-->
-            <div @click=goToCourseDetails()>
-            <div class="title">
+            <div class="title" @click=goToCourseDetails()>
                 <div class="title-lf">已上课时</div>
                 <div class="title-rt">详情
                     <svg class="icon" aria-hidden="true">
@@ -167,34 +141,14 @@
                         <div class="circle-box">
                             <div class="circle wigB"></div>
                         </div>
-                        <div>已上：{{dataObj.cct1}}节</div>
+                        <div>已上：{{dataObj.cct1}}次</div>
                     </div>
-                    <div class="count-rt">共计：{{dataObj.cct0}}节</div>
+                    <div class="count-rt">共计：{{dataObj.cct0}}次</div>
                 </div>
-                <!--1小时，2次，3按月-->
-                <div class="detail" v-if="dataObj.data && dataObj.data.courseDetail && dataObj.data.courseDetail.length">
-                    <div class="triangle"></div>
-                    <div class="item"
-                         v-for="(item,index) in dataObj.data.courseDetail"
-                         :key="index"
-                         :class="{'hours':item.unit==1,'time':item.unit==2,'day':item.unit == 3}"
-                    >
-                        <span v-show="item.unit==2">按{{app.sysInfo.Title_CourseUnit_2}}计费</span>
-                        <span v-show="item.unit==3">按天计费</span>
-                        <span v-show="item.unit==1">按小时计费</span>
-                        ：{{item.amount}}
-                        <span v-show="item.unit==2">{{app.sysInfo.Title_CourseUnit_2}}</span>
-                        <span v-show="item.unit==3">天</span>
-                        <span v-show="item.unit==1">小时</span>
-                    </div>
-
-                </div>
-            </div>
             </div>
 
             <!--学生出勤-->
-            <div @click=goToAttendanceDetails()>
-            <div class="title">
+            <div class="title" @click=goToAttendanceDetails()>
                 <div class="title-lf">学生出勤</div>
                 <div class="title-rt">详情
                     <svg class="icon" aria-hidden="true">
@@ -217,7 +171,6 @@
                     </div>
                     <div class="count-rt">应到：{{dataObj.adt0}}人</div>
                 </div>
-            </div>
             </div>
 
             <!--课程评价-->
@@ -261,13 +214,13 @@
 </template>
 
 <script>
-    import {processGet} from 'teacher/api/common';
-
+    import {getworkinfo} from 'teacher/api/workinfo';
     export default {
         name: "workinfo",
         data() {
             return {
                 wxTitle: '工作统计',
+                role:'',
                 work_sdate: '',//开始日期
                 work_edate: '',//结束日期
                 dateForShow: '',//底部用来展示的日期
@@ -283,16 +236,26 @@
             }
         },
         created() {
-            processGet({
-                pname: 'workinfo',
-                month: 'this'
+            // 1学管师 2班主任 3老师
+            let role = '';
+            if(app.sysInfo.currole.id==4){
+                this.role=3
+            }else if(app.sysInfo.currole.id==32){
+                this.role=2
+            }else if(app.sysInfo.currole.id==16){
+                this.role=1;
+            }
+            getworkinfo({
+                uid:app.sysInfo.id,
+                userrole:this.role,
+                querymonth:''
             }).then(res => {
-                if (res.errcode == app.errok) {
+                if (res.result.code == app.errok) {
                     this.isLoading = false;
                     this.handleData(res)
                 } else {
                     this.isLoading = true;
-                    app.toast('error', res.errmsg);
+                    app.toast('error', res.result.msg);
                 }
             })
         },
@@ -306,28 +269,50 @@
             },
             // 处理数据
             handleData(data) {
-                this.work_sdate = data.startDate;//赋值
-                this.work_edate = data.endDate;//赋值
-                this.dateForShow = data.startDate.substr(0, 4) + "年" + data.endDate.substr(5, 2) + "月"
+                this.work_sdate = data.data.starttime;//赋值
+                this.work_edate = data.data.endtime;//赋值
+                this.dateForShow = data.data.starttime.substr(0, 4) + "年" + data.data.endtime.substr(5, 2) + "月"
 
-                let info = data.data,
-                    cct = info.courseCount,//课时
-                    cmt = info.commentCount,//评价
-                    adt = info.attendanceCount;//出勤
+                // let info = data.data,
+                //     cct = info.courseCount,//课时
+                //     cmt = info.commentCount,//评价
+                //     adt = info.attendanceCount;//出勤
 
-                let rate;
-                rate = data.cctRate = cct[0] == 0 ? "0" : parseInt(cct[1] / cct[0] * 100) + '%';
-                data.cct1 = cct[1]; //已上课时
-                data.cct0 = cct[0]; //应上课时
+                // let rate;
+                // rate = data.cctRate = cct[0] == 0 ? "0" : parseInt(cct[1] / cct[0] * 100) + '%';
+                // data.cct1 = cct[1]; //已上课时
+                // data.cct0 = cct[0]; //应上课时
 
-                rate = data.cmtRate = cmt[0] == 0 ? "0" : parseInt(cmt[1] / cmt[0] * 100) + '%';
-                data.cmt1 = cmt[1]; //已评价
-                data.cmt0 = cmt[0]; //应评价
+                // rate = data.cmtRate = cmt[0] == 0 ? "0" : parseInt(cmt[1] / cmt[0] * 100) + '%';
+                // data.cmt1 = cmt[1]; //已评价
+                // data.cmt0 = cmt[0]; //应评价
 
-                rate = data.adtRate = adt[0] == 0 ? "0" : parseInt(adt[1] / adt[0] * 100) + '%';
-                data.adt1 = adt[1]; //已出勤
-                data.adt0 = adt[0]; //应出勤
+                // rate = data.adtRate = adt[0] == 0 ? "0" : parseInt(adt[1] / adt[0] * 100) + '%';
+                // data.adt1 = adt[1]; //已出勤
+                // data.adt0 = adt[0]; //应出勤
+                
+                // coursetotalcount 202
+                // coursefinishedcount  90  
 
+                // coursestudentcount  739
+                // coursestudentisattendcount 634
+
+                // coursecommentcount  404
+                // coursestudentcommentcount    20
+
+                let info = data.data;
+                console.log(data)
+                data.cctRate = info.coursetotalcount==0 ? "0" : parseInt(info.coursefinishedcount / info.coursetotalcount * 100) + '%';//上课率
+                data.cct1 = info.coursefinishedcount; //已上课时
+                data.cct0 = info.coursetotalcount; //应上课时
+
+                data.cmtRate = info.coursecommentcount==0 ? "0" : parseInt(info.coursestudentcommentcount / info.coursecommentcount * 100) + '%';//评价率
+                data.cmt1 = info.coursestudentcommentcount; //已评价
+                data.cmt0 = info.coursecommentcount; //应评价
+
+                data.adtRate = info.coursestudentcount==0 ? "0" : parseInt(info.coursestudentisattendcount / info.coursestudentcount * 100) + '%';//出勤率
+                data.adt1 = info.coursestudentisattendcount; //已出勤
+                data.adt0 = info.coursestudentcount; //应出勤
                 this.dataObj = data;
 
             },
@@ -340,14 +325,17 @@
 
                 // 判断上个月还是下个月
                 if (flag == 0) {
-                    processGet({
-                        pname: "workinfo",
-                        month: "PREV",
-                        sdate: this.work_sdate,
-                        edate: this.work_edate
+                    getworkinfo({
+                        // pname: "workinfo",
+                        uid:app.sysInfo.id,
+                        userrole:this.role,
+                        querymonth:'PREV',
+                        // month: "PREV",
+                        starttime: this.work_sdate,
+                        endtime: this.work_edate
                     }).then(res => {
                         this.isLoading = false;
-                        if (res.errcode == app.errok) {
+                        if (res.result.code == app.errok) {
                             this.handleData(res)
                         } else {
                             app.toast("error", "统计信息获取失败。");
@@ -362,14 +350,17 @@
                         this.isLoading = false;
                         return
                     }
-                    processGet({
-                        pname: "workinfo",
-                        month: "NEXT",
-                        sdate: this.work_sdate,
-                        edate: this.work_edate
+                    getworkinfo({
+                        // pname: "workinfo",
+                        uid:app.sysInfo.id,
+                        userrole:this.role,
+                        querymonth:'NEXT',
+                        // month: "NEXT",
+                        starttime: this.work_sdate,
+                        endtime: this.work_edate
                     }).then(res => {
                         this.isLoading = false;
-                        if (res.errcode == app.errok) {
+                        if (res.result.code == app.errok) {
                             this.handleData(res)
                         } else {
                             app.toast("error", "统计信息获取失败。");

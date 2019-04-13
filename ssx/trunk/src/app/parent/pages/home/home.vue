@@ -2,6 +2,7 @@
 	
 	
 	.home {
+        background-color: $color-white;
 		.home-group {
 			@include position-absolute(0, 0, $h-1, 0);
 			background-color: #EDF1F7;
@@ -25,7 +26,6 @@
 			display: flex;
 			.item {
 				flex: 1;
-                position: relative;
 				@include flex-center(column);
 				.icon {
 					font-size: 20px;
@@ -35,18 +35,9 @@
 					font-size: $fs-small-s;
 					margin-top: 3px;
 				}
-                .unread{
-                    position: absolute;
-                    top: 5px;
-                    right: 25%;
-                    width: 6px;
-                    height: 6px;
-                    border-radius: 10px;
-                    background-color: #ff3433;
-                }
 			}
 			.active {
-				color: #FF8369;
+				color:#FF8369;
 			}
 		}
 	}
@@ -68,13 +59,11 @@
 			<div 
 				v-for="(item, index) in home.list"
                 class="item"
-				@click="changeContent(item, index)"
-                v-show="item.show"
+				@click="changeContent(item, index)" 
 				:class="{active:index==home.activeIndex}">
 				<svg class="icon" aria-hidden="true">
 					<use :xlink:href="index === home.activeIndex ? item.iconAction : item.icon"></use>
 				</svg>
-                <div class="unread" v-show="index==1&&app.sysInfo.HasUnReadMsg>0"></div>
 				<span class="text">{{item.text}}</span>
 			</div>
 		</div>
@@ -91,23 +80,11 @@
 				home: {
 					activeIndex: parseInt(this.$route.params.homeIndex) || 0,
 					list: [{
-					    show:true,
 						icon: '#icon-shouye1',
 						iconAction: '#icon-shouyexuanzhong',
 						text: '首页',
 						component: Main
-					}, {
-					    show:app.sysInfo.isStudent==1,
-						icon: '#icon-shishengxin1',
-						iconAction: '#icon-shishengxinxuanzhong',
-						text: app.sysInfo.Title_SSX_Menu
-					}, {
-                        show:true,
-						icon: '#icon-xuankebaoming',
-						iconAction: '#icon-xuankebaomingxuanzhong',
-						text: '选课报名'
-					}, {
-                        show:true,
+					},{
 						icon: '#icon-wode1',
 						iconAction: '#icon-wodexuanzhong',
 						text: '我的',
@@ -125,9 +102,9 @@
 				
 				switch(this.home.activeIndex){
 					case 0:
-						title = this.userConfig.documentTitle || '首页';
+						title = this.userConfig.documenttitle || '首页';
 						break;
-					case 3:
+                    case 1:
 						title = '个人中心';
 						break;
 				}
@@ -137,16 +114,8 @@
 		},
 		methods: {
 			changeContent(item, index) {
-				if (item.component) {
-					this.home.activeIndex = index;
-					this.$router.replace(`/home/${index}`);
-				}else {
-					if (index == 1) { //跳转师生信
-						app.gotoIM()
-					}else if (index == 2) { //跳转商城
-						location.href = app.sysInfo.MallURL;
-					}
-				}
+                this.home.activeIndex = index;
+                this.$router.replace(`/home/${index}`);
 			}
 		}
 	}

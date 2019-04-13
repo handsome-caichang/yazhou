@@ -4,7 +4,6 @@
     .container {
         // background-color: $color-assist-1;
         width: 100%;
-        background-color: $color-white;
         .heard {
             @include flex-between;
             padding: 0 12px;
@@ -37,6 +36,49 @@
                 overflow: hidden;
                 background-color: $color-white;
                 @include position-absolute;
+                .card {
+                    background-color: $color-white;
+                    border-bottom: 10px solid $color-assist-1;
+                    .card-heard {
+                        @include flex-center;
+                        padding: 0 12px;
+                        height: 44px;
+                        border-bottom: 1px solid $color-assist-1;
+                        .card-heard-left {
+                            flex: 1;
+                            font-size: 16px;
+                            color: $color-3;
+                        }
+                        .card-heard-right {
+                            width: 75px;
+                            font-size: 12px;
+                            color: $color-9;
+                        }
+                    }
+                    .card-body {
+                        padding: 12px 12px 0 12px;
+                        @include flex-center;
+                        .card-body-left {
+                            flex: 1;
+                            .item {
+                                height: 12px;
+                                line-height: 12px;
+                                font-size: 12px;
+                                margin-bottom: 12px;
+                                color: $color-6;
+                                .item-content {
+                                    color: $color-3;
+                                }
+                            }
+                        }
+                        .card-body-right {
+                            width: 50px;
+                            .icon {
+                                font-size: 28px;
+                            }
+                        }
+                    }
+                }
             }
         }
         .bottom {
@@ -48,92 +90,100 @@
             text-align: center;
             color: $color-white;
         }
-        .empty-page {
-            @include position-absolute(54px, 0, 49px, 0);
-            z-index: 20;
-        }
     }
 </style>
 
 <template>
     <div class="container">
         <div class="heard">
-            <div class="heard-left">今日新增客户<span class="num">{{list.length}}</span>人</div>
+            <div class="heard-left">今日新增客户<span class="num">5</span>人</div>
             <div class="heard-right" @click="showSelectStatus=true">筛选</div>
         </div>
         <div class="void"></div>
         <div class="list-body">
             <scroller-super class="scroller"
-                            ref="scroll"
                             :type="2"
                             :data="list"
                             :pagingOption="pagingOption"
                             @loadData="loadData">
                 <div>
-                    <comm-card v-for="(card, index) in list" :card="card" :key="index"></comm-card>
+                    <div class="card" v-for="card in list">
+                        <div class="card-heard">
+                            <div class="card-heard-left">王文并
+                                <svg class="icon" aria-hidden="true">
+                                    <use xlink:href="#icon-nan1"></use>
+                                </svg>
+                            </div>
+                            <div class="card-heard-right">
+                                沟通记录
+                                <svg class="icon" aria-hidden="true">
+                                    <use xlink:href="#icon-youjiantou"></use>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                                <!-- tag="div"
+                                :to="`/customDetail/${card.ID}/${card.Name}`"> -->
+                            <div 
+                                @click="saveInfo(card)"
+                                class="card-body-left">
+                                <div class="item">主责任人:<span class="item-content">{{card.SalePersonName}}</span></div>
+                                <div class="item">手机号码:<span class="item-content">{{card.SMSTel}}</span></div>
+                                <div class="item">客户状态:<span class="item-content">{{card.CustomerStatusName}}</span></div>
+                                <div class="item">意向级别:
+                                    <span class="item-content">
+                                        <svg class="icon" aria-hidden="true" v-for="i in card.WillLevel">
+                                            <use xlink:href="#icon-xingxingxuanzhong"></use>
+                                        </svg>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="card-body-right">
+                                <svg class="icon" aria-hidden="true">
+                                    <use xlink:href="#icon-bodadianhua"></use>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </scroller-super>
         </div>
-        <router-link tag="div" to="/customHadle/today" class="bottom">客户操作管理</router-link>
+        <router-link tag="div" :to="{path: '/customHadle'}" class="bottom">客户操作管理</router-link>
         <select-custom-status 
             :opened.sync="showSelectStatus"
             :customState="customState"
             @selectCustomStatus="selectCustomStatus">
             
         </select-custom-status>
-        <loading class="loading" v-show="isLoading" :bgType='bgType'></loading>
-        <empty-page :type="5" class="empty-page" :text="'今日没有新增意向客户'" v-if="!list.length"></empty-page>
     </div>
 </template>
 
 <script>
     import {queryCustomer} from 'teacher/api/customers'
     import SelectCustomStatus from './selectCustomStatus'
-    import CommCard from './commCard'
-    import EmptyPage from 'teacher/components/common/empty-page/empty-page'
-    import {mapState, mapMutations} from 'vuex'
     export default {
         data() {
             return {
-                wxTitle: "今日新增客户",
                 list: [],
                 pagingOption: {
                     api: queryCustomer,
                     params: {
                         pname:"querycustomer",
-                        NextDate1: '',
-                        NextDate2: '',
-                        CreateTime1: '',
-                        CreateTime2: '',
-                        Query: '',
-                        sort: 'CreateTime',
-                        employeeid: '',
-                        employeename: '',
-                        desc: 1,
-                        Status: ''
-                    },
-                    pageOpt: {
-                        // 分页初始页码的'key'、'value'
-                        indexKey: 'page',
-                        indexVal: 1,
-                        // 每页请求数据长度的'key'、'value'
-                        sizeKey: 'pageSize',
-                        sizeVal: 20,
-                        // 后端返回的总页数'key'
-                        countKey: 'pageCount'
+                        CreateTime1: '2018-02-23',
+                        CreateTime2: '2018-02-23',
+                        sort: 'CreateTime,',
+                        desc: 1
                     }
                 },
                 showSelectStatus: false,
-                customState: {},
-                isLoading: true,
-                bgType: 0
+                customState: {}
             }
         },
         methods: {
-            ...mapMutations(['set_todayParams']),
+            ...Vuex.mapMutations(['set_cunstomInfo']),
             loadData(ajaxPromise) {
                 ajaxPromise.then(res => {
-                    this.isLoading = false
+                    // this.isLoading = false
                     if (res.errcode == app.errok) {
                         if (res.pageIndex === 1) {
                             this.list = []
@@ -143,21 +193,20 @@
                 })
             },
             selectCustomStatus(obj) {
-                this.$refs.scroll.refresh({Status: obj.ID})
                 this.customState = obj
                 this.showSelectStatus = false
-                this.set_todayParams(obj)
+            },
+            saveInfo(obj) {
+                this.set_cunstomInfo({
+                    CustomerStatusName: obj.CustomerStatusName,
+                    CustomerStatus: obj.CustomerStatus,
+                    WillLevel: obj.WillLevel
+                }) 
+                this.$router.push({name: 'customDetail', params: {id: obj.ID, name: obj.Name}})
             }
-        },
-        created() {
-            let date = new Date(), str = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
-            this.$set(this.pagingOption.params, 'CreateTime1', str)
-            this.$set(this.pagingOption.params, 'CreateTime2', str)
-        },
+         },
         components: {
-            SelectCustomStatus,
-            CommCard,
-            EmptyPage
+            SelectCustomStatus
         }
     }
 </script>

@@ -144,18 +144,6 @@
                     .lvse {
                         background-color: #A6DA6D;
                     }
-                    .huise {
-                        background-color: #E1E8F4;
-                    }
-                    .no-will {
-                        font-size: 12px;
-                        color: #CCCCCC;
-                    }
-                    svg {
-                        width: 15px;
-                        height: 15px;
-                        margin-right: 5px;
-                    }
                 }
                 .list-mid, .list-right {
                     width: 90px;
@@ -192,7 +180,7 @@
             </div>
             <div class="heard-bottom">
                 <div class="heard-bottom-left">
-                    选择{{app.sysInfo.Title_Campus}}
+                    选择校区
                 </div>
                 <div class="heard-bottom-mid" @click="emit">
                     {{campusText}}
@@ -221,10 +209,8 @@
                         <div class="left-icon lanse" v-if="item.name=='3'"></div>
                         <div class="left-icon huangse" v-if="item.name=='2'"></div>
                         <div class="left-icon lvse" v-if="item.name=='1'"></div>
-                        <div class="left-icon huise" v-if="item.name=='0'"></div>
-                        <span class="no-will" v-if="item.name=='0'">未填写意向级别</span>
                         <svg class="icon" aria-hidden="true" v-for="i in parseInt(item.name)">
-                            <use xlink:href="#icon-yixiangjibie"></use>
+                            <use xlink:href="#icon-xingxingxuanzhong"></use>
                         </svg>
                     </div>
                     <div class="list-mid">{{item.value}}</div>
@@ -233,7 +219,6 @@
                 <div class="void"> </div>
             </div>
         </div>
-        <loading class="loading" v-show="isLoading" :bgType='bgType'></loading>
     </scroller-base>
 </template>
 
@@ -247,8 +232,6 @@
             type: "pie",
             radius: ['50%', '70%'],
             avoidLabelOverlap: false,
-            selectedOffset: 0,
-            silent: true,
             label: {
                 normal: {
                     show: true,
@@ -257,7 +240,7 @@
                         return '意向级别'
                     },
                     textStyle: {
-                        fontSize: '48px',
+                        fontSize: '32px',
                         color: '#666666'
                     }
 
@@ -270,7 +253,7 @@
                     }
                 }
             },
-            color:[],  
+            color:['#9999FF','#BBDBFC','#1E88F5','#FFAC00','#A6DA6D'],  
             data: []
                 
             }]
@@ -302,28 +285,17 @@
         data() {
             return {
                 dateObj:{
-                    sdate:app.tool.getDatesByIndex(3, app.localTimeToServer).sdate,
-                    edate:app.tool.getDatesByIndex(0, app.localTimeToServer).sdate,
+                    // sdate:app.tool.getDatesByIndex(3, app.localTimeToServer).sdate,
+                    // edate:app.tool.getDatesByIndex(3, app.localTimeToServer).sdate,
                 },
                 quickDateIndex:-1,
                 list: [],
-                setOption: null,
-                isLoading: true,
-                bgType: 0,
-                colorMap: {
-                    '0': '#E1E8F4',
-                    '1': '#A6DA6D',
-                    '2': '#FFAC00',
-                    '3': '#1E88F5',
-                    '4': '#BBDBFC',
-                    '5': '#9999FF'
-                }
+                setOption: null
             }
         },
         methods: {
             initPage(params) {
                 getCustomers(params).then(res => {
-                    this.isLoading = false
                     if (res.errcode == app.errok) {
                         this.list = res.data.Values.sort((a, b) => {
                             if (b.name > 5) return 
@@ -332,15 +304,12 @@
                         let arr = this.list.map(obj => {
                             return {
                                 value: obj.value,
-                                name: obj.name,
-                                itemStyle: {
-                                    color: this.colorMap[obj.name]
-                                }
+                                name: obj.name
                             }
                         })
                         if (arr.length == 0) {
                             opt.series[0].data = [{value:25,name:''},{value:25,name:''},{value:25,name:''},{value:25,name:''},{value:25,name:''}]
-                            opt.color = ['#666666','#777777','#888888','#666666','#999999']
+                            opt.series.color = ['#999999','#333333','#999999','#333333','#999999']
                         } else  {
                             opt.series[0].data = arr
                         }

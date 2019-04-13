@@ -34,7 +34,7 @@
         :data="list" 
         @close="close">
         <div slot="header" class="actionsheet-hd">到访类型</div>
-            <!-- :class="{'active':item.Id==app.sysInfo.currole.Id}" -->
+            <!-- :class="{'active':item.Id==app.sysInfo.currole.id}" -->
         <div class="wrapper">
             <div class="actionsheet-item"
                 :class="{'active':tagIndex==index}"
@@ -47,9 +47,6 @@
 </template>
 
 <script>
-    
-    
-    
     export default {
         mixins: [app.mixin.popupWindowRouteMixin],
         props: {
@@ -76,17 +73,12 @@
                 this.$emit('selectVisitType', item)
             }
         },
-        created() {
-        },
         watch: {
             opened(val) {
                 if (val) {
                     this.list = app.customConfigInfo.VisitType
                 }
             }
-        },
-        components: {
-            
         }
     }
 </script>

@@ -58,7 +58,7 @@
 		<div class="ps-form">
 			<div class="title">
 				<div>用户名</div>
-				<div class="title-name">{{uname}}</div>
+				<div class="title-name">{{app.sysInfo.username}}</div>
 			</div>
 			<input type="password" placeholder="请输入旧密码" v-model="oldPwd"/>
 			<input type="password" placeholder="请输入4位数以上的新密码" v-model="newPwd"/>
@@ -70,7 +70,7 @@
 </template>
 
 <script>
-	import {processPost} from 'parent/api/common';
+	import {opuserpwd} from 'parent/api/personal-center';
 
 	export default{
 		name:'password-modify',
@@ -85,8 +85,7 @@
             	oldPwd: '',
             	newPwd: '',
 				confirmPwd: '',
-                isLoading: false,
-                uname: ''
+				isLoading: false
             }
         },
         methods: {
@@ -94,18 +93,16 @@
         		let $target = event.target;
         		if (app.dom.hasClass($target,'active')) {
         			if (this._baseValidate()) {
-		        		processPost({
-		        			pname: 'password',
-							action: 'change',
+		        		opuserpwd({
 							oldpwd: this.oldPwd,
 							newpwd: this.newPwd
 		        		}).then(res => {
 							this.isLoading = false;
-		        			if (res.errcode == app.errok) {
+		        			if (res.result.code == app.errok) {
 		                    	app.toast('success', '修改密码成功。');
 		                    	this.$router.back();
 		                    }else{
-								app.toast('error', res.errmsg);
+								app.toast('error', res.result.msg);
 		                    }
 		        		});
         			}
@@ -121,9 +118,6 @@
         		}
         		return true;
         	}
-        },
-        created(){
-            this.uname = this.$route.params.name;
-        }
+		}
 	}
 </script>

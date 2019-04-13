@@ -68,18 +68,19 @@
 			class="action-sheet" 
 			v-show="opened" 
 			:data="list" 
-			:scrollerStyle="scrollerStyle"
 			:fullParent="true"
 			:position="position" 
+			:scrollerStyle="scrollerStyle"
 			@close="close" 
 			>
+			<div class="item-box">
 				<div v-for="(item, key) in list" :key="key">
 					<div class="date-node">{{key}}</div>
 					<div v-for="(node, index) in item" :key="index">
 						<div class="class-item" @click="chooseStudent(node)">
 							<div class="class-item-first-child">
-								<span class="class-name">{{node.ClassName}}</span>
-								<span class="class-status" v-if="node.IsSend == 1">已发送</span>
+								<span class="class-name">{{node.classname}}</span>
+								<span class="class-status" v-if="node.issend == 1">已发送</span>
 							</div>
 							<div>
 								<span>{{node.time}}</span>
@@ -92,6 +93,7 @@
 						</div>
 					</div>
 				</div>
+			</div>
 
 			<!-- 空白页 -->
 			<empty-page class="noData-temp" v-if="Object.keys(this.list).length==0" :type="1001" text="没有找到班级哦"></empty-page>
@@ -101,7 +103,7 @@
 		<Checked 
 			:opened.sync="checked" 
 			:checkList="temp.list" 
-			:header="temp.ClassName" 
+			:header="temp.classname" 
 			@getStudentList="getStudentList" 
 			ref="checked"></Checked>
 	</div>
@@ -109,8 +111,8 @@
 
 <script>
 	import Checked from "./checked";
-	import {processGet} from "teacher/api/common";
-	import EmptyPage from "teacher/components/common/empty-page/empty-page";
+	import {getcoursestudentforhomework} from "teacher/api/homework";
+	import EmptyPage from "teacher/components/common/empty-page/empty-page";	
 	
 	export default {
 		name: "accpet-class",
@@ -125,25 +127,28 @@
 				default: "sideRight"
 			}
 		},
+		computed: {
+			_list() {
+				return this.list;
+			}
+		},
 		data() {
 			return {
 				list: {},
 				accpets: {
-					CourseID: null,
-					ClassID: null,
-					shiftName: "",
+					courseid: null,
+					classid: null,
 					chooseNum: 0,
-					StudentList: []
-				},
-				scrollerStyle: {
-					background:'#eef1f6'
 				},
 				temp: {
-					CourseID: null,
-					ClassID: null,
-					ClassName: "",
+					courseid: null,
+					classid: null,
+					classname: "",
 					chooseNum: 0,
 					list: []
+				},
+				scrollerStyle: {
+					"background": "#eef1f6"
 				},
 				isOk: false,
 				checked: false,
@@ -156,23 +161,23 @@
 				// 打开接收人选择面板
 				this.checked = true;
                 this.isOk = true;
-                this.temp.ClassID = item.ClassID;
-				this.temp.CourseID = item.CourseID;
-				this.temp.ClassName = item.ClassName;
-				var _students = item.Students;
+                this.temp. classid = item. classid;
+				this.temp.courseid = item.courseid;
+				this.temp.classname = item.classname;
+				var _students = item.homeworkstudentinfos;
 				// 为了测试方便，为0时赋了初始值。实际场景中不需要处理这个条件
 				if(this.temp.list.length == 0) {
 					this.temp.list = this.initStudents(_students);
                     // console.log('first------------->', this.temp.list);
 				} else {
 					// // 与之前的选择做比较，如果不是同一个班级就重置temp.list
-					if(this.temp.CourseID != this.accpets.CourseID) {
+					if(this.temp.courseid != this.accpets.courseid) {
 						this.temp.list = this.initStudents(_students);
 					} else {
-                        this.temp.CourseID = this.accpets.CourseID;
-                        this.temp.ClassID = this.accpets.ClassID;
-                        this.temp.shiftName = this.accpets.shiftName;
-                        this.temp.list = this.accpets.StudentList;
+                        this.temp.courseid = this.accpets.courseid;
+                        this.temp. classid = this.accpets. classid;
+                        this.temp.classname = this.accpets.classname;
+                        this.temp.list = this.accpets.studentids;
 					}
 				}
 			},
@@ -184,14 +189,14 @@
 				//   list: list
 				// }
 				this.isOk = false;
-				this.accpets.CourseID = this.temp.CourseID;
-				this.accpets.ClassID = this.temp.ClassID;
-				this.accpets.shiftName = this.temp.ClassName;
+				this.accpets.courseid = this.temp.courseid;
+				this.accpets. classid = this.temp. classid;
+				this.accpets.classname = this.temp.classname;
 				this.accpets.chooseNum = data.chooseNum;
-				this.accpets.StudentList = data.list;
+				this.accpets.studentids = data.list;
 
 				// 选择了接收人就回到发布页面
-				let _hasStudents = this.accpets.StudentList.some(item => item.checked);
+				let _hasStudents = this.accpets.studentids.some(item => item.checked);
 				if (_hasStudents) {
 					this.close();
 					// 解决苹果设备下不能连续多次改变路由的问题
@@ -203,18 +208,18 @@
 				}
 
 				let _accpets = Object.assign({}, this.accpets);
-				_accpets.StudentList = [].concat(_accpets.StudentList.filter(item => {return item.checked}))
+				_accpets.studentids = [].concat(_accpets.studentids.filter(item => {return item.checked}))
 				this.$emit("getAccpets", _accpets);
 			},
 			// 格式化时间
 			formatDate(data) {
 				// 格式：2017-12-6 17:37:17
 				// 截取时间(hh:hmm)
-				var _time = data.split("T")[1];
+				var _time = data.split(" ")[1];
 				// 去掉秒,转为hh:mm
 				_time = _time.split(":").splice(0, 2).join(":");
 				// 截取年月日(yy-mm-dd)
-				var _ymd = data.split("T")[0],
+				var _ymd = data.split(" ")[0],
 					_y = parseInt(_ymd.split("-")[0]),
 					_m = parseInt(_ymd.split("-")[1]),
 					_d = parseInt(_ymd.split("-")[2]);
@@ -240,17 +245,14 @@
 					this.isLoading = true;
 					if(Object.keys(this.list).length == 0 || Object.keys(this.list).length == 0) {
 						// 如果list为空，就请求数据
-						processGet({
-							pname: 'api',
-							action: 'getCourseStudent'
-						}).then(res => {
+						getcoursestudentforhomework().then(res => {
 							this.isLoading = false;
-							if(res.errcode == 200) {
-								let _data = [].concat(res.data.CourseStudent);
+							if(res.result.code == 200) {
+								let _data = [].concat(res.data)
 								// 遍历数据原始数据，然后重组到this.list
 								_data.forEach((item, key) => {
 									
-									var _formatDate = this.formatDate(item.Sdate),
+									var _formatDate = this.formatDate(item.sdate),
 										_dateNode = _formatDate.ymd,
 										_time = _formatDate.time;
 									// 查找self.list中的与_dateNode匹配的key

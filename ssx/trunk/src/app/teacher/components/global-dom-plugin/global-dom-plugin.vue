@@ -6,7 +6,7 @@
         <!-- 无分配角色 -->
         <no-role></no-role>
         <!-- 过期提醒 -->
-        <system-overdue></system-overdue>
+        <system-overdue></system-overdue>        
 	</div>
 </template>
 
@@ -20,7 +20,7 @@
 		components: {
             NoRole,
             SystemOverdue,
-            ActionsheetPassword
+			ActionsheetPassword
 		}
 	}
 </script>

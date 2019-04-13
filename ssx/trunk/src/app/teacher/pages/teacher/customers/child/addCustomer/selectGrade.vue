@@ -32,20 +32,17 @@
         <!-- <div slot="header" class="actionsheet-hd">客户状态筛选</div> -->
         <div class="wrapper">
             <div class="actionsheet-item"
-                :class="{'active':item.value==gradeObj.value}"
+                :class="{'active':item==gradeObj}"
                 v-for="(item, index) in list"
                 @click="select(item)"
                 >
-                {{item.name}}
+                {{item}}
             </div>
         </div>
     </action-sheet>
 </template>
 
 <script>
-    
-    
-    
     export default {
         mixins: [app.mixin.popupWindowRouteMixin],
         props: {
@@ -54,7 +51,7 @@
                 default: false
             },
             gradeObj: {
-                type: Object
+                type: String
             }
         },
         computed: {
@@ -71,26 +68,14 @@
         methods: {
             select(item) {
                 this.$emit('selectGradeObj', item)
-                this.close()
             }
         },
         watch: {
             opened(val) {
                 if (val) {
-                    // this.list = app.customConfigInfo.Grade
-                    if (this.list.length) return
-                    for (let key in app.customConfigInfo.Grade) {
-                        let obj = {
-                            value: key,
-                            name: app.customConfigInfo.Grade[key]
-                        }
-                        this.list.push(obj)
-                    }
+                    this.list = app.customConfigInfo.Grade
                 }
             }
-        },
-        components: {
-            
         }
     }
 </script>

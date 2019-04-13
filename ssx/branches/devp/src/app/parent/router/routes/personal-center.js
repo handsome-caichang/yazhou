@@ -12,7 +12,7 @@ const routes = [{
         page: PersonalInformation
     }
 },{
-    path: '/passwordModify/:name',
+    path: '/passwordModify',
     name: 'PasswordModify',
     component: routerBus,
     meta: {

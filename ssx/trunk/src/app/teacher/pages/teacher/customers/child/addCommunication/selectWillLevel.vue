@@ -40,7 +40,7 @@
             <div class="level">
                 <div class="level-container" v-for="i in 5" @click="select(i)">
                     <svg class="icon" aria-hidden="true" >
-                        <use :xlink:href="level>=i?'#icon-yixiangdengji':'#icon-yixiangjibie'"></use>
+                        <use :xlink:href="level>=i?'#icon-xingxingxuanzhong':'#icon-xingxingweixuanzhong'"></use>
                     </svg>
                 </div>
             </div>
@@ -49,8 +49,6 @@
 </template>
 
 <script>
-    
-    
     export default {
         mixins: [app.mixin.popupWindowRouteMixin],
         props: {
@@ -71,14 +69,7 @@
         methods: {
             select(i) {
                 this.$emit('selectLevel', i)
-                this.close()
             }
-        },
-        watch: {
-            
-        },
-        components: {
-            
         }
     }
 </script>

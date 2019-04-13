@@ -1,0 +1,213 @@
+@keyframes arrow_up-anim {
+  0% {
+    opacity: 0.1;
+    transform: translate3d(0, 0, 0); }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 12px, 0); } }
+
+#joinus {
+  min-width: 1200px; }
+  #joinus .tips {
+    position: relative; }
+    #joinus .tips .btn {
+      height: 36px;
+      line-height: 36px;
+      width: 188px;
+      color: #fff;
+      background-color: #2E6BBB;
+      border-radius: 36px;
+      text-align: center;
+      position: absolute;
+      bottom: 50px;
+      margin: auto;
+      left: 0;
+      right: 0;
+      cursor: pointer; }
+  #joinus .section {
+    padding-top: 50px;
+    text-align: center; }
+    #joinus .section.shichang .content {
+      background-color: #F5F5F5; }
+    #joinus .section.shili .content img:nth-child(1) {
+      margin-right: 30px; }
+    #joinus .section.shili .content img:nth-child(2) {
+      margin-right: 30px; }
+    #joinus .section.shili, #joinus .section.jiamengliucheng {
+      background-color: #2C6BBB; }
+      #joinus .section.shili .title, #joinus .section.jiamengliucheng .title {
+        color: #fff; }
+        #joinus .section.shili .title::after, #joinus .section.jiamengliucheng .title::after {
+          background-color: #fff; }
+      #joinus .section.shili .title-desc, #joinus .section.jiamengliucheng .title-desc {
+        color: #fff; }
+      #joinus .section.shili .content, #joinus .section.jiamengliucheng .content {
+        background-color: #2C6BBB; }
+    #joinus .section.jiamengxuqiu {
+      background-color: #F8F8F8; }
+      #joinus .section.jiamengxuqiu .content-list li .list-title {
+        background-repeat: no-repeat;
+        background-position: center;
+        padding-top: 160px; }
+      #joinus .section.jiamengxuqiu .content-list li:nth-child(1) .list-title {
+        background-image: url(../images/joinus/xuqiu1.png); }
+      #joinus .section.jiamengxuqiu .content-list li:nth-child(2) .list-title {
+        background-image: url(../images/joinus/xuqiu2.png); }
+      #joinus .section.jiamengxuqiu .content-list li:nth-child(3) .list-title {
+        background-image: url(../images/joinus/xuqiu3.png); }
+      #joinus .section.jiamengxuqiu .content-list li:nth-child(4) .list-title {
+        background-image: url(../images/joinus/xuqiu4.png); }
+    #joinus .section.jiamengliucheng .content-list li {
+      width: 210px;
+      height: 300px; }
+    #joinus .section.jiamengliucheng .content-list li {
+      background-repeat: no-repeat;
+      background-position: center top;
+      padding-top: 230px;
+      background-color: #2C6BBB;
+      color: #fff;
+      font-size: 20px;
+      position: relative; }
+      #joinus .section.jiamengliucheng .content-list li img {
+        vertical-align: middle; }
+    #joinus .section.jiamengliucheng .content-list li:nth-child(1) {
+      background-image: url(../images/joinus/1.png);
+      margin-right: 86px; }
+      #joinus .section.jiamengliucheng .content-list li:nth-child(1)::after {
+        display: block;
+        content: '';
+        width: 32px;
+        height: 32px;
+        background-image: url("../images/joinus/lcicon.png");
+        background-repeat: no-repeat;
+        background-position: center;
+        position: absolute;
+        right: -60px;
+        top: 90px; }
+    #joinus .section.jiamengliucheng .content-list li:nth-child(2) {
+      background-image: url(../images/joinus/2.png);
+      margin-right: 86px; }
+      #joinus .section.jiamengliucheng .content-list li:nth-child(2)::after {
+        display: block;
+        content: '';
+        width: 32px;
+        height: 32px;
+        background-image: url("../images/joinus/lcicon.png");
+        background-repeat: no-repeat;
+        background-position: center;
+        position: absolute;
+        right: -60px;
+        top: 90px; }
+    #joinus .section.jiamengliucheng .content-list li:nth-child(3) {
+      background-image: url(../images/joinus/3.png);
+      margin-right: 86px; }
+      #joinus .section.jiamengliucheng .content-list li:nth-child(3)::after {
+        display: block;
+        content: '';
+        width: 32px;
+        height: 32px;
+        background-image: url("../images/joinus/lcicon.png");
+        background-repeat: no-repeat;
+        background-position: center;
+        position: absolute;
+        right: -60px;
+        top: 90px; }
+    #joinus .section.jiamengliucheng .content-list li:nth-child(4) {
+      background-image: url(../images/joinus/4.png); }
+    #joinus .section .title {
+      color: #2D6CBB;
+      font-size: 28px;
+      font-weight: bold;
+      border-bottom: 1px solid #DFDFDF;
+      padding: 0 1em 16px;
+      display: inline-block;
+      position: relative;
+      overflow: visible; }
+      #joinus .section .title::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        right: 0;
+        width: 1em;
+        height: 3px;
+        margin: auto;
+        background-color: #2D6CBB; }
+    #joinus .section .title-desc {
+      margin: 5px; }
+    #joinus .section .content {
+      color: #666;
+      text-align: center;
+      padding: 50px;
+      margin-top: 50px; }
+      #joinus .section .content .content-desc {
+        margin-top: 30px; }
+  #joinus .jiamengxuqiu .content {
+    padding-left: 0px;
+    padding-right: 0px; }
+  #joinus .jiamengxuqiu .content-list li {
+    display: inline-block;
+    width: 284px;
+    vertical-align: middle;
+    background-color: #fff; }
+    #joinus .jiamengxuqiu .content-list li .list-title {
+      height: 210px;
+      color: #fff; }
+    #joinus .jiamengxuqiu .content-list li .list-content {
+      height: 176px;
+      padding: 50px 22px;
+      text-align: left; }
+  #joinus .jiamengxuqiu .content-list li:nth-child(1) {
+    margin-right: 16px; }
+    #joinus .jiamengxuqiu .content-list li:nth-child(1) .list-title {
+      background-color: #47D0C0; }
+  #joinus .jiamengxuqiu .content-list li:nth-child(2) {
+    margin-right: 16px; }
+    #joinus .jiamengxuqiu .content-list li:nth-child(2) .list-title {
+      background-color: #44C0DA; }
+  #joinus .jiamengxuqiu .content-list li:nth-child(3) {
+    margin-right: 16px; }
+    #joinus .jiamengxuqiu .content-list li:nth-child(3) .list-title {
+      background-color: #2797ED; }
+  #joinus .jiamengxuqiu .content-list li:nth-child(4) {
+    margin-right: 16px; }
+    #joinus .jiamengxuqiu .content-list li:nth-child(4) .list-title {
+      background-color: #2C6BBB; }
+  #joinus .jiamengliucheng .content-list li {
+    display: inline-block;
+    width: 210px;
+    vertical-align: middle;
+    background-color: #fff; }
+  #joinus .joinus-footer {
+    text-align: center;
+    position: relative; }
+    #joinus .joinus-footer .btn {
+      display: inline-block;
+      height: 75px;
+      line-height: 75px;
+      width: 313px;
+      color: #fff;
+      background-color: #2E6BBB;
+      border-radius: 75px;
+      text-align: center;
+      cursor: pointer;
+      margin-top: 94px;
+      margin-bottom: 140px;
+      font-size: 24px; }
+  #joinus .hint {
+    top: 60px;
+    display: block;
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    left: 0;
+    right: 0;
+    margin: auto;
+    background-image: url(../images/joinus/ficon.png);
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+    background-position: center center;
+    background-size: 18px;
+    z-index: 2;
+    opacity: 0.1;
+    animation: arrow_up-anim 1s ease-out infinite; }

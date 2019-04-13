@@ -56,66 +56,65 @@
 				font-size: 15px;
 				color: $color-3;
 				line-height: 24px;
-				overflow: hidden;
 				word-break: break-word;
+				overflow: hidden;
 			}
 			.slide-down {
 				text-align: right;
 				color: $color-primary;
 			}
 		}
-	}
-	.noData-temp {
-		z-index: 100;
-		@include position-absolute;
+		.noData-temp{
+		    @include position-absolute;
+		}
 	}
 </style>
 
 <template>
-	<div class="wrapper">
-			<!-- v-if="list.length" -->
-		<scroller-super
-			class="scroll"
-			ref="scroll"
-			:type="2"
-			:data="scrollData"
-			@loadData="renderData"
-			:pagingOption="pagingOption">
-			<div class="item" v-for="(item, index) in list" :key="index">
-				<router-link tag="div" :to="`/suggestionDetail/${item.id}`" >
-					<div class="item-top" >
-						<div class="avatar" :style="{backgroundImage: `url(${item.photo})`}"></div>
-						<div class="text">
-							<!-- <div class="name">{{item.Name}}</div> -->
-							<div class="text-top">
-								<div class="name">{{item.name}}</div>
-								<div class="num" v-if="item.replayCount>0">
-									{{item.replaycount}}
-								</div>
-								<div class="icon-wrapper">
-									<svg class="icon" aria-hidden="true">
-									    <use xlink:href="#icon-huifushuliang"></use>
-									</svg>
-								</div>
+	<scroller-super 
+		class="scroll"
+		ref="scroll"
+		:type="2"
+		:data="scrollData"
+		@loadData="renderData"
+		:pagingOption="pagingOption">
+		<div 
+			class="item" 
+			v-for="(item, index) in list" 
+			:key="index">
+			<router-link tag="div" :to="`/suggestionDetail/${item.id}`">
+				<div class="item-top">
+					<div class="avatar" :style="{backgroundImage: `url(${item.photo})`}"></div>
+					<div class="text">
+						<div class="name">{{item.Name}}</div>
+						<div class="text-top">
+							<div class="name">{{item.name}}</div>
+							<div class="num" v-if="item.replaycount>0">
+								{{item.replaycount}}
 							</div>
-							<div class="time">{{item.createtime}}</div>
+							<div class="icon-wrapper">
+								<svg class="icon" aria-hidden="true">
+								    <use xlink:href="#icon-huifushuliang"></use>
+								</svg>
+							</div>
 						</div>
+						<div class="time">{{item.createtime}}</div>
 					</div>
-					<div class="content">
-						{{item.content.length>80?item.longContent:item.content}}
-					</div>
-				</router-link>
-				<div class="slide-down" v-if="isShowAll(item.content)" @click="changeContent(item,index)">
-					{{item.longContentFlag?'全文':'收起'}}
 				</div>
+				<div class="content">
+					{{item.content.length>80?item.longContent:item.content}}
+				</div>
+			</router-link>
+			<div class="slide-down" v-if="isShowAll(item.content)" @click="changeContent(item,index)">
+				{{item.longContentFlag?'全文':'收起'}}
 			</div>
-		</scroller-super>
-		<empty-page class="noData-temp" :type="8" v-if="list.length == 0" :text="'没有投诉与建议哦'"></empty-page>
-	</div>
+		</div>
+		<empty-page class="noData-temp" :type="8" v-if="list.length == 0"></empty-page>
+	</scroller-super>
 </template>
 
 <script>
-	import {getSuggestionList} from 'teacher/api/suggestion'
+	import {getsuggestionforteacherlist} from 'teacher/api/suggestion'
 	import EmptyPage from 'teacher/components/common/empty-page/empty-page';
 	export default { 
 		data() {
@@ -125,23 +124,19 @@
 				list: [],
 				num: 0,
 				pagingOption: {
-					api: getSuggestionList,
+					api: getsuggestionforteacherlist,
 					params: {
-						campusids:''//校区id
+						"isdesc": false,
 					},
 					pageOpt: {
-						sortfield:'',
-						isdesc:false,
-						// 分页初始页码的'key'、'value'
-						indexKey: "pageindex",
-						indexVal: 1,
-						// 每页请求数据长度的'key'、'value'
-						sizeKey: "pagesize",
-						sizeVal: 20,
-						// 后端返回的总页数'key'
-						countKey: "totalpage"
-					}
-					
+						isdesc: false,
+                        sortfield: '',
+                        indexKey: 'pageindex', // 分页初始页码的'key'、'value'
+                        indexVal: 1,
+                        sizeKey: 'pagesize', // 每页请求数据长度的'key'、'value'
+                        sizeVal: 8,
+                        countKey: 'totalpage', // 后端返回的总页数'key'
+                    }
 				}
 			}
 		},
@@ -156,7 +151,6 @@
 		methods: {
 			renderData(ajaxPromise) {
 				ajaxPromise.then(res => {
-					console.log(res)
 					if (res.result.code === app.errok) {
 						if (res.page.pageindex === 1) {
 							this.list = []
@@ -168,20 +162,19 @@
 						    }
 						})
 						this.list = this.list.concat(res.data)
-						// this.list = []
 					}
 				})
 			},
 			isShowAll(str) {
-			    return str&&str.length > 80 ? true : false
+			    return str.length > 80 ? true : false
 			},
 			changeContent(obj, index) {
 			    this.num ++
 			    obj.longContentFlag = !obj.longContentFlag
 			    if (!obj.longContentFlag) {
-			        obj.longContent = obj.Content
+			        obj.longContent = obj.content
 			    } else {
-			        obj.longContent = obj.Content.substr(0, 80) + '...'
+			        obj.longContent = obj.content.substr(0, 80) + '...'
 			    }
 			},
 		},

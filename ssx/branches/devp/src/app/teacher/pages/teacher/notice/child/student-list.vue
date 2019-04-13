@@ -1,8 +1,8 @@
 /*
  * @Author: Sa 
  * @Date: 2017-12-20 11:03:51 
- * @Last Modified by: Sa
- * @Last Modified time: 2018-02-14 16:34:07
+ * @Last Modified by: mikey.zhaopeng
+ * @Last Modified time: 2018-03-29 13:52:19
  * @Descript: 选择组件（单选，复选）
  */
 <style lang="scss" scoped>
@@ -94,11 +94,12 @@
 		:data="tempList" 
 		:position="position" 
 		:fullParent="true" 
+		:scrollerStyle="scrollerStyle" 
 		:maskToClose="false"
 		@close="closeCheckedAction">
-		<div slot="header" v-if="checkList.length>0" class="class-name">{{header}}</div>
+		<div v-if="checkList.length!=0" slot="header" class="class-name">{{header}}</div>
 
-		<div v-if="checkList.length>0"
+		<div v-if="checkList.length!=0"
 			 v-for="(item, key) in tempList" 
 			 class="student-item" :key="key" 
 			 @click.stop="itemChecked(item, $event)">
@@ -106,7 +107,7 @@
 				<use :xlink:href="item.checked == false ? '#icon-duoxuan-weixuanze' : '#icon-duoxuan'"></use>
 			</svg>
             <span class="photo" :style="'background-image:url('+ item.photo +')'"></span>
-			<span class="student-name">{{item.StudentName}}</span>
+			<span class="student-name">{{item.studentname}}</span>
 		</div>
 
 		<div slot="footer" class="bottom-fixed-button">
@@ -155,6 +156,7 @@
 				total: 0, // 总数
                 tempList: [], // checkList
                 acceptList: [],
+				scrollerStyle: {},
 			};
 		},
 		methods: {

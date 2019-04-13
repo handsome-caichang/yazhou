@@ -1,5 +1,7 @@
 <!--作业列表页-->
 <style scoped lang="scss">
+	
+	
 	.homework-container {
 		.top-serach {
 			width: 100%;
@@ -121,6 +123,9 @@
 						}
 					}
 				}
+				.time{
+					margin-left: 5px;
+				}
 			}
 		}
 		.bottom-fixed-button {
@@ -149,11 +154,12 @@
 		<div class="top-serach">
 			<date-bar 
 				class="date" 
-				:sdate='pagingOption.params.sdate' 
-				:edate='pagingOption.params.edate' 
+				:sdate='pagingOption.params.starttime' 
+				:edate='pagingOption.params.endtime' 
 				:index="quickDateIndex" 
 				@changeDate="changeDate">
 			</date-bar>
+			<!-- <div class="top-serach-button" @click="serachHomework">搜索</div> -->
 		</div>
 		<div class="body">
 			<scroller-super 
@@ -163,8 +169,8 @@
 				:pagingOption="pagingOption" 
 				@loadData="loadData" 
 				ref="homeworkListIScroller">
-				<div v-for="(item, key) in list" :key="item.id">
-					<div class="to-detail" @click.stop.prevent="toDetail(item.jobid)">
+				<div v-for="(item, key) in list" :key="item.messageid">
+					<div class="to-detail" @click.stop.prevent="toDetail(item.messageid, key)">
 						<div>
 							<span>{{item.title}}</span>
 							<span>
@@ -181,19 +187,19 @@
 							</span>
 						</div>
 					</div>
-					<div @click.stop.prevent="toStudentList(item.jobid)" class="to-students">
-						<div>
+					<div  @click.stop.prevent="toStudentList(item)" class="to-students">
+						<div class="name-time">
 							<span>{{item.classname}}</span>
 							<span>
 								<em class="strong" v-if="item.formatDate.ymd==='今天'">{{item.formatDate.ymd}}</em>
-								<span v-else>{{ item.formatDate.ymd }}</span>&nbsp;
-							<span>{{item.formatDate.time}}</span>
+								<span v-else>{{ item.formatDate.ymd }}</span>
+								<span class="time">{{item.formatDate.time}}</span>
 							</span>
 						</div>
 						<div>
 							<span>已读 <em :class="{strong: item.isreadcount != item.studentcount}">{{item.isreadcount}}</em>/{{item.studentcount}} 人</span>
-							<span>已交 <em :class="{strong: item.issubmitcount != item.studentcount}">{{item.issubmitcount}}</em> 人</span>
-							<span>已评 <em :class="{strong: item.iscommentcount != item.studentcount}">{{item.iscommentcount}}</em> 人</span>
+							<span>已交 <em :class="{strong: item.issubmitedcount != item.studentcount}">{{item.issubmitedcount}}</em> 人</span>
+							<span>已评 <em :class="{strong: item.isevaluateedcount != item.studentcount}">{{item.isevaluateedcount}}</em> 人</span>
 						</div>
 					</div>
 				</div>
@@ -207,8 +213,8 @@
 </template>
 
 <script>
-	import {getjoblistforteacher} from "teacher/api/homework.js";
-	import EmptyPage from "teacher/components/common/empty-page/empty-page.vue";
+	import {gethomeworkforteacher} from "teacher/api/homework";
+	import EmptyPage from "teacher/components/common/empty-page/empty-page";
 
 	export default {
 		name: "homework-list",
@@ -221,12 +227,14 @@
 				list: [],
 				quickDateIndex: -1,
 				pagingOption: {
-					api: getjoblistforteacher,
+					api: gethomeworkforteacher,
 					params: {
-                        sortfield: '', //TODO:改！排序字段&&正序倒序
-                        isdesc: '',
-						sdate: app.tool.getDatesByIndex(3, app.localTimeToServer).sdate,
-						edate: app.tool.getDatesByIndex(3, app.localTimeToServer).edate
+						pname: 'message',
+						type: 3,
+						page: 1,
+						flag: '',
+						starttime: app.tool.getDatesByIndex(3, app.localTimeToServer).sdate,
+						endtime: app.tool.getDatesByIndex(3, app.localTimeToServer).edate
 					},
 					pageOpt: {
                         // 分页初始页码的'key'、'value'
@@ -244,8 +252,8 @@
 		},
 		methods: {
 			changeDate(date) {
-				this.pagingOption.params.sdate = date.sdate;
-				this.pagingOption.params.edate = date.edate;
+				this.pagingOption.params.starttime = date.sdate;
+				this.pagingOption.params.endtime = date.edate;
 				this.quickDateIndex = date.index;
 				this.isLoading = true;
 				this.$refs.homeworkListIScroller.refresh(this.pagingOption.params);
@@ -254,29 +262,26 @@
 			loadData(ajaxPromise) {
 				ajaxPromise.then(res => {
 					this.isLoading = false;
-					if(res.result.code === app.errok) {
+					if(res.result.code == 200) {
 						res.data.forEach(item => {
-							let _date = item.createtime;
+							let _date = item.msgcreatetime;
 							// 扩展被格式化的时间对象
-							// item.formatDate = this.formatDate(_date);
-                            //TODO:改！时间
-							item.formatDate = this.formatDate('2018-11-20 17:52');
+							item.formatDate = this.formatDate(_date);
 						});
-						this.list = res.pageindex == 1 ? [].concat(res.data) : [].concat(this.list, res.data)
+						this.list = res.page.pageindex && res.page.pageindex > 1 ? [].concat(this.list, res.data) : [].concat(res.data);
 					}
 				});
 			},
 			// 去详情
-			toDetail(id) {
-				// this.$router.push({path: `/homeworkDetail/${id}/0`, component: 'homeworkDetail'})
-                this.$router.push({path: `/homeworkDetail/${id}`, query: {from: 0}})
+			toDetail(id, key) {				
+				this.$router.push({path: `/homeworkDetail/${id}`, query: {from: 0}});
 			},
-			toStudentList(id) {
-				this.$router.push({path: `/homeworkStudentsList/${id}`});
+			toStudentList(item) {	
+				this.$router.push({path: `/homeworkStudentsList/${item.messageid}`});
 			},
 			// 发布作业
 			pubHomework() {
-                this.$router.push("/homeworkAdd");
+                this.$router.push("homeworkAdd");
 			},
 			formatDate(data) {
 				// 格式：2017-12-6 17:37:17
@@ -306,16 +311,14 @@
 						_ymd,
 					time: _time
 				};
-            }
-        },
-        created(){
-            app.eventDefine.on('refresh-homework-list', () => {
-                this.$refs.homeworkListIScroller.refresh(this.pagingOption.params);
-            });
-            // 监听移除事件，如果删除成功就移除数据
-            app.eventDefine.on('removeItem-homework-list', () => {
-				this.$refs.homeworkListIScroller.refresh(this.pagingOption.params);
-            })
+			},
+			handleEmit(){
+				this.$refs.homeworkListIScroller.refresh();
+			}
+		},
+		mounted() {
+			app.eventDefine.on('refresh-homework-list', this.handleEmit);
+			app.eventDefine.on('removeItem-homework-list',this.handleEmit);
         },
         beforeDestroy() {
             app.eventDefine.off('refresh-homework-list');

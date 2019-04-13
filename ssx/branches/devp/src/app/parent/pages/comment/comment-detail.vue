@@ -39,10 +39,6 @@
 					.cinfo-item-content{
 						flex: 1;
 						color: $color-3;
-                        -webkit-user-select: text;
-                        -moz-user-select: text;
-                        -ms-user-select: text;
-                        user-select: text;
 					}
 				}
 			}
@@ -107,6 +103,7 @@
 				    bottom: 0;
 				    left: 15px;
 				    top: 15px;
+				    // margin: auto 0;
 				    width: 16px;
 				    height: 16px;
 				    border-radius: 4px;
@@ -124,6 +121,21 @@
 					margin-top: 6px;
 					color: $color-9;
 					font-size: 11px;
+				}
+			}
+			.cinfo{
+				padding: 7px 15px;
+				.cinfo-item{
+					padding: 8px 0;
+					display: flex;
+					.cinfo-item-title{
+						width: 45px;
+						color: $color-9;
+					}
+					.cinfo-item-content{
+						flex: 1;
+						color: $color-3;
+					}
 				}
 			}
 			.tcomment{
@@ -158,20 +170,10 @@
 				padding: 10px 15px;
 				.teacher-content {
 					word-break: break-all;
-                    -webkit-user-select: text;
-                    -moz-user-select: text;
-                    -ms-user-select: text;
-                    user-select: text;
 				}
-				.voice {
-					margin-top: 15px;
+				.voice-content,.img-content {
+					margin-top: 10px;
 				}
-				.img {
-					margin-top: 15px;
-				}
-                .video{
-                    margin-top: 15px;
-                }
 			}
 			.stu-content-wrapper {
 				border-top: 1px solid $color-assist-1;
@@ -180,10 +182,6 @@
 				color: $color-6;
 				font-size: 14px;
 				padding: 10px;
-                -webkit-user-select: text;
-                -moz-user-select: text;
-                -ms-user-select: text;
-                user-select: text;
 			}
 			.textarea-wrapper {
 				margin-right: 15px;
@@ -209,7 +207,6 @@
 				.topstar-item-img{
 					width: 40px;
 					height: 40px;
-					border: 1px solid $color-white;
 					border-radius: 100%;
 					margin-bottom: 5px;
                     background-size: contain;
@@ -250,6 +247,7 @@
 					}
 				}
 			}
+
 		}
 	}
 </style>
@@ -267,29 +265,26 @@
 					<div class="cinfo-item">
 						<div class="cinfo-item-title">班级</div>
 						<div class="cinfo-item-content">
-							{{detail.data.ClassName}}<span v-if="detail.data.SubjectName">-{{detail.data.SubjectName}}</span>
+							{{detail.classname}}<span v-if="detail.subjectname">-{{detail.subjectname}}</span>
 						</div>
 					</div>
 					<div class="cinfo-item">
 						<div class="cinfo-item-title">老师</div>
-						<div class="cinfo-item-content" @click="()=>{app.gotoIM({toUserID: detail.data.TeacherUserID})}">
-                            {{detail.data.TeacherNames}}
-                            <svg aria-hidden="true" class="icon">
-                                <use xlink:href="#icon-lianxilaoshi1"></use>
-                            </svg>
+						<div class="cinfo-item-content">
+                            {{detail.teachername}}
                         </div>
 					</div>
 					<div class="cinfo-item">
 						<div class="cinfo-item-title">信息</div>
 						<div class="cinfo-item-content">
 							<div>{{dateStr}}</div>
-							<div v-if="detail.ShiftContent">{{detail.data.DateDetail}}</div>
+							<div v-if="detail.ShiftContent">{{detail.datedetail}}</div>
 						</div>
 					</div>
-					<div class="cinfo-item" v-if="detail.data.ShiftContent">
+					<div class="cinfo-item" v-if="detail.content">
 						<div class="cinfo-item-title"></div>
 						<div class="cinfo-item-content">
-							<div>{{detail.data.ShiftContent}}</div>
+							<div>{{detail.content}}</div>
 						</div>
 					</div>
 				</div>
@@ -307,55 +302,49 @@
 						</span>
 						老师点评
 					</div>
-					<div class="tcomment" v-if="(detail.data.IsTeacherEvad==1&&teacherScope>0)||(detail.data.IsTeacherEvad==0)">
+					<div class="tcomment" v-if="(detail.isteacherevad==1&&teacherScope>0)||(detail.isteacherevad==0)">
 						<!-- 老师未评 -->
-						<div v-if="detail.data.IsTeacherEvad==0" class="teacher-no-comment">暂未评价</div>
+						<div v-if="detail.isteacherevad==0" class="teacher-no-comment">暂未评价</div>
 						<!-- 老师已评 -->
-						<div class="content-wrapper" v-if="detail.data.IsTeacherEvad==1&&teacherScope>0">
-							<star v-for="(tstar, index) in detail.ListScopeTeacherDetail"
+						<div class="content-wrapper" v-if="detail.isteacherevad==1&&teacherScope>0">
+							<star v-for="(tstar, index) in detail.teacherscope"
 								  :key="index"
-								  :title="tstar.CourseCommentScopeSettingName"
-								  :desc="tstar.Describe"
-								  :starsDesc="detail.ListScopeDesc"
-								  :selectedStarsNum="tstar.Scope">
+								  :title="tstar.name"
+								  :desc="tstar.describe"
+								  :starsDesc="detail.listscopedesc"
+								  :selectedStarsNum="tstar.scope">
 							</star>
 						</div>
 					</div>
-					<div class="line" v-if="(detail.data.IsTeacherEvad==1&&teacherScope>0)||(detail.data.IsTeacherEvad==0)"></div>
+					<div class="line" v-if="(detail.isteacherevad==1&&teacherScope>0)||(detail.isteacherevad==0)"></div>
 					<!-- 老师已经评论内容 -->
 					<div class="comment-content" 
-		                v-if="detail.data.TeacherContent||detail.ListAudioFile.length>0||detail.ListImgFile.length>0||detail.ListVideo.length>0">
-		                <div class="teacher-content" v-html="app.tool.textToHtml(detail.data.TeacherContent)"></div>
+		                v-if="detail.teachercontent||detail.listaudiofile.length>0||detail.listimgfile.length>0">
+		                <div class="teacher-content" v-html="app.tool.textToHtml(detail.teachercontent)"></div>
 		                <!-- <div>{{detail.data.TeacherContent}}</div> -->
-		                <div class="voice" v-if="detail.ListAudioFile.length>0">
+		                <div class="voice-content">
 							<voice-recording 
 			                    :edit="false" 
-			                    :audioFileList="detail.ListAudioFile"
-			                    >
+			                    :audioFileList="detail.listaudiofile"
+			                    v-if="detail.listaudiofile.length>0">
 			                </voice-recording>
 		                </div>
-		                <div class="img" v-if="detail.ListImgFile.length>0">
+		                <div class="img-content">
 			                <img-area
 			                    :edit="false"
 			                    :imageType="1"
-			                    :imageFileList="detail.ListImgFile"
+			                    :imageFileList="detail.listimgfile"
 			                    @imageLoaded="addScrollNum"
-			                    >
+			                    v-if="detail.listimgfile.length>0">
 			                </img-area>
 		                </div>
-                        <div class="video" v-if="detail.ListVideo.length>0">
-                            <video-area
-                                    :edit="false"
-                                    :videoFileList="detail.ListVideo"
-                            ></video-area>
-                        </div>
 					</div>
 				</div>
 			</div>
 			
 			<!-- 学习之星 -->
 			<!-- <div class="void" v-if="detail.ListScopeStar.length>0"></div> -->
-			<div class="card-gray" v-if="detail.ListScopeStar.length>0">
+			<div class="card-gray" v-if="detail.scopestar.length>0">
 				<div class="xuexi-star-wrapper">
 					
 					<div class="card-hd">
@@ -367,9 +356,9 @@
 						学习之星
 					</div>
 					<div class="topstar">
-						<div v-for="student in detail.ListScopeStar" class="topstar-item">
-							<div :style="'backgroundImage:url('+student.ImgPath+')'" class="topstar-item-img"></div>
-							<div class="topstar-item-name">{{student.FullName}}</div>
+						<div v-for="student in detail.scopestar" class="topstar-item">
+							<div :style="'backgroundImage:url('+student.photo+')'" class="topstar-item-img"></div>
+							<div class="topstar-item-name">{{student.name}}</div>
 						</div>
 					</div>
 				</div>
@@ -377,10 +366,10 @@
 			
 			<!-- 学生点评 -->
 			<div class="void"></div>
-			<div class="card-gray" v-if="!(detail.data.IsFinished==1&&detail.data.IsStudentEvad==0)">
+			<div class="card-gray" v-if="!(detail.isfinished==1&&detail.isstudentevad==0)">
 				<div class="card-gray-wrapper">
 					
-					<div class="card-hd" v-if="detail.data.IsStudentEvad==1">
+					<div class="card-hd" v-if="detail.isstudentevad==1">
 						<span class="content-hd-icon bg3">
 						    <svg class="icon" aria-hidden="true">
 						        <use xlink:href="#icon-xueshengdianping"></use>
@@ -388,25 +377,25 @@
 						</span>
 						学生点评
 					</div>
-					<div class="card-hd-stu" v-if="detail.data.IsStudentEvad==0">
+					<div class="card-hd-stu" v-if="detail.isstudentevad==0">
 						<span class="content-hd-icon bg3">
 						    <svg class="icon" aria-hidden="true">
 						        <use xlink:href="#icon-xueshengdianping"></use>
 						    </svg>
 						</span>
 						学生点评
-						<div class="describe" v-if="detail.ListScopeDetail.length">问下孩子的感受，给老师评个分吧（匿名评价）</div>
+						<div class="describe" v-if="detail.studentscope.length">问下孩子的感受，给老师评个分吧（匿名评价）</div>
 					</div>
 					<!-- 未评价老师 -->
-					<div class="scomment" v-if="detail.data.IsStudentEvad==0">
-						<star v-for="(commentScope,index) in detail.ListScopeDetail"
-							  :title="commentScope.CourseCommentScopeSettingName"
-							  :desc="commentScope.Describe"
+					<div class="scomment" v-if="detail.isstudentevad==0">
+						<star v-for="(commentScope,index) in detail.studentscope"
+							  :title="commentScope.name"
+							  :desc="commentScope.describe"
 							  :key="index"
-							  :starsDesc="detail.ListScopeDesc"
+							  :starsDesc="detail.listscopedesc"
 							  :isClick="true"
 							  :groupIndex="index"
-							  :isFinished="detail.data.IsFinished"
+							  :isFinished="detail.isfinished"
 							  @selectStar="selectStar"
 							  @addScrollNum="addScrollNum">
 						</star>
@@ -423,25 +412,25 @@
 							</textarea>
 						</div>
 						<div class="scomment-submit" @click="submitComment">提交匿名评价</div>
-						<div v-if="detail.data.Remark" class="remark">
+						<div v-if="detail.remark" class="remark">
 							<div class="remark-title">评价说明：</div>
-							<div class="remark-intro" v-html="app.tool.changeLine(detail.data.Remark)"></div>
+							<div class="remark-intro" v-html="app.tool.changeLine(detail.remark)"></div>
 						</div>
 					</div>
 
 					<!-- 已评价老师 -->
-					<div class="scomment" v-if="detail.data.IsStudentEvad==1">
-						<star v-for="(star, index) in detail.ListScopeDetail"
+					<div class="scomment" v-if="detail.isstudentevad==1">
+						<star v-for="(star, index) in detail.studentscope"
 							  :key="index"
-							  :starsDesc="detail.ListScopeDesc"
-							  :title="star.CourseCommentScopeSettingName"
-							  :desc="star.Describe"
-							  :selectedStarsNum="star.Scope"
+							  :starsDesc="detail.listscopedesc"
+							  :title="star.name"
+							  :desc="star.describe"
+							  :selectedStarsNum="star.scope"
 							  :groupIndex="index"
 							  @addScrollNum="addScrollNum">
 						</star>
 					</div>
-					<div class="stu-content-wrapper"  v-html="app.tool.textToHtml(detail.data.Content)" v-if="detail.data.Content!==''">
+					<div class="stu-content-wrapper"  v-html="app.tool.textToHtml(detail.studentcontent)" v-if="detail.studentcontent">
 	                   
 	                </div>
 				</div>
@@ -460,18 +449,18 @@
 	 		评价说明要换行、
 	 		跟后台确认ListScopeHistory判断需不需要展示历史评价
 	 * */
-	import { processGet, savePost, getCompanyLogo } from 'parent/api/common.js';
-	import Star from './child/star.vue';
-
+	import { getcourseevaluatedetail, savecoursecomment } from 'parent/api/common';
+	import Star from './child/star'
+	
 	export default {
 		name: 'comment-detail',
-		mixins: [app.mixin.shareMixin],
 		computed: {
+			...Vuex.mapState(['userConfig']),
 			dateStr() {
 				let str = ''
-				if (this.detail.data.Unit === 3) {
+				if (this.detail.unit === 3) {
 					let arr 
-					arr = this.detail.data.DateDetail.split(' ')
+					arr = this.detail.datedetail.split(' ')
 					if (arr.length) {
 						for (let i = 0; i < arr.length; i++) {
 							if (arr[i].indexOf('~') < 0) {
@@ -480,7 +469,7 @@
 						}
 					}
 				} else {
-					str = this.detail.data.DateDetail
+					str = this.detail.datedetail
 				}
 				return str
 			},
@@ -492,20 +481,16 @@
 			},
 			commentTips(){
 				let tips = '';
-				if(this.detail.ListScopeDetail.length>0){
+				if(this.detail.studentscope.length>0){
 					tips += '其他'
 				}
 				tips += '意见和建议（匿名发送，请放心填写';
-				if (this.detail.data.AddPoint) {
-					tips += '，还可以获得'+this.detail.data.AddPoint+'个积分哦！'
+				if (this.detail.addpoint) {
+					tips += '，还可以获得'+this.detail.addpoint+'个积分哦！'
 				}
 				tips += '）';
 				return tips;
-			},
-			// getSchoolName() {
-			// 	return  this.title;
-			// },
-			
+			}
 		},
 		data() {
 			return {
@@ -516,28 +501,11 @@
 				content: '',
                 selectStars:[], //选中的星星
                 wxTitle: '评价详情',
-				teacherScope: 0,
-                title: '',
+                teacherScope: 0,
                 queryPara: null
 			}
 		},
 		methods: {
-			getPreview(schoolName) {
-				let arr = [{
-					id: this.detail.CommentID,
-					title: `我家${this.$store.state.userConfig.username}在老师眼里原来这么棒！`,
-					desc: `在${schoolName}学校学习，孩子点滴进步看得见！`
-				},{
-					id: this.detail.CommentID,
-					title: `原来我家${this.$store.state.userConfig.username}上课的时候是这样的......老师评价得太到位啦！`,
-					desc: `在${schoolName}学校学习，孩子点滴进步看得见！`
-				},{
-					id: this.detail.CommentID,
-					title: `老师对我家${this.$store.state.userConfig.username}评价这么好，不炫耀下真说不过去！`,
-					desc: `自从上了${schoolName}学校，再也不用担心孩子的学习！`
-				}];
-				return arr[Math.round(Math.random() * (arr.length-1))];
-			},
 			addScrollNum() {
 				this.clickNum++;
 			},
@@ -547,15 +515,14 @@
 			sendComment() {
                 this.isLoading = true;
 				let params = {
-					saveFlag: 'COURSE_COMMENT_REPLY',
-					courseId: this.queryPara.id,
-					studentId: this.queryPara.studentId,
-					content: app.tool.arrowFilter(this.content),
-					contentType: 0,
-					jsonStar: JSON.stringify(this.selectStars)
+					courseId: this.queryPara.courseid,
+                    studentId: this.userConfig.userId,
+                    content: app.tool.arrowFilter(this.content),
+                    contenttype: 0,
+                    coursecommentscopeinfos: this.selectStars
 				}
-				savePost(params).then(res => {
-					if (res.ErrorCode == app.errok || res.errcode == app.errok) {
+				savecoursecomment(params).then(res => {
+					if (res.result.code == app.errok) {
 						this.$nextTick(() => {
 							if(history.length>1){
 								this.$router.go(-1)
@@ -565,7 +532,7 @@
 						})
 						app.event.emit('selectStar')
 					} else {
-						app.toast('info', res.errmsg)
+						app.toast('info', res.result.msg)
                     }
                     setTimeout(() => {
                         this.isLoading = false;
@@ -576,7 +543,8 @@
 			    //判断每条评价维度是否必须评价，是但没有评价，则提示并return掉。
                 //统计至少有一个评分（所有scope之和不为0，为0则提示‘给老师评个分吧^_^’。），而不是每条都需要评分
                 //统计满足差评标准的维度，即scope>0&&scope<=标准&&没有填写内容，则提示‘您的评分很低，请给出差评理由’。提示按钮分别为‘直接提交’，‘好’。选择‘好’时评论框聚焦。选择‘直接提交’时直接提交。
-                if (this.detail.ListScopeDetail.length) {
+                if (this.detail.studentscope.length) {
+
 	                let isComment = false, isLowScope = false
 	                for (var i = 0; i < this.selectStars.length; i++) {
 	                	if(this.selectStars[i].scope > 0) {
@@ -588,14 +556,14 @@
 	                	app.toast('info', `给老师评个分吧^_^。`)
 	                	return
 	                }
-					for (let i = 0; i < this.detail.ListScopeDetail.length; i++) {
-						if (this.selectStars[i].scope === 0 && this.detail.ListScopeDetail[i].IsMust == 1) {
-							app.toast('info', `请对${this.detail.ListScopeDetail[i].CourseCommentScopeSettingName}进行评价。`)
+					for (let i = 0; i < this.detail.studentscope.length; i++) {
+						if (this.selectStars[i].scope === 0 && this.detail.studentscope[i].ismust == 1) {
+							app.toast('info', `请对${this.detail.studentscope[i].name}进行评价。`)
 							return
 						} 
 					}
 					for (let i = 0; i < this.selectStars.length; i++) {
-						if (this.selectStars[i].scope > this.detail.data.Low) {
+						if (this.selectStars[i].scope > this.detail.low) {
 							isLowScope = true
 							break
 						}
@@ -627,49 +595,26 @@
 						return
 					}
                 }
-
 				this.sendComment()
 				
-			},
-			handlerDetail(){
-				// 获取分享出去的学校logo
-				getCompanyLogo().then(res => {
-					let _shareLogo = res.Data.LogoPath;
-					
-					let params = this.getPreview(res.Data.Title);
-					let _link = '';
-					 if(app.sysInfo.ShowCustomerCommentSharePage == 1 ){
-						 _link = `${location.protocol}//${location.host}/weixin/parent/share.html?id=${params.id}&companyId=${app.sysInfo.companyID}&studentId=${this.$store.state.userConfig.userId}&terminal=1#/xyxCommentShare`;
-					 }else{
-						_link = `${location.protocol}//${location.host}/weixin/parent/share.html?id=${params.id}&companyId=${app.sysInfo.companyID}&studentId=${this.$store.state.userConfig.userId}&terminal=1#/classCommentShare`
-					}
-					this.v_shareResolve({
-						title: params.title,
-						desc: params.desc,
-						link:_link,
-						imgUrl: _shareLogo.length > 0 ? `${ _shareLogo.indexOf('http') < 0 ? 'https:' : ''}${_shareLogo}` : location.protocol + "//" + location.host + '/weixin/parent/static/img/Group-2@3x.f0e0b64.png'
-					})
-				})
-				// 参数 id:公告ID
-            }
+			}
 		},
 		created() {
 			this.queryPara = this.$route.params;
 			let params = {
-				pname: 'comment_detail',
-				page: 1,
-				id: this.$route.params.id,
-				studentId: this.$route.params.studentId
+				courseid: this.queryPara.courseid,
+				companyid: this.userConfig.companyID,
+				studentid: app.sysInfo.userId
 			}
-			processGet(params).then(res => {
+			getcourseevaluatedetail(params).then(res => {
 				this.isLoading = false;
-				if (res.errcode == app.errok) {
-					this.detail = res;
-					// this.detail.data.IsFinished = 1
-					this.detail.ListScopeTeacherDetail = this.detail.ListScopeTeacherDetail.filter(obj => {
-						return obj.Scope > 0
-					});
-					if (this.detail.data.IsFinished == 1 && this.detail.data.IsStudentEvad == 0) {
+				if (res.result.code == app.errok) {
+					this.detail = res.data
+					// this.detail.studentscope = []
+					this.detail.teacherscope = this.detail.teacherscope.filter(obj => {
+						return obj.scope > 0
+					})
+					if (this.detail.isfinished == 1 && this.detail.isstudentevad == 0) {
 						app.confirm({
 							title: '班级结业',
 							text: '该班级已经结业,不能继续评价，点击关闭页面'
@@ -677,24 +622,17 @@
 							if (res) this.$router.push({path:`/commentList`})
 						})
 					}
-					this.selectStars = this.detail.ListScopeDetail.map(obj => {
+					this.selectStars = this.detail.studentscope.map(obj => {
 						return {
-							scope: obj.Scope,
-							settingID: obj.CourseCommentScopeSettingID
+							scope: obj.scope,
+							settingID: obj.id
 						}
 					})
-					for (var i = 0; i < this.detail.ListScopeTeacherDetail.length; i++) {
-						this.teacherScope += this.detail.ListScopeTeacherDetail[i].Scope
+					for (var i = 0; i < this.detail.teacherscope.length; i++) {
+						this.teacherScope += this.detail.teacherscope[i].scope
 					}
-
-					// 分享 老师为评价时不能分享
-                    if(res.data.IsTeacherEvad!=0){
-                        this.handlerDetail()
-                    }
-
-
 				} 
-			});
+			})
 		},
 		components: {
 			Star

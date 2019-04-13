@@ -51,6 +51,7 @@
                 .today {
                     color: $color-primary;
                 }
+                
             }
             .card-box {
                 min-height: 87px;
@@ -94,7 +95,7 @@
                             .campu {
                                 height: 24px;
                                 line-height: 24px;
-                                @include ellipsis-single;
+                                 @include ellipsis-single;
                             }
                             .leave{
                                 width: 40px;
@@ -107,7 +108,6 @@
                                     height: 16px;
                                 }
                             }
-
                             .teacher {
                                 max-width: 100%;
                                 @include ellipsis-single;
@@ -120,7 +120,6 @@
                                 border-radius: 10px;
                                 margin: 2px 0 2px 8px;
                             }
-
                         }
                         .room-time {
                             margin-top: 1px;
@@ -168,7 +167,6 @@
                             }
                         }
                     }
-
                 }
             }
 
@@ -217,6 +215,7 @@
                             top: -4px;
                         }
                     }
+
                 }
             }
             .course-content-container {
@@ -320,9 +319,8 @@
         </div>
         <!-- 按周显示 -->
         <scroller-base class="week-scroller" v-show="weeklyDisplay" :data="renderWeekData" ref="weekDataScroller">
-
             <!--星期X-->
-            <div v-for="(d,i) in week_list" :key="i">
+            <div  v-for="(d,i) in week_list" :key="i">
                 <div class="title">
                     <div>{{week_title[i]}}</div>
                     <div class="today" v-if="week_day[i]==today">今天</div>
@@ -334,30 +332,27 @@
                             <use :xlink:href="item.status=='已上课'?'#icon-yixingbiaoqian-hui':'#icon-yixingbiaoqian'"></use>
                         </svg>
                         <router-link tag="div"
-                                     :to="{name:'courseDetails', query:{id: item.id,classname:item.name,campus:item.campusName}}"
+                                     :to="{name:'courseDetails', query:{id: item.id,classname:item.name,campus:item.campusname}}"
                                      class="card-lf">
                             <div class="class-name">
-                                {{item.name}}<span v-if="item.subjectName">（{{item.subjectName}}）</span>
+                                {{item.name}}
                             </div>
                             <div class="msgs">
                                 <div class="campu"><svg class="icon" aria-hidden="true">
                                     <use xlink:href="#icon-xiaoqu2"></use>
-                                </svg>{{item.campusName}}</div>
-                                <div class="leave" v-if="item.isSend==1">
-                                    <svg class="icon" aria-hidden="true">
-                                        <use xlink:href="#icon-qingjiabiaoqian1"></use>
-                                    </svg>
-                                </div>
-                                <div class="teacher" v-if="item.teacher">{{item.teacher}}</div>
+                                </svg>{{item.campusname}}</div>
+                                <div class="leave" v-if="item.issend==1"><svg class="icon" aria-hidden="true">
+                                    <use xlink:href="#icon-qingjiabiaoqian1"></use>
+                                </svg></div>
+                                <div class="teacher" v-if="item.teachernames.length">{{item.teachernames.join(',')}}</div>
                             </div>
                             <div class="room-time">
                                 <div class="room"><svg class="icon" aria-hidden="true">
                                     <use xlink:href="#icon-jiaoshi1"></use>
-                                </svg>{{item.classroomName}}</div>
-                                <div class="time" v-if="!(item.stime=='00:00'&&item.etime=='23:59')">
-                                    <svg class="icon" aria-hidden="true">
-                                        <use xlink:href="#icon-shijian1"></use>
-                                    </svg>{{item.stime}}~{{item.etime}}</div>
+                                </svg>{{item.classroomname}}</div>
+                                <div class="time" v-if="!(item.stime=='00:00'&&item.etime=='23:59')"><svg class="icon" aria-hidden="true">
+                                    <use xlink:href="#icon-shijian1"></use>
+                                </svg>{{item.stime}}~{{item.etime}}</div>
                             </div>
                         </router-link>
                         <!--已取消-->
@@ -368,14 +363,14 @@
                         <div class="card-rt" v-if="item.status=='已上课'">
                             <div class="describe">已上课</div>
                             <router-link tag="div" :to="{name:'courseRecords', query:{id: item.id}}" class="counts">
-                                {{item.attendanceCount}}/{{item.studentCount}}
+                                {{item.attendancecount}}/{{item.studentcount}}
                             </router-link>
                         </div>
                         <!--未上课-->
                         <div class="card-rt" v-if="item.status==''">
                             <div class="describe notyet">未上课</div>
                             <router-link tag="div" :to="{name:'courseRecords', query:{id: item.id}}" class="counts notyet">
-                                {{item.attendanceCount}}/{{item.studentCount}}
+                                {{item.attendancecount}}/{{item.studentcount}}
                             </router-link>
                         </div>
                     </div>
@@ -384,7 +379,6 @@
                     </div>
                 </div>
             </div>
-
         </scroller-base>
 
         <!-- 按月显示 -->
@@ -400,6 +394,7 @@
                     <!--dayMap[data.datestr]可能为undefined-->
                     <div class="course-amount-box" v-if="dayMap[data.datestr]">
                         <div class="course-amount-dot" :class="{'show': dayMap[data.datestr].length>0}"></div>
+
                     </div>
 
                 </div>
@@ -408,7 +403,6 @@
             <div class="course-content-container">
                 <div class="course-card" v-for="item in list" :key="item.id">
                     <div class="month-card-box">
-                        <!--时间-->
                         <div class="describe">
                             <span v-if="item.stime=='00:00'&&item.etime=='23:59'">{{item.date.replace(/-/g,'.').substring(5)}}</span>
                             <span v-else>{{item.stime}}~{{item.etime}}</span>
@@ -417,23 +411,23 @@
                         <div class="month-card">
                             <div class="name">班级：</div>
                             <div class="val">
-                                <span>{{item.name}}<span v-show="item.subjectName">({{item.subjectName}})</span></span>
+                                <span>{{item.name}}</span>
                             </div>
                         </div>
                         <!--校区-->
                         <div class="month-card">
                             <div class="name">校区：</div>
-                            <div class="val">{{item.campusName}}</div>
+                            <div class="val">{{item.campusname}}</div>
                         </div>
                         <!--老师-->
-                        <div class="month-card" v-if="item.teacher">
+                        <div class="month-card" v-if="item.teachernames.length">
                             <div class="name">老师：</div>
-                            <div class="val"><span class="teacher">{{item.teacher}}</span></div>
+                            <div class="val"><span class="teacher">{{item.teachernames.join(',')}}</span></div>
                         </div>
                         <!--教室-->
                         <div class="month-card">
                             <div class="name">教室：</div>
-                            <div class="val">{{item.classroom}}</div>
+                            <div class="val">{{item.classroomname}}</div>
                         </div>
                         <!--状态-->
                         <div class="month-card">
@@ -452,7 +446,7 @@
                         <div class="month-records">
                             <div class="text-record">上课人数</div>
                             <div class="link-flag">
-                                <span class="blue">{{item.attendanceCount}}</span>/{{item.studentCount}}
+                                <span class="blue">{{item.attendancecount}}</span>/{{item.studentcount}}
                                 <svg class="icon" aria-hidden="true">
                                     <use xlink:href="#icon-youjiantou"></use>
                                 </svg>
@@ -474,16 +468,14 @@
      *  全科科目：显示科目名称
      *  按月计费班级 根据开始时间为00:00且结束时间为23:59判断，满足条件即显示几月几日，否则显示后台字段‘xx:xx’~'xx:xx'
      */
-    import {processGet} from 'teacher/api/common';
-    
     import MonthCalenderCommon from 'teacher/components/common/month-calender/month-calender-common.vue';
     import EmptyPage from 'teacher/components/common/empty-page/empty-page'
+    import {getcourseinfosbytime} from 'teacher/api/course';
 
     //按月展示 需要的辅助变量
     let _dateMonth = new Date();
     let _daysArr = [];		//缓存calender返回的42天数据.
     let _isFirst = true;		//第一次进入课表界面,直接定位到今天.
-
 
     export default {
         name: "course-list",
@@ -501,18 +493,12 @@
                 week_title:['星期一','星期二','星期三','星期四','星期五','星期六','星期日'],
                 isLoading: true,//loading加载中gif
                 weekPara: {
-                    pname: "courseList",
-                    week: '',
-                    sdate: null,
-                    edate: null
+                    startdate: null,
+                    enddate: null,
+                    usertype:1,
+                    viewtype:1 //0日视图；1周视图；3单条记录；
                 },
-                monthPara: {
-                    pname: "courseList",
-                    page: 1,
-                    week: 'MONTH',
-                    sdate: null,
-                    edate: null
-                },
+           
                 monthNum: 0,
                 month: '',
                 list: [],        //放课程
@@ -528,6 +514,10 @@
             this.w = new Date().getDay();//变量赋值
             this.today = this.formatDate(cn, 'yyyy-MM-dd');//变量赋值
             this.now = this.w == 0 ? 7 : this.w;//变量赋值
+
+            // 0学生;1教师;3学管师
+            let role = judgeUserType();
+            this.weekPara.usertype=role;
             this.weekShow("THIS");
         },
         mounted() {
@@ -564,7 +554,7 @@
             },
             weekShow(newweek) {
                 this.isLoading = true;
-                this.weekPara.week = newweek;
+                // this.weekPara.week = newweek;
                 if (newweek == "THIS") {
                     this.currentWeek = 0;
                 } else if (newweek == "NEXT") {
@@ -572,14 +562,13 @@
                 } else {
                     this.currentWeek -= 1;
                 }
-                if (this.week_day.length > 0) {
-                    this.weekPara.sdate = this.week_day[0];
-                    this.weekPara.edate = this.week_day[6];
-                }
                 this.week_day0 = [];//清空一周的日期列表 MM-dd
                 this.week_day = [];//清空一周的日期列表 yyyy-MM-dd
                 this.clear();// 清空数据
                 this.setCourseWeek();// this.week_day的赋值
+                //this.week_day赋值之后给参数赋值
+                this.weekPara.startdate = this.week_day[0];
+                this.weekPara.enddate = this.week_day[6];
                 this.getWeekData();//请求数据
                 this.lightHeightToday(); //判断是否今天，显示‘今天’
             },
@@ -651,18 +640,19 @@
                             break;
                     }
                 });
+
             },
             clear() {
                 this.week_list=[{val:[]},{val:[]},{val:[]},{val:[]},{val:[]},{val:[]},{val:[]}];
             },
             //获取周数据
             getWeekData() {
-                processGet(this.weekPara).then(res => {
+                getcourseinfosbytime(this.weekPara).then(res => {
                     this.isLoading = false;
-                    if (res.errcode == app.errok) {
+                    if (res.result.code == app.errok) {
                         this.handleWeek(res)
                     } else {
-                        app.toast('error', res.errmsg);
+                        app.toast('error', res.result.msg);
                     }
                 })
             },
@@ -684,17 +674,18 @@
             },
             selectDay(index, data) {
                 this.selected.index = index;
-                this.getDayData(this.dayMap[data.datestr]);
+                this.getDayData(this.dayMap[data.datestr],data.datestr);
+
             },
-            // 获取月数据
-            getMonthData() {
+            //获取月视图
+            getMonthData(mstartdate,menddate) {
                 if(this.loadNum<1){
-                   return
+                    return
                 }
                 this.isLoading = true;
-                processGet(this.monthPara).then(res => {
+                monthQueue(mstartdate,menddate).then(res => {
                     this.isLoading = false;
-                    this.dayMap = transformData(res.data, _daysArr);
+                    this.dayMap = transformData(res, _daysArr);
                     //直接定位到今天
                     if (_isFirst) {
                         this.selected.index = getTodayIndex(_daysArr);
@@ -703,24 +694,36 @@
                     this.selectDay(this.selected.index, _daysArr[this.selected.index]);
                 })
             },
-            //获取某一天的数据
-            getMonthDayData(ids) {
+            //获取月视图某天的数据
+            getMonthDayData(ids,datestr) {
+                let role = judgeUserType();
+                let params={
+                    startdate: datestr,//当天的详情，开始时间结束时间都可以去datestar
+                    enddate: datestr,
+                    usertype:role,
+                    viewtype:0
+                    // courseid:ids
+                    // page:{
+                    //     pageindex:0,
+                    //     pagesize:999,
+                    // }
+                }
+
+                this.isLoading = true;
                 // 请求到数据，为list赋值 界面显示
-                processGet({
-                    pname: "courseList_detail",
-                    courseIdList: ids
-                }).then(res => {
+                getcourseinfosbytime(params).then(res => {
+                    this.isLoading = false;
                     this.list = res.data ? res.data : '';
                 })
             },
-            getDayData(arr) {
+            getDayData(arr,datestr) {
                 //循环 courseIdList id列表 逗号隔开 请求数据
                 let idList = '';
                 if (arr.length > 0) {
                     arr.forEach((item, index) => {
                         index == arr.length - 1 ? (idList += item.id) : (idList += (item.id + ','));
                     })
-                    this.getMonthDayData(idList)
+                    this.getMonthDayData(idList,datestr)
                 } else {
                     this.list = '';
                 }
@@ -728,12 +731,11 @@
             },
             monthChanged(data) {
                 _daysArr = data;
-                this.monthPara.sdate = data[0].datestr;
-                this.monthPara.edate = data[41].datestr;
-                this.getMonthData();
+                // this.monthPara.startdate = data[0].datestr;
+                // this.monthPara.enddate = data[41].datestr;
+                this.getMonthData(data[0].datestr,data[41].datestr);
             }
         },
-
         components: {
             MonthCalenderCommon,
             EmptyPage
@@ -745,14 +747,13 @@
                 })
             },
             loadNum:function (newval,oldval) {
-                this.getMonthData();
+                this.getMonthData(_daysArr[0].datestr,_daysArr[41].datestr);
             }
         }
     }
     //按月展示 需要的辅助方法
     //1.一些数据的处理参数的赋值
     //2.判断是否‘今天’
-    //3.格式化日期xxxx-x-x 为 xxxx-xx-xx 是否需要加0的判断
     function transformData(res, daysArr) {
         let dayMap = {};
         //初始化 dayMap={xxxx-xx-xx:[],xxxx-xx-xx:[],xxxx-xx-xx:[],xxxx-xx-xx:[],xxxx-xx-xx:[],...}
@@ -775,6 +776,69 @@
             }
         });
         return today;
+    }
+
+    //以下就和家长端一样了
+    //第一次请求iscount传1,表示后台要进行统计,依据统计结果一次性返回或分次返回.
+    //接受第一次请求的返回后,依据返回的字段'hasnext'决定要不要进行下4次请求(分次返回)
+    //后4次请求iscount传0,表示后台不再进行统计.
+    //mstartdate:月历的开始时间,menddate:月历的结束时间
+    function monthQueue(mstartdate,menddate){
+        return new Promise((resolve,reject)=>{
+            //请求1:
+            let role = judgeUserType();
+            let params = {
+                mstartdate,
+                menddate,
+                startdate:mstartdate,
+                enddate:dateStrChange(mstartdate,6),                    
+                iscount:1,
+                viewtype:2,
+                usertype:role
+            };
+
+            getcourseinfosbytime(params).then(res=>{
+                if (res.result.code == app.errok){
+                    if (!res.hasnext){      //如果一次性给完数据,无须进行多余的请求
+                        resolve(res.data);  
+                    } else {    //进行多次请求
+                        let proArr = [];
+                        params.iscount = 0;     //剩下的不用统计
+                        for (let i = 0; i < 5; i++){    //下一个区间
+                            params.startdate = dateStrChange(params.enddate,1);
+                            params.enddate = dateStrChange(params.startdate,6);
+                            proArr.push(getcourseinfosbytime(Object.assign({},params)));
+                        }
+
+                        Promise.all(proArr).then(proArrRes=>{
+                            let returnArr = res.data;       //第一次请求返回的数组
+                            proArrRes.forEach(proRes=>{
+                                returnArr.push(...proRes.data);     //拼接上所有的的请求数组,作为一个完整的数组返回
+                            });
+                            resolve(returnArr);
+                        });
+                    }
+                } 
+            });
+        });
+    }
+    
+    
+    //给定date的字符串,加减多少天后给出新date的字符串
+    function dateStrChange(date,days){
+        let dateObj = new Date(date);
+        dateObj.setDate(dateObj.getDate()+days);
+        return dateObj.getFullYear() + '-' + formartZero(dateObj.getMonth()+1) + '-' + formartZero(dateObj.getDate());
+    }
+
+    //判断用户类型 0学生;1教师;3学管师
+    function judgeUserType(){
+        let role = app.sysInfo.currole.id;
+        if(role==4){
+            return 1;
+        }else if (role==16){
+            return 3;
+        }
     }
 
     function formartZero(s){

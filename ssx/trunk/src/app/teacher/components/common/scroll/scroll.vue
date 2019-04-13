@@ -225,6 +225,7 @@
 			}
 		},
 		mounted() {
+			window.a = this
 			this._initScroll()
 		},
 

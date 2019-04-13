@@ -64,7 +64,7 @@
                 line-height: 44px;
                 width: 75px;
                 color: $color-6;
-                @include ellipsis-single;
+                @include ellipsis-multi;
             }
             .item-two {
                 font-size: 15px;
@@ -91,13 +91,6 @@
                 width: 10px;
             }
         }
-        .loading {
-            @include position-absolute;
-        }
-        .empty-page {
-            @include position-absolute(98px, 0, 0, 0);
-            z-index: 20;
-        }
     }
 
 </style>
@@ -120,7 +113,7 @@
             </div>
             <div class="heard-bottom">
                 <div class="heard-bottom-left">
-                    选择{{app.sysInfo.Title_Campus}}
+                    选择校区
                 </div>
                 <div class="heard-bottom-mid" @click="emit">
                     {{campusText}}
@@ -133,32 +126,33 @@
             </div>
             <div class="item-wrapper" v-for="item in list">
                 <div class="void"></div>
-                <div class="item" @click="setStorage(item)">
+                <div class="item">
                     <div class="item-one">
                         {{item.name}}
                     </div>
                     <div class="item-two">
-                        {{item.Rate}}
+                        {{item.Rate+"%"}}
                     </div>
                     <div class="item-three">
                         <div class="rate" :style="{width:item.Rate + '%'}"></div>
                     </div>
-                    <div class="item-four" v-if="!type==1">
-                        <svg class="icon" aria-hidden="true">
+                    <div class="item-four">
+                        <!-- <svg class="icon" aria-hidden="true">
                             <use xlink:href="#icon-youjiantou"></use>
-                        </svg>
+                        </svg> -->
                     </div>
                 </div>
             </div>
         </div>
-        <loading class="loading" v-show="isLoading" :bgType='bgType'></loading>
-        <empty-page :type="1001" class="empty-page" v-if="!list.length"></empty-page>
+        
+
+       
     </scroller-base>
 </template>
 
 <script>
     import {getCustomers} from 'teacher/api/customers'
-    import EmptyPage from 'teacher/components/common/empty-page/empty-page'
+    
     export default {
         props: {
             campusListOld: {
@@ -169,21 +163,16 @@
             },
             saleModesArr: {
                 type: Array
-            },
-            type: {
-                type: Number
             }
         },
         data() {
             return {
                 dateObj:{
-                    sdate:app.tool.getDatesByIndex(3, app.localTimeToServer).sdate,
-                    edate:app.tool.getDatesByIndex(0, app.localTimeToServer).sdate,
+                    // sdate:app.tool.getDatesByIndex(3, app.localTimeToServer).sdate,
+                    // edate:app.tool.getDatesByIndex(3, app.localTimeToServer).sdate,
                 },
                 quickDateIndex:-1,
                 list: [],
-                isLoading: true,
-                bgType: 0
             }
         },
         computed: {
@@ -204,7 +193,6 @@
         methods: {
             initPage(params) {
                 getCustomers(params).then(res => {
-                    this.isLoading = false
                     if (res.errcode == app.errok) {
                         this.list = res.data
                     }
@@ -219,8 +207,7 @@
                     sdate: this.dateObj.sdate,
                     edate: this.dateObj.edate,
                     campusids: this.campusListOld.join(),
-                    salemodes: this.saleModesArr.join(),
-                    type: this.type
+                    salemodes: this.saleModesArr.join()
                 })
             },
             emit() {
@@ -228,11 +215,6 @@
             },
             emitSelectMode() {
                 this.$emit('openSelectMode')
-            },
-            setStorage(obj) {
-                if (this.type === 1) return
-                this.$emit('setStorage', obj) 
-                this.$router.push(`/customerSourceDetail/${obj.id}`)
             }
            
         },
@@ -241,9 +223,7 @@
                 pname: 'countbysalemode',
                 campusids: this.campusListOld.join(),
                 sdate: this.dateObj.sdate,
-                edate: this.dateObj.edate,
-                type: this.type,
-                salemodes: ''
+                edate: this.dateObj.edate
             })
         },
         watch: {
@@ -254,8 +234,7 @@
                         sdate: this.dateObj.sdate,
                         edate: this.dateObj.edate,
                         campusids: this.campusListOld.join(),
-                        salemodes: this.saleModesArr.join(),
-                        type: this.type
+                        salemodes: this.saleModesArr.join()
                     })
                 }
             },
@@ -265,15 +244,13 @@
                         pname: 'countbysalemode',
                         sdate: this.dateObj.sdate,
                         edate: this.dateObj.edate,
-                        type: this.type,
                         campusids: this.campusListOld.join(),
                         salemodes: this.saleModesArr.join()
                     })
-                } 
+                }
             }
         },
         components: {
-            EmptyPage
         }
     }
 </script>

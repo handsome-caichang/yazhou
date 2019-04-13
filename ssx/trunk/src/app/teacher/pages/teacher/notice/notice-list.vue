@@ -136,8 +136,8 @@
 		<div class="top-serach">
 			<date-bar 
 				class="date" 
-				:sdate='pagingOption.params.sdate' 
-				:edate='pagingOption.params.edate' 
+				:sdate='pagingOption.params.starttime' 
+				:edate='pagingOption.params.endtime' 
 				:index="quickDateIndex" 
 				@changeDate="changeDate">
 			</date-bar>
@@ -153,13 +153,14 @@
 				ref="noticeListIScroller">
 				<div 
 					v-for="item in list" 
-					:key="item.id" 
-					@click="toDetail(item.id)" 
+					:id="item.messageid" 
+					:key="item.messageid" 
+					@click="toDetail(item.messageid)" 
 					class="to-detail">
 					<div>
 						<div class="top-left-div">
-							<span class="notice-title">{{item.subject}}</span>
-							<svg class="icon icon-guanlian" aria-hidden="true" v-if="item.isFile == 1">
+							<span class="notice-title">{{item.title}}</span>
+							<svg class="icon icon-guanlian" aria-hidden="true" v-if="item.isfile == 1">
 								<use xlink:href="#icon-guanlian"></use>
 							</svg>
 						</div>
@@ -168,8 +169,8 @@
 								<use xlink:href="#icon-liulan"></use>
 							</svg>
 							<span>
-								<span :class="{'strong' : item.isReadCount != item.studentCount}">{{item.isReadCount}}</span>/
-								<span>{{item.studentCount}}</span>
+								<span :class="{'strong' : item.isreadcount === item.studentcount}">{{item.isreadcount}}</span>/
+								<span>{{item.studentcount}}</span>
 							</span>
 						</div>
 					</div>
@@ -183,7 +184,7 @@
 							</span>
 						</div>
 						<div class="bottom-right-div">
-							<span>{{item.shiftName}}</span>
+							<span>{{item.classname}}</span>
 						</div>
 					</div>
 				</div>
@@ -198,7 +199,7 @@
 </template>
 
 <script>
-	import { getNoticeList } from "teacher/api/notice";
+	import { getnoticelistforteacher } from "teacher/api/notice";
 	import EmptyPage from "teacher/components/common/empty-page/empty-page";
 
 	export default {
@@ -209,23 +210,24 @@
 				list: [],
 				quickDateIndex: -1,
 				pagingOption: {
-					api: getNoticeList,
+					api: getnoticelistforteacher,
 					params: {
 						pname: "message",
+						teacherid: app.sysInfo.id,
 						flag: "",
 						type: 4,
-						sdate: app.tool.getDatesByIndex(4, app.localTimeToServer).sdate,
-						edate: app.tool.getDatesByIndex(4, app.localTimeToServer).edate
+						starttime: app.tool.getDatesByIndex(4, app.localTimeToServer).sdate,
+						endtime: app.tool.getDatesByIndex(4, app.localTimeToServer).edate
 					},
 					pageOpt: {
                         // 分页初始页码的'key'、'value'
-                        indexKey: 'page',
+                        indexKey: 'pageindex',
                         indexVal: 1,
                         // 每页请求数据长度的'key'、'value'
-                        sizeKey: 'pageSize',
+                        sizeKey: 'pagesize',
                         sizeVal: 20,
                         // 后端返回的总页数'key'
-                        countKey: 'pageCount'
+                        countKey: 'totalpage'
                     }
 				},
 				isLoading: true
@@ -234,8 +236,8 @@
 		methods: {
 			// 选择日期
 			changeDate(date) {
-				this.pagingOption.params.sdate = date.sdate;
-				this.pagingOption.params.edate = date.edate;
+				this.pagingOption.params.starttime = date.sdate;
+				this.pagingOption.params.endtime = date.edate;
 				this.quickDateIndex = date.index;
 				this.isLoading = true;
 				this.$refs.noticeListIScroller.refresh(this.pagingOption.params);
@@ -244,29 +246,34 @@
 			loadData(ajaxPromise) {
 				ajaxPromise.then(res => {
 					this.isLoading = false;
-					if(res.errcode === 200) {
+					if(res.result.code == 200) {
 						res.data.forEach(item => {
-							let _date = item.createTime;
+							let _date = item.createtime;
 							// 扩展被格式化的时间对象
 							item.formatDate = this.formatDate(_date);
 						});
 						this.list =
-						res.pageIndex == 1 ? [].concat(res.data) :	this.list.concat(res.data);
+							res.page.pageindex && res.page.pageindex > 1 ? [].concat(this.list, res.data) :	[].concat(res.data);
 					}
 				});
 			},
 			// 去详情
 			toDetail(id) {
-				
+				// 监听移除事件，如果删除成功就移除dom
+				app.eventDefine.on('removeItem', function(flag) {
+					if(flag) {
+						document.getElementById(id).remove();
+					}
+				})
 				this.$router.push({
-					path: `/noticeDetail/${id}`,
+					path: `noticeDetail/${id}`,
 					component: 'noticeDetail'
 				})
 			},
 			// 发布通知
 			pubNotice() {
-                
-				this.$router.push("/noticeAdd");
+                app.eventDefine.on('refresh', () => this.$refs.noticeListIScroller.refresh(this.pagingOption.params));
+				this.$router.push("noticeAdd");
 			},
 			formatDate(data) {
 				// 格式：2017-12-6 17:37:17
@@ -292,24 +299,7 @@
 					time: _time
 				};
 			}
-        },
-        created(){
-            app.eventDefine.on('refresh-notice-list', () => this.$refs.noticeListIScroller.refresh(this.pagingOption.params));
-            // 监听移除事件，如果删除成功就移除dom
-            app.eventDefine.on('removeItem-notice-list', (type,id)=> {
-                let p = -1;
-                this.list.some((item,index)=>{
-                    item.id === id && (p = index);
-                })
-                if (p> -1){
-                    this.list.splice(p,1);
-                }
-            })
-        },
-        beforeDestroy() {
-            app.eventDefine.off("refresh-notice-list");
-            app.eventDefine.off('removeItem-notice-list');
-        },
+		},
 		components: {
 			EmptyPage
 		}

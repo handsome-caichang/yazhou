@@ -228,7 +228,7 @@
 				<div @click="openStateActionsheet" class="filter">筛选</div>
 			</div>
 			<div class="campu-area" @click="openCampusActionsheet">
-				<div class="describe">选择{{app.sysInfo.Title_Campus}}</div>
+				<div class="describe">选择{{app.sysInfo.title_campus}}</div>
 				<div class="campu-box">
 					<div class="campu-name">{{currentCampu.name}}</div>
 					<div class="icon-area">
@@ -248,33 +248,33 @@
 			:pagingOption="pagingOption" 
 			@loadData="loadData" 
 			ref="newcourseScroller">
-            <div v-for="item in list" :key="item.ID">
+            <div v-for="item in list" :key="item.id">
                 <div class="item" @click="selectClass(item)">
                     <div class="icon-area">
                         <svg class="icon" aria-hidden="true">
-                            <use :xlink:href="currentClass.ID==item.ID?'#icon-danxuan':'#icon-danxuan-weixuanze'"></use>
+                            <use :xlink:href="currentClass.id==item.id?'#icon-danxuan':'#icon-danxuan-weixuanze'"></use>
                         </svg>
                     </div>
                     <div class="con-area">
                         <div class="top">
-                            <div class="class-name">{{item.Name}}</div>
-                            <div class="counts">{{item.StudentCount}}/{{item.MaxStudentsAmount}}</div>
+                            <div class="class-name">{{item.name}}</div>
+                            <div class="counts">{{item.studentcount}}/{{item.maxstudentsamount}}</div>
                         </div>
                         <div class="campus-name">
                             <svg class="icon" aria-hidden="true">
                                 <use xlink:href="#icon-xiaoqu2"></use>
-                            </svg>{{item.CampusName}}
+                            </svg>{{item.campusname}}
                         </div>
 
                         <div class="bottom">
                             <div class="class-teacher">
                                 <svg class="icon" aria-hidden="true">
                                     <use xlink:href="#icon-laoshi"></use>
-                                </svg>{{item.TeacherName}}
+                                </svg>{{nameMap(item.classteachers)}}
                             </div>
                             <div class="course-name"><svg class="icon" aria-hidden="true">
                                 <use xlink:href="#icon-kecheng1"></use>
-                            </svg>{{item.ShiftName}}
+                            </svg>{{item.shiftname}}
                             </div>
                             <!--<div class="class-date">开班日期：{{item.OpenDate.replace(/-/g,'.')}}</div>-->
                         </div>
@@ -307,12 +307,12 @@
 			@courseAttendanceCampus="campuAction">
 		</course-attendance-campus>
 
+
 		<!--详情页 以子组件的形式-->
 		<newcourse-details 
 			class="as-details" 
 			:opened.sync="openDetails" 
 			:detailsObj="detailsObj" 
-			@courseAttendanceNewcourseReplace="courseAttendanceNewcourseReplace"
 			@backToNewcourse="prevStep">
 		</newcourse-details>
 		
@@ -325,7 +325,7 @@
 	import StateActionsheet from 'teacher/components/common/actionsheets/state-actionsheet.vue';
 	import courseAttendanceCampus from './child/course-attendance-campus';
 	import NewcourseDetails from './child/newcourse-details';
-	import { processPost } from "teacher/api/common";
+	import { getclasscampusfromwx,getclasslistfromwx } from "teacher/api/course-attendance";
 
 	export default {
 		name: "course-attendance-newcourse",
@@ -341,30 +341,30 @@
 				openAsCampus: false, //是否展开‘校区选择’组件
 				isLoading: true,
 				searchQuery: '', //搜索输入框的双向绑定
-				currentClass: '', //当前选择的班级信息
+				currentClass:{}, //当前选择的班级
 				state: {
 					curState: 0,
-					stateList: ['查看所有班级', '只看一对一', '只看一对多', '只看集体班'],
+					stateList: ['查看所有班级', '只看一对一','只看集体班'],
 				},
+				stateMap:[[0,1],[1],[0]],
 				openState: false,
 				campusPara: {
 					pname: "queryClassCampus"
 				},
 				pagingOption: {
-					api: processPost,
+					api: getclasslistfromwx,
 					params: {
-						pname: "queryClass",
-						countStudents: 1, //根据参数决定是否返回学员人数统计信息：预招人数，当前人数
+						//countStudents: 1, //根据参数决定是否返回学员人数统计信息：预招人数，当前人数
 						query: '', //班级名称
-						campusId: '', //校区
-						shiftType: 0 //课程类型：0不限，1一对一，2一对多，4集体班，其他组合关系相加即可（比如：3为一对一和一对多，5为一对一和集体班）
+						campusids: [], //校区
+						shifttype:[0,1] 
 					},
 					pageOpt: {
-						indexKey: 'page', // 分页初始页码的'key'、'value'
+						indexKey: 'pageindex', // 分页初始页码的'key'、'value'
 						indexVal: 1,
-						sizeKey: 'pageSize', // 每页请求数据长度的'key'、'value'
+						sizeKey: 'pagesize', // 每页请求数据长度的'key'、'value'
 						sizeVal: 20,
-						countKey: 'pageCount', // 后端返回的总页数'key'
+						countKey: 'totalpage', // 后端返回的总页数'key'
 					}
 				},
 				openDetails: false,
@@ -372,11 +372,14 @@
 			}
 		},
 		methods: {
+			nameMap(arr){
+				return arr.map(item=>item.name).join(',');
+			},
 			loadData(ajaxPromise) {
 				ajaxPromise.then(res => {
 					this.isLoading = false;
-					if(res.errcode == app.errok) {
-						if(res.pageIndex === 1) {
+					if(res.result.code == app.errok) {
+						if(res.page.pageindex === 1) {
 							this.list = [];
 						}
 						this.list = this.list.concat(res.data);
@@ -384,16 +387,14 @@
 				})
 			},
 			getCampusData() {
-				processPost({
-					pname: "queryClassCampus"
-				}).then(res => {
-					this.campusList = res.data;
+				getclasscampusfromwx().then(res => {
+					this.campusList = res.campusinfos;
 				})
 			},
 			//勾选班级
 			selectClass(obj) {
 				this.currentClass = obj;
-			},
+			}, 
 			//搜索
 			search() {
 				this.$refs.newcourseScroller.refresh({
@@ -409,7 +410,7 @@
 				this.isLoading = true;
 				this.list = [];
 				this.$refs.newcourseScroller.refresh({
-					'shiftType': type == 3 ? 4 : type
+					'shifttype': this.stateMap[type]
 				});
 			},
 			//选择校区
@@ -422,20 +423,20 @@
 			},
 			//接收分校信息
 			campuAction(obj) {
-				this.currentCampu.name = obj.CampusName;
-				this.currentCampu.id = obj.CampusID;
+				this.currentCampu.name = obj.name;
+				this.currentCampu.id = obj.id;
 				this.$refs.newcourseScroller.refresh({
-					'campusId': obj.CampusID
+					'campusids': [obj.id]
 				});
 			},
 			//下一步
 			nextStep() {
 				let obj = this.currentClass;
-				if(this.currentClass == '') {
+				if(!this.currentClass.id) {
 					app.toast('info', '请先选择班级。')
 					return
 				}
-				if(!app.tool.op('CoursePlanForGroup') && (obj.IsOneToOne == 0 || obj.IsOneToOne == 2)) {
+				if(!app.tool.op('CoursePlanForGroup') && (obj.isonetoone == 0 || obj.isonetoone == 2)) {
 					app.alert({
 						'title': '权限不足',
 						'text': '未授权。此操作需要以下权限：教务管理 - 排课管理 - 集体班排课',
@@ -447,7 +448,7 @@
 					});
 					return
 				}
-				if(!app.tool.op('CoursePlanForOne') && obj.IsOneToOne == 1) {
+				if(!app.tool.op('CoursePlanForOne') && obj.isonetoone == 1) {
 					app.alert({
 						'title': '权限不足',
 						'text': '未授权。此操作需要以下权限：教务管理 - 排课管理 - 一对一排课',
@@ -464,18 +465,6 @@
 			},
 			prevStep() {
 				this.openDetails = false;
-			},
-			// 路由跳转
-			courseAttendanceNewcourseReplace(id){
-				setTimeout(()=>{
-					this.$router.replace(
-						{
-							path: '/courseAttendanceStudents',
-							query: {id: id}
-						}
-					);
-				},50)
-				
 			}
 		},
 		created() {

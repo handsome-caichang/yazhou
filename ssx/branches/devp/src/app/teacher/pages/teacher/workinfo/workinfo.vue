@@ -1,5 +1,8 @@
 <!--工作统计-->
 <style scoped lang="scss">
+    
+    
+
     .workinfo-container {
         background-color: $color-assist-1;
         .footer {
@@ -27,7 +30,6 @@
             }
         }
         .scroller {
-            background-color: $color-assist-1;
             @include position-absolute(0, 0, 49px, 0);
             .title {
                 padding: 0 15px;
@@ -84,27 +86,9 @@
                                 border-radius: 100%;
                             }
                         }
+
                     }
-                }
-                .detail{
-                    font-size: 12px;
-                    color: $color-9;
-                    padding: 12px 20px;
-                    margin-top: 10px;
-                    background-color: #F4F6F8;
-                    position: relative;
-                    .triangle{
-                        position: absolute;
-                        top: -9px;
-                        left: 23px;
-                        @include triangle($color:#F4F6F8);
-                    }
-                    .item{
-                        margin-bottom: 8px;
-                        &:last-child{
-                            margin: 0;
-                        }
-                    }
+
                 }
             }
         }
@@ -136,97 +120,82 @@
 
 <template>
     <div class="workinfo-container">
-        <scroller-base class="scroller" :data="dataObj">
+        <scroller-base class="scroller" :data="renderData">
             <!--已上课时-->
-            <div @click=goToCourseDetails()>
-                <div class="title">
-                    <div class="title-lf">已上课时</div>
-                    <div class="title-rt">详情
-                        <svg class="icon" aria-hidden="true">
-                            <use xlink:href="#icon-youjiantou"></use>
-                        </svg>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="describe">上课率</div>
-                    <div class="percentage wigC">{{dataObj.cctRate}}</div>
-                    <div class="progress">
-                        <div class="process-child wigB" :style="{width:dataObj.cctRate}"></div>
-                    </div>
-                    <div class="count">
-                        <div class="count-lf">
-                            <div class="circle-box">
-                                <div class="circle wigB"></div>
-                            </div>
-                            <div>已上：{{dataObj.coursefinishedcount}}节</div>
-                        </div>
-                        <div class="count-rt">共计：{{dataObj.coursetotalcount}}节</div>
-                    </div>
-                    <!--1小时，2次，3按月  TODO: 上课率这里的展示要确认下
-                    <div class="detail" v-if="dataObj.data && dataObj.data.courseDetail && dataObj.data.courseDetail.length">
-                        <div class="triangle"></div>
-                        <div class="item"
-                            :key="index"
-                            v-for="(item,index) in dataObj.data.courseDetail"
-                            :class="{'hours':item.unit==1,'time':item.unit==2,'day':item.unit == 3}">
-                            <span v-show="item.unit==2">按{{app.sysInfo.Title_CourseUnit_2}}计费</span>
-                            <span v-show="item.unit==3">按天计费</span>
-                            <span v-show="item.unit==1">按小时计费</span>：{{item.amount}}
-                            <span v-show="item.unit==2">{{app.sysInfo.Title_CourseUnit_2}}</span>
-                            <span v-show="item.unit==3">天</span>
-                            <span v-show="item.unit==1">小时</span>
-                        </div>
-                    </div>
-                    -->
+            <div class="title" @click=goToCourseDetails()>
+                <div class="title-lf">已上课时</div>
+                <div class="title-rt">详情
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-youjiantou"></use>
+                    </svg>
                 </div>
             </div>
+            <div class="card">
+                <div class="describe">上课率</div>
+                <div class="percentage wigC">{{dataObj.cctRate}}</div>
+                <div class="progress">
+                    <div class="process-child wigB" :style="{width:dataObj.cctRate}"></div>
+                </div>
+                <div class="count">
+                    <div class="count-lf">
+                        <div class="circle-box">
+                            <div class="circle wigB"></div>
+                        </div>
+                        <div>已上：{{dataObj.cct1}}次</div>
+                    </div>
+                    <div class="count-rt">共计：{{dataObj.cct0}}次</div>
+                </div>
+            </div>
+
             <!--学生出勤-->
-            <div @click=goToAttendanceDetails()>
-                <div class="title">
-                    <div class="title-lf">学生出勤</div>
-                    <div class="title-rt">详情
-                        <svg class="icon" aria-hidden="true">
-                            <use xlink:href="#icon-youjiantou"></use>
-                        </svg>
-                    </div>
+            <div class="title" @click=goToAttendanceDetails()>
+                <div class="title-lf">学生出勤</div>
+                <div class="title-rt">详情
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-youjiantou"></use>
+                    </svg>
                 </div>
-                <div class="card">
-                    <div class="describe">出勤率</div>
-                    <div class="percentage wibC">{{dataObj.adtRate}}</div>
-                    <div class="progress"><div class="process-child wibB" :style="{width:dataObj.adtRate}"></div></div>
-                    <div class="count">
-                        <div class="count-lf">
-                            <div class="circle-box">
-                                <div class="circle wibB"></div>
-                            </div>
-                            <div>实到：{{dataObj.coursestudentisattendcount}}人</div>
+            </div>
+            <div class="card">
+                <div class="describe">出勤率</div>
+                <div class="percentage wibC">{{dataObj.adtRate}}</div>
+                <div class="progress">
+                    <div class="process-child wibB" :style="{width:dataObj.adtRate}"></div>
+                </div>
+                <div class="count">
+                    <div class="count-lf">
+                        <div class="circle-box">
+                            <div class="circle wibB"></div>
                         </div>
-                        <div class="count-rt">应到：{{dataObj.coursestudentcount}}人</div>
+                        <div>实到：{{dataObj.adt1}}人</div>
                     </div>
+                    <div class="count-rt">应到：{{dataObj.adt0}}人</div>
                 </div>
+            </div>
+
+            <!--课程评价-->
+            <div class="title">
+                <div class="title-lf">课程评价</div>
+            </div>
+            <div class="card">
+                <div class="describe">评价率</div>
+                <div class="percentage wiyC">{{dataObj.cmtRate}}</div>
+                <div class="progress">
+                    <div class="process-child wiyB" :style="{width:dataObj.cmtRate}"></div>
                 </div>
-                <!--课程评价-->
-                <div class="title">
-                    <div class="title-lf">课程评价</div>
-                </div>
-                <div class="card">
-                    <div class="describe">评价率</div>
-                    <div class="percentage wiyC">{{dataObj.cmtRate}}</div>
-                    <div class="progress">
-                        <div class="process-child wiyB" :style="{width:dataObj.cmtRate}"></div>
-                    </div>
-                    <div class="count">
-                        <div class="count-lf">
-                            <div class="circle-box">
-                                <div class="circle wiyB"></div>
-                            </div>
-                            <div>已评价：{{dataObj.coursestudentcommentcount}}人</div>
+                <div class="count">
+                    <div class="count-lf">
+                        <div class="circle-box">
+                            <div class="circle wiyB"></div>
                         </div>
-                        <div class="count-rt">应评价：{{dataObj.coursecommentcount}}人</div>
+                        <div>已评价：{{dataObj.cmt1}}人</div>
                     </div>
+                    <div class="count-rt">应评价：{{dataObj.cmt0}}人</div>
                 </div>
+            </div>
             <div class="void"></div>
         </scroller-base>
+        
         <div class="footer">
             <div class="prev-month" @click="selectMonth(0)">
                 <svg class="icon" aria-hidden="true">
@@ -245,114 +214,159 @@
 </template>
 
 <script>
-    import {getworkinfo} from 'teacher/api/personal-center.js';
-
-     function getNextMonth(date,fmt='yyyy-MM-dd'){            
-            let today = date ? new Date(date) : new Date(),
-                start,end;
-                today.setMonth(today.getMonth()+1);
-                today.setDate(1);
-                start = app.filters.formatDatetime(today,fmt);
-                // today.setMonth(today.getMonth()+1);
-                today.setDate(0);
-                end =  app.filters.formatDatetime(today,fmt);
-            return {start,end};      
-        }
-
+    import {getworkinfo} from 'teacher/api/workinfo';
     export default {
         name: "workinfo",
         data() {
             return {
                 wxTitle: '工作统计',
+                role:'',
                 work_sdate: '',//开始日期
                 work_edate: '',//结束日期
                 dateForShow: '',//底部用来展示的日期
-                current_sdate: app.tool.getDatesByIndex(5, app.localTimeToServer).sdate, //当前（底部）月份
-                current_edate:app.tool.getDatesByIndex(5, app.localTimeToServer).edate,
                 dataObj: {},
                 isLoading: true
-                
+            }
+        },
+        computed: {
+            renderData() {
+                return {
+                    dataObj: this.dataObj
+                }
             }
         },
         created() {
-           this.getData(
-               this.current_sdate
-               ,
-               this.current_edate
-               );
+            // 1学管师 2班主任 3老师
+            let role = '';
+            if(app.sysInfo.currole.id==4){
+                this.role=3
+            }else if(app.sysInfo.currole.id==32){
+                this.role=2
+            }else if(app.sysInfo.currole.id==16){
+                this.role=1;
+            }
+            getworkinfo({
+                uid:app.sysInfo.id,
+                userrole:this.role,
+                querymonth:''
+            }).then(res => {
+                if (res.result.code == app.errok) {
+                    this.isLoading = false;
+                    this.handleData(res)
+                } else {
+                    this.isLoading = true;
+                    app.toast('error', res.result.msg);
+                }
+            })
         },
         methods: {
-            goToCourseDetails() {  // 页面跳转
+            // 页面跳转
+            goToCourseDetails() {
                 this.$router.push({path: `/workInfoCourseDetails/${this.work_sdate}/${this.work_edate}`})
             },
-            goToAttendanceDetails() {  // 页面跳转
+            goToAttendanceDetails() {
                 this.$router.push({path: `/workInfoAttendanceDetails/${this.work_sdate}/${this.work_edate}`})
             },
-            getData(starttime,endtime){
-                //补充格式
-                getworkinfo({
-                    starttime:starttime+' 00:00:00',
-                    endtime:endtime+' 23:59:59'
-                }).then(res => {
-                    this.isLoading = false;
-                    console.log(res)
-                    if (res.result.code == app.errok) {
-                        this.handleData(res.data);
-                    } else {
-                        app.toast('error', res.result.msg);
-                    }
-                })
-            },
+            // 处理数据
             handleData(data) {
-                this.work_sdate = data.starttime;
-                this.work_edate = data.endtime;
-                this.dateForShow =this.current_sdate.substr(0, 4) + '年' + this.current_sdate.substr(5, 2) + '月';
+                this.work_sdate = data.data.starttime;//赋值
+                this.work_edate = data.data.endtime;//赋值
+                this.dateForShow = data.data.starttime.substr(0, 4) + "年" + data.data.endtime.substr(5, 2) + "月"
+
+                // let info = data.data,
+                //     cct = info.courseCount,//课时
+                //     cmt = info.commentCount,//评价
+                //     adt = info.attendanceCount;//出勤
+
+                // let rate;
+                // rate = data.cctRate = cct[0] == 0 ? "0" : parseInt(cct[1] / cct[0] * 100) + '%';
+                // data.cct1 = cct[1]; //已上课时
+                // data.cct0 = cct[0]; //应上课时
+
+                // rate = data.cmtRate = cmt[0] == 0 ? "0" : parseInt(cmt[1] / cmt[0] * 100) + '%';
+                // data.cmt1 = cmt[1]; //已评价
+                // data.cmt0 = cmt[0]; //应评价
+
+                // rate = data.adtRate = adt[0] == 0 ? "0" : parseInt(adt[1] / adt[0] * 100) + '%';
+                // data.adt1 = adt[1]; //已出勤
+                // data.adt0 = adt[0]; //应出勤
+                
+                // coursetotalcount 202
+                // coursefinishedcount  90  
+
+                // coursestudentcount  739
+                // coursestudentisattendcount 634
+
+                // coursecommentcount  404
+                // coursestudentcommentcount    20
+
+                let info = data.data;
+                console.log(data)
+                data.cctRate = info.coursetotalcount==0 ? "0" : parseInt(info.coursefinishedcount / info.coursetotalcount * 100) + '%';//上课率
+                data.cct1 = info.coursefinishedcount; //已上课时
+                data.cct0 = info.coursetotalcount; //应上课时
+
+                data.cmtRate = info.coursecommentcount==0 ? "0" : parseInt(info.coursestudentcommentcount / info.coursecommentcount * 100) + '%';//评价率
+                data.cmt1 = info.coursestudentcommentcount; //已评价
+                data.cmt0 = info.coursecommentcount; //应评价
+
+                data.adtRate = info.coursestudentcount==0 ? "0" : parseInt(info.coursestudentisattendcount / info.coursestudentcount * 100) + '%';//出勤率
+                data.adt1 = info.coursestudentisattendcount; //已出勤
+                data.adt0 = info.coursestudentcount; //应出勤
                 this.dataObj = data;
-                this.dataObj.cctRate = data.coursetotalcount == 0 ? '0' : parseInt(data.coursefinishedcount/data.coursetotalcount*100)+'%';
-                this.dataObj.adtRate = data.coursestudentcount == 0 ? '0' : parseInt(data.coursestudentisattendcount/data.coursestudentcount*100)+'%';
-                this.dataObj.cmtRate = data.coursecommentcount == 0 ? '0' : parseInt(data.coursestudentcommentcount/data.coursecommentcount*100)+'%';
+
             },
-            selectMonth(flag) { // 上||下一个月
+            // 上||下一个月
+            selectMonth(flag) {
                 this.isLoading = true;
                 if (!this.isLoading) {//说明正在请求
-                    return;
+                    return
                 }
 
                 // 判断上个月还是下个月
-                if (flag == 1) {
+                if (flag == 0) {
+                    getworkinfo({
+                        // pname: "workinfo",
+                        uid:app.sysInfo.id,
+                        userrole:this.role,
+                        querymonth:'PREV',
+                        // month: "PREV",
+                        starttime: this.work_sdate,
+                        endtime: this.work_edate
+                    }).then(res => {
+                        this.isLoading = false;
+                        if (res.result.code == app.errok) {
+                            this.handleData(res)
+                        } else {
+                            app.toast("error", "统计信息获取失败。");
+                        }
+                    })
+                } else {
                     // 判断是否为当月
                     let curYear = new Date().getFullYear(),
-                        curMonth = new Date().getMonth() + 1;                    
-                    if ((this.current_sdate.substr(0, 4) == curYear) && (this.current_sdate.substr(5, 2) == curMonth)) {
+                        curMonth = new Date().getMonth() + 1;
+                    if ((this.work_sdate.substr(0, 4) == curYear) && (this.work_edate.substr(5, 2) == curMonth)) {
                         app.toast("info", "已是当前月。");
                         this.isLoading = false;
-                        return;
+                        return
                     }
+                    getworkinfo({
+                        // pname: "workinfo",
+                        uid:app.sysInfo.id,
+                        userrole:this.role,
+                        querymonth:'NEXT',
+                        // month: "NEXT",
+                        starttime: this.work_sdate,
+                        endtime: this.work_edate
+                    }).then(res => {
+                        this.isLoading = false;
+                        if (res.result.code == app.errok) {
+                            this.handleData(res)
+                        } else {
+                            app.toast("error", "统计信息获取失败。");
+                        }
+                    })
                 }
-                //更新当前月份
-                if(flag == 0){
-                    this.current_sdate = app.tool.getDatesByIndex(6, this.current_sdate).sdate
-                    this.current_edate = app.tool.getDatesByIndex(6, this.current_edate).edate
-                }else{
-                    this.current_sdate = getNextMonth(this.current_sdate).start;
-                    this.current_edate = getNextMonth(this.current_sdate).end;
-                }
-
-                this.getData(this.current_sdate,this.current_edate)
-
-                /* getworkinfo({
-                    // querymonth: flag==0?'PREV':'NEXT',
-                    starttime: this.work_sdate,
-                    endtime: this.work_edate
-                }).then(res => {
-                    this.isLoading = false;
-                    console.log(res)
-                    if (res.result.code == app.errok) {
-                        this.handleData(res.data);
-                    } else {
-                        app.toast("error", res.result.msg);
-                    }
-                }) */
             }
         }
     }

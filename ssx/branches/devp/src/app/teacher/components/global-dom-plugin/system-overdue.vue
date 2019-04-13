@@ -1,5 +1,7 @@
 <!-- 师生信功能是否将要到期或已到期，并进行相应提示 -->
 <style lang="scss" scoped>
+	
+	
 	.system-overdue {
 		.due-dialog {
 			@include position-absolute(5px, 6px, 5px, 6px);
@@ -37,10 +39,6 @@
 				padding: 10px 20px;
 				font-size: 16px;
 			}
-			// .due-tips {
-			// 	color: $color-9;
-			// 	padding: 10px 20px;
-			// }
 		}
 	}
 </style>
@@ -59,8 +57,8 @@
 <template>
 	<div class="system-overdue">
 		<!-- 产品功能即将到期 -->
-		<div class="due-dialog" v-if="app.sysInfo.SystemStatus&&app.sysInfo.SystemStatus.IsPastDue==1&&opened">
-			<marquee direction="left" v-html="app.sysInfo.SystemStatus.PastInfo.One"></marquee>
+		<div class="due-dialog" v-if="!systemOverdue&&systemOverdueMsg&&opened">
+			<marquee direction="left" v-html="systemOverdueMsg"></marquee>
 			<div class="due-close" @click="()=>{opened=false;}">
 				<svg class="icon" aria-hidden="true">
 					<use xlink:href="#icon-sousuowenzishanchu"></use>
@@ -69,46 +67,32 @@
 		</div>
 
 		<!-- 产品功能已到期 -->
-		<div class="due-page" v-if="app.sysInfo.SystemStatus&&app.sysInfo.SystemStatus.IsPastDue==2">
+		<div class="due-page" v-if="systemOverdue">
 			<div class="due-img" :style="'background-image:url('+duepng+')'"></div>
-			<div class="due-content" v-html="app.sysInfo.SystemStatus.PastInfo.One"></div>
-			<!-- <div class="due-tips">如有疑问，请致电：
-				<svg class="icon" aria-hidden="true">
-					<use xlink:href="#icon-youjiantou"></use>
-				</svg>{{app.sysInfo.SystemStatus.PastInfo.Two}}
-			</div> -->
-		</div>
-
-        <!-- 师生信正在审核 -->
-        <div class="due-page" v-if="app.sysInfo.SystemStatus&&app.sysInfo.SystemStatus.IsPastDue==3">
-			<div class="due-img" :style="'background-image:url('+examinepng+')'"></div>
-			<div class="due-content">师生信正在审核中...</div>
+			<div class="due-content" v-html="systemOverdueMsg"></div>
 		</div>
 	</div>
 </template>
 
 <script>
-	import duepng from './img/due.png';
-	import examinepng from './img/examine.png';
-
+    /**@augments
+     * status:0未过期，1将要过期，2已经过期
+     */
 	// let str1 = '<span>温馨提示：您的师生信系统将于</span><i>2017</i>年<i>3</i>月<i>19</i><span>日到期(还剩5天），逾期后将无法登录，请及时续费。</span>',
-	//     str2 = "您的师生信系统已于<i>2017</i>年<i>3</i>月<i>17</i>日到期，请续费。";
+    //     str2 = "您的师生信系统已于<i>2017</i>年<i>3</i>月<i>17</i>日到期，请续费。";
+    
 	export default {
 		name: 'system-overdue',
 		data() {
 			return {
-				duepng,
-                examinepng,
-				opened: true,
-				// SystemStatus:{
-				//     "PastInfo": {
-				//         "One": str2,
-				//         "Two": "400-800-9585"
-				//     },
-				//     "FunctionStr": "SSXQY",
-				//     "IsPastDue": ""
-				// }
+                wxTitle: '系统提醒',
+				duepng: require('./img/due.png'),
+				opened: true
 			}
-		}
+        },
+        computed: {
+            ...Vuex.mapState(['systemOverdueMsg',
+                'systemOverdueMsg'])
+        }
 	}
 </script>

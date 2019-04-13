@@ -68,13 +68,13 @@
 				<div class="detail" v-for="item1 in item">
 					<div class="flex-top">
 						<span>上课时间</span>
-						<!-- <span class="time">{{item1.Date.replace('.', '-')+' '+item1.Time}}</span> -->
-						<span class="time">{{item1.Date.replace('.', '-')}}</span>
+						<!-- <span class="time">{{item1.starttime.split(' ')[0]+' '+item1.time}}</span> -->
+						<span class="time">{{item1.starttime.split(' ')[0].substr(5)}}</span>
 					</div>
 					<div class="flex-bottom">
-						<span>平均分:<span class="values">{{ item1.Scope }}</span></span>
-						<span>出勤人数:<span class="values">{{ item1.AttendCount }}</span></span>
-						<span>评价人数:<span class="values">{{ item1.WriteCount }}</span></span>
+						<span>平均分:<span class="values">{{ item1.scope }}</span></span>
+						<span>出勤人数:<span class="values">{{ item1.attendcount }}</span></span>
+						<span>评价人数:<span class="values">{{ item1.writecount }}</span></span>
 					</div>
 				</div>
 			</div>
@@ -87,7 +87,7 @@
 </template>
 
 <script>
-	import { getClassScopeDetail } from "teacher/api/comment-rank";
+	import { getteacherscopecourseinfo } from "teacher/api/comment-rank";
 	import EmptyPage from "teacher/components/common/empty-page/empty-page";
 
 	export default {
@@ -97,18 +97,17 @@
 				wxTitle: "评价维度",
 				list: [],
 				pagingOption: {
-					api: getClassScopeDetail,
+					api: getteacherscopecourseinfo,
 					params: {
-						type: this.$router.currentRoute.query.type,
+						type: parseInt(this.$router.currentRoute.query.type),
 						classid: this.$router.currentRoute.query.classid,
-						campusid: this.$router.currentRoute.query.campusid,
+						campusids: JSON.parse(this.$router.currentRoute.query.campusids),
 						// 默认显示7天
-						sdate: this.$router.currentRoute.query.sdate,
-						edate: this.$router.currentRoute.query.edate,
-						typeValue: this.$router.currentRoute.query.typeValue,
-						CourseCommentScopeSettingID: this.$router.currentRoute.query
-							.CourseCommentScopeSettingID
-					},
+						starttime: this.$router.currentRoute.query.starttime,
+						endtime: this.$router.currentRoute.query.endtime,
+						itemvalue: this.$router.currentRoute.query.itemvalue,
+						coursecommnetsettingid: this.$router.currentRoute.query.coursecommnetsettingid
+					}/* ,
 					pageOpt: {
 						// 分页初始页码的'key'、'value'
 						indexKey: "PageIndex",
@@ -118,7 +117,7 @@
 						sizeVal: 20,
 						// 后端返回的总页数'key'
 						countKey: "PageCount"
-					}
+					} */
 				},
 				isLoading: true
 			};
@@ -127,8 +126,8 @@
 			loadData(promise) {
 				promise.then(res => {
 					this.isLoading = false;
-					if(res.ErrorCode == 200) {
-						this.list = res.PageIndex == 1 ? [].concat(res.Data) : [].concat(this.list, res.Data);
+					if(res.result.code == 200) {
+						this.list = res.page.pagindex == 1 ? [].concat(res.data) : [].concat(this.list, res.data);
 						this.fomatData(this.list);
 					}
 				});
@@ -137,14 +136,15 @@
 				let _obj = {};
 				data.forEach(item => {
 					let _has = Object.keys(_obj).some(itme1 => {
-						return itme1 == item.Year;
+						return itme1 == item.year;
 					});
 					if(!_has) {
-						_obj[item.Year] = []
+						_obj[item.year] = []
 					}
-					_obj[item.Year].push(item);
+					_obj[item.year].push(item);
 				});
 				this.list = _obj;
+				console.log(this.list);
 			}
 		},
 		components: {

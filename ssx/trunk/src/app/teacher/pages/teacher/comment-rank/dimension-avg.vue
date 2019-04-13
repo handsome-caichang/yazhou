@@ -45,8 +45,6 @@
 						}
 					}
 					.comment-list {
-						height: calc(100vh - 380px);
-						position: relative;
 						.to-detail {
 							padding: 10px 12px;
 							display: flex;
@@ -56,19 +54,15 @@
 							color: #333;
 							@include border-bottom;
 							background-color: #ffffff;
-                            >span:first-child {
-                                max-width: 65%;
+                            span:first-child {
+                                max-width: 65%;;
                             }
 							.span {
 								text-align: center;
 								color: #333333;
                                 display: flex;
-								justify-content: flex-end;
-								align-items: center;
-								width: 20%;
 								.lanse {
 									color: #1E88F5;
-									width: 65%;
 								}
 							}
 						}
@@ -108,13 +102,13 @@
 					<div class="comment-list">
 						<div 
 							v-for="item in list" 
-							:key="item.ClassID" 
+							:key="item.classid" 
 							class="to-detail" 
-							@click="toScoreDetail(item.ClassID)">
-							<span>{{ item.ClassName }}</span>
+							@click="toScoreDetail(item.classid)">
+							<span>{{ item.classname }}</span>
 							<span class="span">
-                      			<span :class="{'lanse' : item.Scope === '5.0000'}">
-                                    {{ item.Scope }}
+                      			<span :class="{'lanse' : item.scope === '5.0000'}">
+                                    {{ item.scope }}
                                 </span>
                                 <svg class="icon card-next" aria-hidden="true">
                                     <use xlink:href="#icon-youjiantou"></use>
@@ -133,7 +127,7 @@
 </template>
 
 <script>
-	import { getTeacherScoreDetail } from "teacher/api/comment-rank";
+	import { getteachercoursecommmetscopedetail } from "teacher/api/comment-rank";
 	import EmptyPage from "teacher/components/common/empty-page/empty-page";
 
 	export default {
@@ -148,30 +142,30 @@
 		},
 		computed: {
 			getparams() {
-				return this.$router.currentRoute.query;
+				let param = this.$router.currentRoute.query;
+				param.campusids = JSON.parse(param.campusids);
+				param.type = parseInt(param.type);
+				return param;
 			}
 		},
 		methods: {
-			_getTeacherScoreDetail() {
-				getTeacherScoreDetail(this.getparams).then(res => {
+			_getteachercoursecommmetscopedetail() {
+				getteachercoursecommmetscopedetail(this.getparams).then(res => {
 					this.isLoading = false;
-					if(res.ErrorCode == 200) {
-						this.list = [].concat(res.Data);
+					if(res.result.code == 200) {
+						this.list = [].concat(res.data);
 						this.itemName = this.getparams.itemName;
 					}
 				});
 			},
 			toScoreDetail(classid) {
-				this.$router.push({
-					path: '/classScoreDetail',
-					query: { ...this.getparams,
-						classid: classid
-					}
-				})
+				let _params = { ...this.getparams, classid: classid};
+				_params.campusids = JSON.stringify(_params.campusids);
+				this.$router.push({	path: '/classScoreDetail', query: _params})
 			}
 		},
 		created() {
-			this._getTeacherScoreDetail();
+			this._getteachercoursecommmetscopedetail();
 		},
 		components: {
 			EmptyPage

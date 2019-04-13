@@ -55,16 +55,16 @@
 <template>
 	<div class="statistics-list">
 		<scroller-base class="scroller" :data="list">
-			<div v-for="item in list" :key="item.classid" @click="toDetail(item)" class="statistics-item">
+			<div v-for="item in list" :key="item.shiftid" @click="toDetail(item)" class="statistics-item">
 				<!-- <div> -->
 					<span class="flex-left">
 		                <!-- 课名 -->
-		                <span class="course-name">{{item.classname}}</span>
+		                <span class="course-name">{{item.name}}</span>
 						<!-- 上课概览 -->
 						<span class="course-statistics">
-		                  	<span v-if="app.sysInfo.SSXCourseCountShowAll == 1">购买：{{item.totalamount}}</span>
-							<span v-if="app.sysInfo.SSXCourseCountShowAll == 1">已上课：<span class="cyan">{{item.usedamount}}</span></span>
-							<span>剩余：<span class="orange">{{item.remainamount}}</span></span>
+		                  	<span v-if="app.sysInfo.ssxcoursecountshowall == 1">购买：<span>{{item.totalamount}}</span>{{item.unit}}</span>
+							<span v-if="app.sysInfo.ssxcoursecountshowall == 1">已上课：<span class="cyan">{{item.usedamount}}</span>{{item.unit}}</span>
+							<span>剩余：<span class="orange">{{item.remainamount}}</span>{{item.unit}}</span>
 						</span>
 					</span>
 					<!-- 右箭头 -->
@@ -81,11 +81,11 @@
 </template>
 
 <script>
-	import {getcoursecountrecord} from "parent/api/statistics.js";
+	import {getcoursecountrecord} from "parent/api/statistics";
 	import EmptyPage from 'parent/components/common/empty-page/empty-page';
 
     /**@description
-     * 购买课次和已上课次：配置项SSXCourseCountShowAll（师生信家长端上课统计是否显示购买课次和已上课次）:0否1是
+     * 购买课次和已上课次：配置项ssxcoursecountshowall（师生信家长端上课统计是否显示购买课次和已上课次）:0否1是
      */
 	export default {
 		name: "statistics",
@@ -97,25 +97,25 @@
 			}
 		},
 		created() {
-			console.log(app.sysInfo)
 			getcoursecountrecord({
-				studentid: app.sysInfo.id
+				pname: 'courseCount'
 			}).then(res => {
 				this.isLoading = false;
-				if(res.result.code === app.errok) {
+				if(res.result.code == 200) {
 					this.list = res.data;
 				}
 			})
 		},
 		methods: {
 			toDetail(item) {
-				// 截取单位中的数值,如果有上课记录才跳转页面
-				//if( (item.usedamount).replace(item.unitname, '') > 0) {
-					this.$router.push({path: `/StatisticsDetail/${item.classid}`, components: 'StatisticsDetail'});
-				// } else {
-				// 	app.toast('info','该课程暂无上课记录。');
-				// 	return;
-				// } 
+				// 有上课记录才跳转页面
+				// 欠费,remainamount<0
+				if(item.totalamount > 0 || item.remainamount < 0) {
+					this.$router.push({path: `/statisticsDetail/${item.shiftid}`, component: 'StatisticsDetail'})
+				} else {
+					app.toast('info','该课程暂无上课记录。');
+					return;
+				}
 			}
 		},
 		components: {

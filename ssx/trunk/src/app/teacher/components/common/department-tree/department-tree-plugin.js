@@ -18,7 +18,7 @@ DepartTree.install = function(Vue,opts){
 				opts:opts
 			});
 		}
-		return treePlugin.show(...arguments);
+		return treePlugin.show(...arguments)
 	}
 }
 

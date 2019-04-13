@@ -40,7 +40,7 @@
 				<div class="title">加分项</div>
 				<div class="point-rule-container">
 					<div v-for="(item,index) in plusList" class="point-rule-item">
-						{{index+1}}、{{item.Name}}：{{item.Rule}}
+						{{index+1}}、{{item.name}}：{{item.rulemodel}}
 					</div>
 				</div>
 			</div>
@@ -49,7 +49,7 @@
 				<div class="title">减分项</div>
 				<div class="point-rule-container">
 					<div v-for="(item,index) in reduceList" class="point-rule-item">
-						{{index+1}}、{{item.Name}}：{{item.Rule}}
+						{{index+1}}、{{item.name}}：{{item.rulemodel}}
 					</div>
 				</div>
 			</div>
@@ -63,7 +63,7 @@
 </template>
 
 <script>
-	import {processGet} from 'parent/api/common';
+	import {getpointlist} from 'parent/api/point';
 	import EmptyPage from 'parent/components/common/empty-page/empty-page';
 	
 	export default {
@@ -81,7 +81,7 @@
 				this.plusList = [];
 				this.reduceList = [];
 				list.forEach(val=>{
-					if (val.Type == 1){
+					if (val.type == 1){
 						this.plusList.push(val);
 					} else {
 						this.reduceList.push(val);
@@ -90,12 +90,15 @@
 			}
 		},
 		created(){
-			processGet({
-				pname:'QueryRule'
+			getpointlist({
+				type:0,
+				flag:-1,
+				status:1
 			}).then(res=>{
-				this.list = res.data;
+				if (res.result.code == app.errok)
+				this.list = res.pointinfos;
 				this.isLoading = false;
-				this.classify(res.data);
+				this.classify(res.pointinfos);
 			});
 		},
 		components:{

@@ -4,31 +4,32 @@ const CommentList = () => import(/*webpackChunkName: "CommentList"*/ 'teacher/pa
 const CommentStudentsList = () => import(/*webpackChunkName: "CommentStudentsList"*/ 'teacher/pages/teacher/comment/comment-students-list')
 const CommentDetails = () => import(/*webpackChunkName: "CommentDetails"*/ 'teacher/pages/teacher/comment/comment-details')
 
+
 const routes = [
     {
-        path: "/commentList",
-        name: "commentList",
+        path: '/commentList',
+        name: 'commentList',
         component: routerBus,
         meta: {
             page: CommentList
         }
     },
     {
-        path: "/commentStudentsList/:id/:date/:time",
-        name: "commentStudentsList",
+        path: '/commentStudentsList/:id/:date/:time',
+        name: 'commentStudentsList',
         component: routerBus,
         meta: {
             page: CommentStudentsList
         }
     },
     {
-        path: "/commentDetail/:courseId/:studentId",
-        name: "commentDetail",
+        path: '/commentDetails/:courseId/:studentId',
+        name: 'commentDetails',
         component: routerBus,
         meta: {
             page: CommentDetails
         }
     }
-];
+]
 
 export default routes;

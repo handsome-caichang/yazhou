@@ -1,5 +1,6 @@
 <!-- iscroll 滚动组件 -->
 <style lang="scss" scoped>
+    
     .scroller-window {
         overflow: hidden;
         .scroll-area {
@@ -20,7 +21,7 @@
     </div>
 </template>
 <script>
-    import {KeyboardMixin} from './mixin/keyboard-mixin.js'
+    import {KeyboardMixin} from './mixin/keyboard-mixin.js';
 
     export default {
         name: 'scroller-base',
@@ -44,8 +45,6 @@
                     momentum: true,
                     bindToWrapper: true,
                     bounce: false,
-                    // preventDefault: true, // 是否屏蔽默认事件
-                    // click: true,  // 是否启用click事件
                     scrollbars: true, // 是否显示滚动条
                     fadeScrollbars: true, // 是否渐隐滚动条,关掉可以加速
                     scrollY: true, // 是否开启纵向滚动条
@@ -73,11 +72,12 @@
             },
             refresh() {
                 this.scroller && this.scroller.refresh();
-            }
+            },
         },
         mounted() {
             // 如果滚动条的窗口没有给绝对定位, 则默认给一个相对定位;
-            if (app.dom.getStyle(this.$refs.scrollWindow).position !== 'absolute') {
+            let posStr = app.dom.getStyle(this.$refs.scrollWindow).position
+            if (posStr !== 'absolute' && posStr !== 'relative') {
                 this.$refs.scrollWindow.style.position = "relative"
             }
 
@@ -88,7 +88,7 @@
         },
         watch: {
             data(newVal, oldval) {
-                this.$nextTick(() => {
+				this.$nextTick(function() {
                     this.refresh();
                 })
             }

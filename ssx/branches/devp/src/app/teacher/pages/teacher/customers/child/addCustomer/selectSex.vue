@@ -45,7 +45,7 @@
         :data="list" 
         @close="close">
         <div slot="header" class="actionsheet-hd">性别选择</div>
-            <!-- :class="{'active':item.Id==app.sysInfo.currole.Id}" -->
+            <!-- :class="{'active':item.Id==app.sysInfo.currole.id}" -->
         <div class="wrapper">
             <div class="actionsheet-item"
                 v-for="(item, index) in list"
@@ -65,9 +65,6 @@
 </template>
 
 <script>
-    
-    
-    
     export default {
         mixins: [app.mixin.popupWindowRouteMixin],
         props: {
@@ -93,7 +90,6 @@
         methods: {
             select(item) {
                 this.$emit('selectSexObj', item)
-                this.close()
             }
         },
         watch: {
@@ -110,9 +106,6 @@
                     }]
                 }
             }
-        },
-        components: {
-            
         }
     }
 </script>

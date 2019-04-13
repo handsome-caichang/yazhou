@@ -1,5 +1,7 @@
 <!-- 老师端 -->
 <style scoped lang="scss">
+	
+	
 	.home {
 		.home-group {
 			@include position-absolute(0, 0, $h-1, 0);
@@ -18,13 +20,12 @@
 		.bottom {
 			height: $h-1;
 			width: 100%;
-            border-top: 1px solid #eeeeee;
+			@include border-top(rgba(215, 215, 215, 1));
 			@include position-absolute(false, 0, 0, 0);
-			background: #FCFCFC;
+			background: $color-white;
 			display: flex;
 			.item {
 				flex: 1;
-                position: relative;
 				@include flex-center(column);
 				.icon {
 					font-size: 20px;
@@ -34,15 +35,6 @@
 					font-size: $fs-small-s;
 					margin-top: 3px;
 				}
-                .unread{
-                    position: absolute;
-                    top: 5px;
-                    right: 25%;
-                    width: 6px;
-                    height: 6px;
-                    border-radius: 10px;
-                    background-color: #ff3433;
-                }
 			}
 			.active {
 				color: $color-primary;
@@ -71,8 +63,7 @@
 				<svg class="icon" aria-hidden="true">
 					<use :xlink:href="index === activeIndex ? item.iconAction : item.icon"></use>
 				</svg>
-                <div class="unread" v-show="index==1&&app.sysInfo.HasUnReadMsg>0"></div>
-				<span class="text">{{index === 3 ? currole.Name : item.text}}</span>
+				<span class="text">{{index === 2 ? currole.name : item.text}}</span>
 			</div>
 		</div>
 
@@ -81,7 +72,7 @@
             :opened.sync="changeRoleFlag"
             @changeLoading="(bool)=>{isLoading = bool}">
         </role-actionsheet>
-
+        
         <!-- 切换用户遮罩 -->
         <loading v-show="isLoading" :bgType="1"></loading>
 	</div>
@@ -104,10 +95,6 @@
                     text: "主页",
                     component: Main
                 },{
-                    icon: "#icon-shishengxin1",
-                    iconAction: "#icon-shishengxinxuanzhong",
-                    text: "师生信"
-                },{
                     icon: "#icon-wode1",
                     iconAction: "#icon-wodexuanzhong",
                     text: "我的",
@@ -125,7 +112,7 @@
 				
 				switch(this.activeIndex){
 					case 0:
-						title = app.sysInfo.FullName+' - '+app.sysInfo.CompanyName || '主页';
+						title = app.sysInfo.documenttitle || '主页';
 						break;
 					default:
 						title = this.renderList[this.activeIndex].text;
@@ -140,7 +127,7 @@
                 if (index==1 && (this.currole.Id==1024||(this.currole.Id!=1024&&app.sysInfo.parentMessageTo==0))) {
                     return false;
                 }
-                if (index==3 && (app.sysInfo.RoleList.length<=1)) {
+                if (index==2 && (app.sysInfo.roles.length<=1)) {
                     return false;
                 }
                 return true;
@@ -151,8 +138,8 @@
 					this.$router.replace(`/home/${index}`);
 				}else {
 					if (index == 1) { //师生信
-                        app.gotoIM()
-                    }else if (index == 3) { //身份切换
+						window.location.href = item.href; 
+                    }else if (index == 2) { //身份切换
 						this.changeRoleFlag = true;
 					}
 				}
@@ -163,7 +150,7 @@
                         icon: "#icon-shenfenxuanze-weijihuo",
                         iconAction: "#icon-shenfenxuanze-jihuo"
                     },
-                    index:3
+                    index:2
                 };
                 this.changeContent(para.item,para.index)
             }

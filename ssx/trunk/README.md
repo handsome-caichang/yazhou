@@ -1,6 +1,6 @@
 # weiParent
 
-> �师生信
+> 校锐星
 
 ## Build Setup
 

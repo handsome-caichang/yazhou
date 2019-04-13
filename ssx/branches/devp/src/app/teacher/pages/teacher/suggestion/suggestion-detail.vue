@@ -1,8 +1,10 @@
 <style scoped lang="scss">
 	
     
+
 	.scroll {
 		// @include position-absolute(0,0,0,0);
+		// background-color: $color-assist-1;
 		.wrapper {
 			.item {
 				padding: 15px;
@@ -44,6 +46,7 @@
 					font-size: 15px;
 					color: $color-3;
 					line-height: 24px;
+					word-break: break-word;
 					overflow: hidden;
 				}
 			}
@@ -80,7 +83,7 @@
 					font-size: 15px;
 					color: $color-9;
 					padding-top: 5px;
-                    resize: none;
+					resize: none;
 				}
 				.niming {
 					margin-top: 13px;
@@ -134,8 +137,8 @@
 
 <template>
 	<scroller-base class="scroll" :data="scrollData" ref="scroll">
-		<div class="wrapper" v-if="suggestionDetail">
-			<div class="item" >
+		<div class="wrapper" v-if="JSON.stringify(suggestionDetail)!=='{}'">
+			<div class="item">
 				<div class="item-top">
 					<div class="avatar" :style="{backgroundImage: `url(${suggestionDetail.photo})`}"></div>
 					<div class="text">
@@ -144,19 +147,24 @@
 					</div>
 				</div>
 				<div class="content" ref="content" v-html="suggestionDetail.studentcontent"></div>
+				<!-- <div class="img-wrapper" >
+					<div class="img" v-for="item in suggestionDetail.listimgfile">
+						<div class="img-content" :style="{backgroundImage:`url(${item.filepath})`}"></div>
+					</div>
+				</div> -->
 				<img-area
 						class="img"
 				        :edit="false"
 				        :imageType="0"
-				        :imageFileList="suggestionDetail.ListImgFile"
+				        :imageFileList="suggestionDetail.listimgfile"
 				        @imageLoaded="imageLoaded">
 				</img-area>
 			</div>
-			<div class="record" v-if="suggestionDetail&&suggestionDetail.suggestreceives&&suggestionDetail.suggestreceives.length>0">
+			<div class="record" v-if="suggestionDetail.employeereceive&&suggestionDetail.employeereceive.length>0">
 				<div class="num" >
-					回复记录&nbsp;({{suggestionDetail.suggestreceives&&suggestionDetail.suggestreceives.length}}条)
+					回复记录&nbsp({{suggestionDetail.employeereceive&&suggestionDetail.employeereceive.length}}条)
 				</div>
-				<div class="now-reply" @click="editSuggest" v-if="hasPower">
+				<div class="now-reply" @click="editSuggest">
 					立即回复
 					<svg class="icon" aria-hidden="true">
 					    <use xlink:href="#icon-tousuyujianyi1"></use>
@@ -164,27 +172,27 @@
 				</div>
 			</div>
 			<div class="item" 
-				v-if="suggestionDetail&&suggestionDetail.suggestreceives&&suggestionDetail.suggestreceives.length>0" 
-				v-for="item in suggestionDetail.suggestreceives">
+				v-if="suggestionDetail.employeereceive&&suggestionDetail.employeereceive.length>0" 
+				v-for="item in suggestionDetail.employeereceive">
 				<div class="item-top" @click="changeSuggest(item)">
-					<div class="avatar" :style="{backgroundImage: `url(${item.TeacherPhoto})`}" v-if="!item.IsCryptonym"></div>
-					<div class="avatar" :style="{backgroundImage: `url(${defaultIcon})`}" v-if="item.IsCryptonym"></div>
+					<div class="avatar" :style="{backgroundImage: `url(${defaultIcon})`}" v-if="item.isanonymous===1"></div>
+					<div class="avatar" :style="{backgroundImage: `url(${item.teacherphoto})`}" v-if="item.isanonymous===0"></div>
 					<div class="text">
-						<div class="name">{{item.IsCryptonym?'回复':item.TeacherName}}</div>
-						<div class="time">{{item.TeacherTime}}</div>
+						<div class="name">{{item.isanonymous?'回复':item.teachername}}</div>
+						<div class="time">{{item.teachertime}}</div>
 					</div>
-					<div class="icon-wrapper" v-if="hasPower">
+					<div class="icon-wrapper">
 						<svg class="icon" aria-hidden="true">
 						    <use xlink:href="#icon-xiugai"></use>
 						</svg>
 					</div>
 				</div>
-				<div class="content">{{item.TeacherContent}}</div>
+				<div class="content">{{item.teachercontent}}</div>
 			</div>
-			<div class="send-msg" v-if="hasPower">
+			<div class="send-msg">
 				<div class="huifu">回复</div>
 				<textarea 
-	                placeholder="输入回复内容(500字以内)"
+	                placeholder="输入回复内容"
 	                class="textarea"
 	                v-model="suggestText"
 	                ref="textarea"
@@ -193,44 +201,44 @@
 	                @touchmove="app.area.move($event)"
 	                @touchend="app.area.end($event)">
 	            </textarea>
-				<div class="niming" @click="isTrueName=!isTrueName" v-show="showCryptonym">
+				<div class="niming" @click="changeTrueName" v-show="showCryptonym">
 					<svg class="icon" aria-hidden="true">
-					    <use :xlink:href="isTrueName?'#icon-duoxuan':'#icon-duoxuan-weixuanze'"></use>
+					    <use :xlink:href="isTrueName===1?'#icon-duoxuan':'#icon-duoxuan-weixuanze'"></use>
 					</svg>
 					匿名回复
 				</div>
 				<div class="text" v-show="showCryptonym">勾选“匿名回复”后，家长不能看到回复人的真实姓名。否则，系统会显示回复人的真实姓名。</div>
 				<div class="submit" 
 					 v-show="isShowSubmit"
-					 @click="sendSuggest('id')">
+					 @click="sendSuggest(true)">
 					 提交
 				</div>
 				<div class="submit-two" v-show="!isShowSubmit">
-					<div class="sure" @click="sendSuggest('receiveid')">确定</div>
+					<div class="sure" @click="sendSuggest(false)">确定</div>
 					<div class="cancle" @click="cancleEditSuggest">取消</div>
 				</div>
 			</div>
 		</div>
-		<empty-page class="noData" :type="9" v-if="!suggestionDetail"></empty-page>
+		<empty-page class="noData" :type="9" v-if="JSON.stringify(suggestionDetail)=='{}'"></empty-page>
 	</scroller-base>
 </template>
 
 <script>
-	import {getSuggestDetail, receiveSuggest} from 'teacher/api/suggestion'
+	import {getsuggestionforteacherinfo, addsuggestionforteacher} from 'teacher/api/suggestion'
 	import EmptyPage from 'teacher/components/common/empty-page/empty-page'
 	import defaultIcon from './img/cryptonym.png'
 	export default {
 		data() {
 			return {
 				wxTitle: "投诉与建议",
-				isTrueName: true,
+				isTrueName: 1,
 				isShowSubmit: true,
-				suggestionDetail: null,
+				suggestionDetail: {},
 				suggestText: '',
 				receiveid: null,
 				defaultIcon: defaultIcon,
 				showCryptonym: true,
-				hasPower: true,
+				// hasPower: true,
 				scrollNum: 0
 			}
 		},
@@ -243,58 +251,53 @@
 			}
 		},
 		methods: {
+			changeTrueName() {
+				this.isTrueName = this.isTrueName === 0 ? 1 : 0
+			},
 			renderData() {
-				getSuggestDetail({id: this.$route.params.id}).then(res => {
-					console.log(res)
+				getsuggestionforteacherinfo({suggestid: this.$route.params.id}).then(res => {
 					if (res.result.code === app.errok) {
 						this.suggestionDetail = res.data
-						// this.suggestionDetail = null
 						this.suggestionDetail.studentcontent = app.tool.textToHtml(this.suggestionDetail.studentcontent)
 					}
 				})
 			},
-			sendSuggest(id) {
-				
+			sendSuggest(tag) {
 				if (this.suggestText == '') {
 					app.toast('info', '请输入内容。')
 					return
 				}
 				
-				let obj = {}
-				// obj[id] = id === 'id' ? this.$route.params.id : this.receiveid
-				if(id==='id'){
-					obj['suggestid']= this.$route.params.id
-				}else{
-					obj[receiveid] = this.receiveid
-				}
-				receiveSuggest(Object.assign(obj, {
+				let obj = {
+					receiveid: this.receiveid,
+					suggestid: this.$route.params.id,
 					content: this.suggestText,
 					isanonymous: this.isTrueName,
-					mediaids:''
-				})).then(res => {
-						if (res.result.code === app.errok) {
-							this.suggestText = ''
-							this.isShowSubmit = true
-							this.renderData()
-							app.toast('info', '您的回复提交成功。')
-							if (id === 'id' || id.id) {
-								app.event.emit('refresh')
-							}
-							if (id === 'receiveid') {
-								this.showCryptonym = true
-								this.isTrueName = true
-							}
-						}
-					})
+					teacherid: app.sysInfo.id
+				}
+				addsuggestionforteacher(obj).then(res => {
+					if (res.result.code === app.errok) {
+						this.suggestText = ''
+						this.isShowSubmit = true
+						this.showCryptonym = true
+						this.isTrueName = 1
+						this.receiveid = ''
+						this.renderData()
+						app.toast('success', '您的回复提交成功。')
+						if (tag) {
+							app.event.emit('refresh')	
+						} 
+					}
+				})
 			},
 			changeSuggest(item) {
 				this.editSuggest()
 				if (item) {
 					this.isShowSubmit = false
-					this.receiveid = item.ReceiveID
-					this.suggestText = item.TeacherContent
+					this.receiveid = item.receiveid
+					this.suggestText = item.teachercontent
 					this.showCryptonym = false
-					this.isTrueName = item.IsCryptonym
+					this.isTrueName = item.isanonymous
 				}
 			},
 			editSuggest() {
@@ -309,16 +312,16 @@
 				this.isShowSubmit = true
 				this.suggestText = ''
 				this.showCryptonym = true
+				this.isTrueName = 1
 			},
 			imageLoaded() {
 				this.scrollNum ++
 			}
 		},
-		watch: {
-		},
 		created() {
+			window.b = this
 			this.renderData()
-			if (!app.tool.op('SuggestionsReply')) this.hasPower = false
+			// if (!app.tool.op('suggestionsreply')) this.hasPower = false
 		},
 		components: {
 			EmptyPage

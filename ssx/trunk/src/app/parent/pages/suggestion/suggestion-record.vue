@@ -121,49 +121,48 @@
         <scroller-base class="scroller" :data="renderData">
             <div class="card" v-for="(item,index) in recordList" :key="index">
                 <div class="card-student">
-                    <div class="head-img" :style="'backgroundImage:url('+item.Photo+')'">
+                    <div class="head-img" :style="'backgroundImage:url('+item.photo+')'">
                     </div>
                     <div class="student-msg borderlight">
-                        <div class="msg-name">{{item.StudentName}}</div>
+                        <div class="msg-name">{{item.studentname}}</div>
                         <div class="msg-content">
                             <!--文本内容-->
-                            <div class="content" v-html="item.StudentContent">
+                            <div class="content" v-html="item.studentcontent">
                             </div>
-                            <!--图片内容-->
+                            <!--图片内容 先注释以免报错-->
                             <img-area
-                                    :edit="false"
-                                    :imageType="0"
-                                    :imageFileList="item.ListImgFile"
-                                    v-if="item.ListImgFile.length>0">
+                                :edit="false"
+                                :imageType="0"
+                                :imageFileList="item.listimgfile"
+                                v-if="item.listimgfile.length>0">
                             </img-area>
                         </div>
-                        <span class="msg-date">{{item.StudentTime.replace(/-/g, '.')}}</span>
+                        <span class="msg-date">{{item.studenttime.replace(/-/g, '.')}}</span>
                     </div>
                 </div>
 
                 <div :class="(index+1)<item.showMoreReplyFlag?'borderlight':'' "
                      class="card-teacher"
-                     v-for="(reply,index) in (item.EmployeeReceive)"
+                     v-for="(reply,index) in (item.employeereceive)"
                      v-if="index<item.showMoreReplyFlag"
                      :key="index">
-
-                    <div v-if="reply.IsCryptonym" class="teacher-img" :style="'backgroundImage:url('+defaultAvatar+')'">
+                    <div v-if="reply.iscryptonym" class="teacher-img" :style="'backgroundImage:url('+defaultAvatar+')'">
                     </div>
-                    <div v-else class="teacher-img" :style="'backgroundImage:url('+reply.TeacherPhoto+')'">
+                    <div v-else class="teacher-img" :style="'backgroundImage:url('+reply.teacherphoto+')'">
                     </div>
                     <div class="teacher-reply">
                         <div class="reply-name">
-                            <span v-if="!reply.IsCryptonym">{{reply.TeacherName}}</span>
+                            <span v-if="!reply.iscryptonym">{{reply.teachername}}</span>
                             <span class="describe">回复</span>
                         </div>
-                        <div class="reply-content" v-html="reply.TeacherContent">
+                        <div class="reply-content" v-html="reply.teachercontent">
                         </div>
-                        <span class="reply-date">{{reply.TeacherTime}}</span>
+                        <span class="reply-date">{{reply.teachertime}}</span>
                     </div>
                 </div>
 
-                <div class="more-reply" v-if="item.EmployeeReceive.length>2" @click="showMoreReply(item)">
-                    <span v-if="item.showMoreReplyFlag==2">查看剩余{{item.EmployeeReceive.length-2}}条回复
+                <div class="more-reply" v-if="item.employeereceive.length>2" @click="showMoreReply(item)">
+                    <span v-if="item.showMoreReplyFlag==2">查看剩余{{item.employeereceive.length-2}}条回复
                         <svg class="icon" aria-hidden="true">
                             <use xlink:href="#icon-shouqizhankai"></use>
                         </svg>
@@ -182,8 +181,8 @@
 </template>
 
 <script>
-    import {processPost} from "parent/api/common";
     import EmptyPage from "parent/components/common/empty-page/empty-page";
+    import {getsuggestioninfos} from 'parent/api/suggestion.js';
 
     export default {
         name: "suggestion-record",
@@ -201,7 +200,7 @@
                 this.clickNum++;
             },
             showMoreReply(item) { //查看剩余回复
-                item.showMoreReplyFlag = item.showMoreReplyFlag == 2 ? item.EmployeeReceive.length : 2;
+                item.showMoreReplyFlag = item.showMoreReplyFlag == 2 ? item.employeereceive.length : 2;
                 this.clickNum++;
             }
         },
@@ -219,19 +218,18 @@
             if (para.id == '00000000-0000-0000-0000-000000000000') {
                 para.id = ''
             }
-            processPost({
-                pname: 'suggestion',
-                id: para.id
+            getsuggestioninfos({
+                'suggestid':para.id
             }).then(res => {
                 this.isLoading = false;
-                if (res.errcode == app.errok) {
+                if (res.result.code == app.errok) {
                     res.data.forEach(item => {
                         item.showMoreReplyFlag = 2;
-                        item.StudentContent = app.tool.richTextToHtml(item.StudentContent, false);
+                        item.studentcontent = app.tool.richTextToHtml(item.studentcontent,false);
                         //回复
-                        item.EmployeeReceive.forEach(reply => {
-                            reply.TeacherContent = app.tool.richTextToHtml(reply.TeacherContent, false);
-                            reply.TeacherTime = reply.TeacherTime.replace(/-/g, '.')
+                        item.employeereceive.forEach(reply => {
+                            reply.teachercontent = app.tool.richTextToHtml(reply.teachercontent,false);
+                            reply.teachertime = reply.teachertime.replace(/-/g, '.')
                         })
                     });
                     this.recordList = res.data;

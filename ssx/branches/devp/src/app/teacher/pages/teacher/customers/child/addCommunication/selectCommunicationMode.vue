@@ -74,9 +74,8 @@
 </template>
 
 <script>
+    import {getCommunicationMode} from 'teacher/api/customers';
     
-    
-    import {getCommunicationMode} from 'teacher/api/customers'
     export default {
         mixins: [app.mixin.popupWindowRouteMixin],
         props: {
@@ -122,9 +121,6 @@
                     })
                 }
             }
-        },
-        components: {
-            
         }
     }
 </script>

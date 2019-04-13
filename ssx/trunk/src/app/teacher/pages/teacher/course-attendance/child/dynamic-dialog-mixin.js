@@ -27,8 +27,8 @@ export default {
 		inputDaynamicUpdate(event){
 			let value = event.target.value;
 			let reg = this.courseInfo.unitCode == 2 ? 
-							/(?:^\d{1,8}\.\d{0,2}$)|(?:^\d{0,8}$)/
-							:/(?:^\d{0,8}$)/;
+							/(?:^\d{1,4}\.\d{0,2}$)|(?:^\d{0,4}$)/
+							:/(?:^\d{0,4}$)/;
 			if (reg.test(value.trim())){
 				if (this.maxVal != -1){
 					event.target.value =  this.dynamicModel = (this.maxVal < +value ? this.maxVal : value);

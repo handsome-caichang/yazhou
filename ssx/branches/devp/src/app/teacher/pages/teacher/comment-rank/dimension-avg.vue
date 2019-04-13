@@ -45,8 +45,6 @@
 						}
 					}
 					.comment-list {
-						height: calc(100vh - 380px);
-						position: relative;
 						.to-detail {
 							padding: 10px 12px;
 							display: flex;
@@ -56,19 +54,15 @@
 							color: #333;
 							@include border-bottom;
 							background-color: #ffffff;
-                            >span:first-child {
-                                max-width: 65%;
+                            span:first-child {
+                                max-width: 65%;;
                             }
 							.span {
 								text-align: center;
 								color: #333333;
                                 display: flex;
-								justify-content: flex-end;
-								align-items: center;
-								width: 20%;
 								.lanse {
 									color: #1E88F5;
-									width: 65%;
 								}
 							}
 						}
@@ -91,8 +85,8 @@
 				ref="commentDimensionListIScroller">
 				<!-- 统计维度总平均分 -->
 				<div class="dimension-result">
-					<div class="txt">{{itemname}}</div>
-					<div class="val">{{ getparams.passcope }}</div>
+					<div class="txt">{{itemName}}</div>
+					<div class="val">{{ getparams.passScope }}</div>
 				</div>
 
 				<!-- 维度列表 -->
@@ -113,7 +107,7 @@
 							@click="toScoreDetail(item.classid)">
 							<span>{{ item.classname }}</span>
 							<span class="span">
-                      			<span :class="{'lanse' : item.Scope === '5.0000'}">
+                      			<span :class="{'lanse' : item.scope === '5.0000'}">
                                     {{ item.scope }}
                                 </span>
                                 <svg class="icon card-next" aria-hidden="true">
@@ -142,44 +136,36 @@
 			return {
 				wxTitle: "评价维度",
 				list: [],
-				itemname: '',
+				itemName: '',
 				isLoading: true
 			};
 		},
 		computed: {
 			getparams() {
-				return this.$router.currentRoute.query;
+				let param = this.$router.currentRoute.query;
+				param.campusids = JSON.parse(param.campusids);
+				param.type = parseInt(param.type);
+				return param;
 			}
 		},
 		methods: {
-			_getTeacherScoreDetail() {
-				getteachercoursecommmetscopedetail(Object.assign({},this.getparams,{
-					page:{
-						sortfield:'',
-						isdesc:false,
-						pageindex:1,
-						pagesize:20
-					}
-				})).then(res => {
+			_getteachercoursecommmetscopedetail() {
+				getteachercoursecommmetscopedetail(this.getparams).then(res => {
 					this.isLoading = false;
-					console.log(res)
 					if(res.result.code == 200) {
 						this.list = [].concat(res.data);
-						this.itemname = this.getparams.itemname;
+						this.itemName = this.getparams.itemName;
 					}
 				});
 			},
 			toScoreDetail(classid) {
-				this.$router.push({
-					path: '/classScoreDetail',
-					query: { ...this.getparams,
-						classid: classid
-					}
-				})
+				let _params = { ...this.getparams, classid: classid};
+				_params.campusids = JSON.stringify(_params.campusids);
+				this.$router.push({	path: '/classScoreDetail', query: _params})
 			}
 		},
 		created() {
-			this._getTeacherScoreDetail();
+			this._getteachercoursecommmetscopedetail();
 		},
 		components: {
 			EmptyPage

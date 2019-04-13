@@ -54,8 +54,8 @@
         v-if="opened" 
         @close="close">
         <div class="selectOne" v-if="selectOne">
-            <div class="selectOne-item" @click="changeContent('status')">状态</div>
             <div class="selectOne-item" @click="changeContent('campus')">校区</div>
+            <div class="selectOne-item" @click="changeContent('status')">状态</div>
         </div>
         
         <div slot="header" class="actionsheet-hd selectTwo" v-if="selectTwo">{{selectTwoString=='campus'?"校区选择":"状态选择"}}</div>
@@ -68,9 +68,7 @@
 </template>
 
 <script>
-    
-    
-    import {getCommunicationMode} from 'teacher/api/customers'
+    import {getCommunicationMode} from 'teacher/api/customers';
     
     export default {
         mixins: [app.mixin.popupWindowRouteMixin],
@@ -86,7 +84,7 @@
                 if (this.selectTwoString == '') {
                     return []
                 } else {
-                    return this.selectTwoString == 'campus' ? app.customConfigInfo.CampusList : app.customConfigInfo.CustomerStatusNoSus
+                    return this.selectTwoString == 'campus' ? app.customConfigInfo.CampusList : app.customConfigInfo.CustomerStatus
                 }
             },
             position() {
@@ -130,9 +128,6 @@
                     this.selectTwoString = ''
                 }
             },
-        },
-        components: {
-            
         }
     }
 </script>

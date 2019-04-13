@@ -48,9 +48,6 @@
 </template>
 
 <script>
-    
-    
-    
     export default {
         mixins: [app.mixin.popupWindowRouteMixin],
         props: {
@@ -91,9 +88,6 @@
                     // this.list = app.customConfigInfo.CustomerStatus
                 }
             },
-        },
-        components: {
-            
         }
     }
 </script>

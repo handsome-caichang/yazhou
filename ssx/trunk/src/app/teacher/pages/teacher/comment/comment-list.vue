@@ -42,7 +42,7 @@
                     height: 55px;
                     color: $color-6;
                     font-size: 12px;
-                    .icon{
+                     .icon{
                         margin-right: 5px;
                     }
                     .name {
@@ -117,8 +117,8 @@
         <div class="header">
             <div class="date-filter">
                 <date-bar
-                        :sdate='dateObj.sdate'
-                        :edate='dateObj.edate'
+                        :sdate='dateObj.startdate'
+                        :edate='dateObj.enddate'
                         :index="quickDateIndex"
                         @changeDate="changeDate">
                 </date-bar>
@@ -137,26 +137,26 @@
                     :pagingOption="pagingOption"
                     @loadData="loadData"
                     ref="commentListScroller">
-                <router-link tag="div" class="card" v-for="item in list" :to="`/commentStudentsList/${item.id}/${item.date}/${item.time||'00:00~23:59'}`" :key="item.id">
+                <router-link tag="div" class="card" v-for="item in list" :to="`/commentStudentsList/${item.courseid}/${item.startdate}/${item.time||'00:00~23:59'}`" :key="item.id">
                     <div class="card-fl">
-                        <div class="name">{{item.name}}</div>
+                        <div class="name">{{item.classname}}</div>
                         <div class="room">
                             <svg aria-hidden="true" class="icon">
                                 <use xlink:href="#icon-jiaoshi1"></use>
-                            </svg>{{item.classroom}}
-                        </div>
+                            </svg>{{item.classroom}}</div>
                         <div class="date">
                             <svg aria-hidden="true" class="icon">
                                 <use xlink:href="#icon-shijian1"></use>
-                            </svg><span class="date-md">{{item.date.replace(/-/,'.')}}</span>
-                            <span class="date-time">{{item.time}}</span>
+                            </svg><span class="date-md">{{item.startdate.replace(/-/,'.')}}</span>
+                            <!-- 注意：重构是用time字段表示，不需要用unit做判断，后台已经做了判断 -->
+                            <span class="date-time" v-if="item.unit!==3">{{item.starttime}}~{{item.endtime}}</span>
                         </div>
                     </div>
                     <div class="card-fr">
                         <div class="text">点评</div>
                         <div class="counts">
-                            <span :class="{bright:item.evaluateCount!=item.attendanceCount}">
-                                {{item.evaluateCount}}</span>/<span>{{item.attendanceCount}}</span>
+                            <span :class="{bright:item.evaluatecount!=item.attendcount}">
+                                {{item.evaluatecount}}</span>/<span>{{item.attendcount}}</span>
                         </div>
                     </div>
                 </router-link>
@@ -178,9 +178,8 @@
 </template>
 
 <script>
-    import {processGet} from "teacher/api/common";
+    import {gettechercourseevaluate} from "teacher/api/comment"; //获取课程评价
     import EmptyPage from 'teacher/components/common/empty-page/empty-page';
-    import {getCommentClassList} from 'teacher/api/comment';
     import StateActionsheet from 'teacher/components/common/actionsheets/state-actionsheet.vue';
 
     export default {
@@ -197,29 +196,19 @@
                 },
                 quickDateIndex:-1,
                 dateObj:{
-                    sdate:"",
-                    edate:""
+                    startdate:"",
+                    enddate:""
                 },
                 list: [],
                 pagingOption: {
-                    api: processGet,
+                    api: gettechercourseevaluate,
                     params: {
-                        pname:"comment",
-                        flag:-1,// 是否点评 -1不限 1已点评 0未点评
-                        sdate:'',
-                        edate:''
-                    },
-                    pageOpt: {
-                        // 分页初始页码的'key'、'value'
-                        indexKey: 'page',
-                        indexVal: 1,
-                        // 每页请求数据长度的'key'、'value'
-                        sizeKey: 'pageSize',
-                        sizeVal: 20,
-                        // 后端返回的总页数'key'
-                        countKey: 'pageCount'
-                    },
-
+                        startdate:'',
+                        enddate:'',
+                        page:{
+                            pagesize:10
+                        }
+                    }
                 },
                 imgsNum: 0
             }
@@ -228,12 +217,18 @@
             loadData(ajaxPromise) {
                 ajaxPromise.then(res => {
                     this.isLoading = false;
-                    if (res.errcode == app.errok) {
-                        if (res.pageIndex === 1) {
+                    if (res.result.code == app.errok) {
+                        if (res.page.pageindex === 1) {
                             this.list = [];
                         }
                         res.data.forEach(item=>{
-                            item.date = item.date.substring(5,10);
+                            item.startdate = item.startdate.substring(5,10);//03-25
+                            //拼接一下item.time
+                            if(0){//是否按月
+                                item.time = '00:00~23:59';
+                            }else{
+                                item.time = item.starttime+'~'+item.endtime;
+                            }
                         })
                         this.list = this.list.concat(res.data);
                     }
@@ -248,8 +243,8 @@
                 this.$refs.commentListScroller.refresh({'type':type});
             },
             changeDate(obj){
-                this.dateObj.sdate = obj.sdate;
-                this.dateObj.edate = obj.edate;
+                this.dateObj.startdate = obj.sdate;
+                this.dateObj.enddate = obj.edate;
                 this.quickDateIndex = obj.index;
                 this.isLoading = true;
                 this.$refs.commentListScroller.refresh(this.dateObj);
@@ -263,18 +258,18 @@
             let pushObj = app.tool.parseHash().query;
             if(app.tool.isEmptyObject(pushObj)){
                 //界面显示
-                this.dateObj.sdate = app.tool.getDatesByIndex(3).sdate;
-                this.dateObj.edate = app.tool.getDatesByIndex(3).edate;
+                this.dateObj.startdate = app.tool.getDatesByIndex(3).sdate;
+                this.dateObj.enddate = app.tool.getDatesByIndex(3).edate;
                 //传参
-                this.pagingOption.params.sdate = app.tool.getDatesByIndex(3).sdate;
-                this.pagingOption.params.edate = app.tool.getDatesByIndex(3).edate;
+                this.pagingOption.params.startdate = app.tool.getDatesByIndex(3).sdate;
+                this.pagingOption.params.enddate = app.tool.getDatesByIndex(3).edate;
             }else{
                 //界面显示
-                this.dateObj.sdate = pushObj.sdate;
-                this.dateObj.edate = pushObj.edate;
+                this.dateObj.startdate = pushObj.sdate;
+                this.dateObj.enddate = pushObj.edate;
                 //传参
-                this.pagingOption.params.sdate = pushObj.sdate;
-                this.pagingOption.params.edate = pushObj.edate;
+                this.pagingOption.params.startdate = pushObj.sdate;
+                this.pagingOption.params.enddate = pushObj.edate;
             }
 
         },

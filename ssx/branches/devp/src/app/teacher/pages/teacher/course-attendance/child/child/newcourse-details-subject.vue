@@ -36,9 +36,6 @@
 </template>
 
 <script>
-    
-    
-
     export default {
         name: "newcourse-details-subject",
         mixins: [app.mixin.popupWindowRouteMixin],
@@ -71,9 +68,6 @@
                     this.close();
                 }
             }
-        },
-        components: {
-            
         },
         watch: {
             opened: function (newVal, oldVal) {

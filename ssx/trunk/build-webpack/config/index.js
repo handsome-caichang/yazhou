@@ -13,7 +13,7 @@ module.exports = {
 
     dev: {
         assetsSubDirectory: 'static',
-        assetsPublicPath: '/weixin/',
+        assetsPublicPath: '/winxin/',
         cacheBusting: true,
         jsSourceMap: true,
         cssSourceMap: true,
@@ -23,9 +23,9 @@ module.exports = {
     },
 
     build: {
-        assetsRoot: resolve('../release/weixin'),
+        assetsRoot: resolve('../release/winxin'),
         assetsSubDirectory: 'static',
-        assetsPublicPath: '//cdn01.xiaogj.com/uploads/mobile/xgj/',
+        assetsPublicPath: '/winxin/',
         jsSourceMap: false,
         cssSourceMap: false,
         productionGzip: false,
@@ -37,23 +37,15 @@ module.exports = {
     },
 
     proxy: {
-        '/api': {
-            target: 'http://wone.xiaogj.com',
+        '/wx.do': {
+            target: 'http://smarttest2.xiaogj.com',
             changeOrigin: true,
         },
-        '/weixin/teacher/Process.ashx': {
-            target: 'http://wone.xiaogj.com',
+        //其他人
+        /*'/99/wx.do': {
+            target: 'http://10.0.0.99:10010',
             changeOrigin: true,
-        },
-        '/99/api': {
-            target: 'http://test.xiaogj.com',
-            changeOrigin: true,
-            pathRewrite: {'^/99/api': '/api'}
-        },
-        '/99/weixin/teacher/Process.ashx': {
-            target: 'http://test.xiaogj.com',
-            changeOrigin: true,
-            pathRewrite: {'^/99/weixin/teacher/Process.ashx': '/weixin/teacher/Process.ashx'}
-        }
+            pathRewrite: {'^/99/wx.do': '/wx.do'}
+        },*/
     }
 }

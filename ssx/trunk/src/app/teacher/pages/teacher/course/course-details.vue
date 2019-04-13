@@ -62,21 +62,18 @@
         <scroller-base class="as-details" :data="renderData">
             <div class="class-name">
                 {{className}}
-                <span v-show="list.subjectName!=''">
-                    （{{list.subjectName}}）
-                </span>
             </div>
             <div class="item">
-                <div class="describe">{{app.sysInfo.Title_Campus}}</div>
+                <div class="describe">{{app.sysInfo.title_campus}}</div>
                 <div class="content">{{campus}}</div>
             </div>
             <div class="item">
                 <div class="describe">老师</div>
-                <div class="content teacher">{{list.teacher}}</div>
+                <div class="content teacher">{{list.teachernames}}</div>
             </div>
             <div class="item">
                 <div class="describe">教室</div>
-                <div class="content classroom">{{list.classroom}}</div>
+                <div class="content classroom">{{list.classroomname}}</div>
             </div>
             <div class="item">
                 <div class="describe">时间</div>
@@ -89,7 +86,7 @@
             </div>
 
             <!--上课内容-->
-            <div class="content-area" v-if="list.content!=''">
+            <div class="content-area" v-if="(list.content!=null)&&(list.content!='')">
                 <div class="title">上课内容</div>
                 <div class="content" v-html="list.content"></div>
             </div>
@@ -102,9 +99,8 @@
 </template>
 
 <script>
-    import {processGet} from "teacher/api/common";
-
-    export default {
+    import {getcourseinfosbytime} from "teacher/api/course";
+        export default {
         name: "course-details",
         data() {
             return {
@@ -125,24 +121,32 @@
             }
         },
         methods: {
-            getData(id) {
-                processGet({
-                    pname: "courseList_detail",
-                    id: id
+            getData(id,user) {
+                getcourseinfosbytime({
+                    viewtype: 3,
+                    usertype: user,
+                    courseid: id
                 }).then(res => {
                     this.isLoading = false;
-                    if (res.errcode == app.errok) {
+                    if (res.result.code == app.errok) {
                         res.data.date = res.data.date.replace(/-/g, '.');
                         res.data.content = res.data.content&&app.dom.parseDom(res.data.content);
+                        res.data.teachernames = res.data.teachernames.join(',');
                         this.list = res.data;
                     } else {
-                        app.toast('error', res.errmsg)
+                        app.toast('error', res.result.msg)
                     }
                 })
             }
         },
         created() {
-            this.getData(this.$route.query.id);
+            let role = app.sysInfo.currole.id;
+            if(role==4){
+                role = 1;
+            }else if (role==16){
+                role = 3;
+            }
+            this.getData(this.$route.query.id,role);
             this.className = this.$route.query.classname;
             this.campus = this.$route.query.campus;
         }

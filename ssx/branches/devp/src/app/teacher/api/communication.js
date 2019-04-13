@@ -18,11 +18,3 @@ export function getCommunicationList(params) {
     */
     return axios.ajax('/weixin/teacher/Process.ashx', params)
 }
-// 发布通知-获取内容模板
-export function getDictionartGet(params) {
-    /* 
-        type: 'COMM_COTENTTPL'
-    */
-    return axios.ajax('/api/Dictionary/Get', params)
-}
-

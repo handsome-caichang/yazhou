@@ -1,4 +1,4 @@
- <!--家长排名-选择校区-多选-->
+/* 家长排名-选择校区-多选 */
 <style lang="scss" scoped>
 	
 	
@@ -88,12 +88,12 @@
 			:data="tempList" 
 			:scrollerStyle="scrollerStyle" 
 			ref="campusAS">
-			<div @click="chooseCampus(item, key)" class="to-detail" v-for="(item, key) in tempList" :key="item.ID">
+			<div @click="chooseCampus(item, key)" class="to-detail" v-for="(item, key) in tempList" :key="item.id">
 				<div class="left-div">
 					<svg class="icon icon-duoxuan" aria-hidden="true">
 						<use :xlink:href="item.checked&&item.checked==true?'#icon-duoxuan':'#icon-duoxuan-weixuanze'"></use>
 					</svg>
-					<span class="campusName">{{item.Name}}</span>
+					<span class="campusName">{{item.name}}</span>
 				</div>
 			</div>
 
@@ -110,9 +110,8 @@
 </template>
 
 <script>
-
 export default {
-	name: "campus-list",
+  name: "campus-list",
 	mixins: [app.mixin.popupWindowRouteMixin],
   props: {
     opened: {
@@ -122,12 +121,14 @@ export default {
   },
   data() {
     return {
-      list: app.sysInfo.CampusList,
+      list: app.sysInfo.campuslist,
       tempListClone: [], //记录确定之前状态的tempList(初始克隆出来)
       tempList: [],
       isAll: false, // 是否选中所有
       counter: 0, // 总数
       scrollerStyle: {
+        top: 0,
+        bottom: "48px",
         background: "#eef1f6"
       }
     };
@@ -178,9 +179,6 @@ export default {
       }).length;
       this.counter == this.tempList.length ? this.isAll = true : this.isAll = false;
     }
-  },
-  components: {
-    
   }
 };
 </script>

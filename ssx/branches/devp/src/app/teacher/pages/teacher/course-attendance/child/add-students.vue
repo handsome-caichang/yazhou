@@ -158,13 +158,13 @@
 					</div>
 					<div class="info-desc">
 						<div class="student-info1">
-							<span>{{item.Name}}</span>
-							<span>{{item.Serial}}</span>
-							<span>{{item.CampusName}}</span>
+							<span>{{item.name}}</span>
+							<span>{{item.serial}}</span>
+							<span>{{item.campusName}}</span>
 						</div>
 						<div class="student-info2">
-							<span>年级：{{item.Grade}}</span>
-							<span>手机号码：{{item.SMSTel}}</span>
+							<span>年级：{{item.grade}}</span>
+							<span>手机号码：{{item.smstel}}</span>
 						</div>
 					</div>
 				</div>
@@ -181,12 +181,10 @@
 </template>
 
 <script>
-	
 	import submitInfo from "./submit-info.vue";
 	import EmptyPage from 'teacher/components/common/empty-page/empty-page';
-	
-	import { searchStudents, addStudentCourse, addStudentClass } from "teacher/api/course-attendance";
-	
+    import { getstudentinfosforwx, studentinfocourse, opclassstudent } from "teacher/api/course-attendance";
+    
 	export default {
 		name: "add-students",
 		mixins: [app.mixin.popupWindowRouteMixin],
@@ -198,8 +196,8 @@
 				keyword: '',
 				para: {},
 				CFG: {
-					cfgAddClass: app.sysInfo.HideMoreStudentsOnClass == '0', //是否显示加入此班.0隐藏,1不隐藏
-					cfgQuery: app.sysInfo.EnableStudentQueryEmpty, //是否可以用空字符串查询,0和2都不可以,1可以.
+					cfgAddClass: true,//app.sysInfo.hidemorestudentsonclass == '0', //是否显示加入此班.0隐藏,1不隐藏
+					cfgQuery: '1',//app.sysInfo.enablestudentqueryempty, //是否可以用空字符串查询,0和2都不可以,1可以.
 				},
 				scrollerConfig: {
 					tag: 'super',
@@ -207,7 +205,7 @@
 					pagingOption: {
 						autoLoadFirst: false,
 						params: {},
-						api: searchStudents,
+						api: getstudentinfosforwx,
 					}
 				},
 				_resolve: null,
@@ -236,11 +234,11 @@
 					}
 				}
 				let params = {
-					Query: this.keyword,
-					campusFlag: 1,
+					query: this.keyword,
+					/*campusFlag: 1,
 					signStatus: -1,
 					status: 1,
-					sort: 'Name'
+					sort: 'Name'*/
 				};
 				this.isLoading = true;
 				this.list = [];
@@ -254,10 +252,10 @@
 					return;
 				}
 				promise.then(res => {
-					res.Data.forEach(item => {
+					res.data.forEach(item => {
 						item.isCheck = false;
 					});
-					this.list.push(...res.Data);
+					this.list.push(...res.data);
 				})
 			},
 			loadFirst(promise) {
@@ -265,10 +263,10 @@
 					return;
 				}
 				promise.then(res => {
-					res.Data.forEach(item => {
+					res.data.forEach(item => {
 						item.isCheck = false;
 					});
-					this.list = res.Data;
+					this.list = res.data;
 					this.isLoading = false;
 				})
 			},
@@ -287,43 +285,46 @@
 			//仅上这节课
 			postOneCourse() {
 				let params = {
-					id: this.para.id,
-					students: this.list.filter(item => item.isCheck).map(item => item.ID).join(',')
+					courseid: this.para.id,
+					studentids: this.list.filter(item => item.isCheck).map(item => item.id),
+					updatetime:this.para.updatetime,
 				}
-				if(params.students == '') {
+				if(params.studentids.length == 0) {
 					app.toast('info', '请选择学员。');
 					return;
 				}
-				addStudentCourse(params).then(res => {
-					if(res.ErrorCode == 200) {
+				studentinfocourse(params).then(res => {
+					if(res.result.code == 200) {
 						this.opened = false;
 						this.$emit("addSucc");
 					} else {
-						app.toast('error', res.ErrorMsg);
+						app.toast('error', res.result.msg);
 					}
 				})
 			},
 			//加入此班.
 			postAddToClass() {
-				let date = new Date(),
-					params = {
-						id: this.para.classId,
-						students: this.list.filter(item => item.isCheck).map(item => item.ID).join(','),
-						indate: date.getFullYear() + '-' + fixed(date.getMonth() + 1) + '-' + fixed(date.getDate())
+				let	params = {
+						classid: this.para.classId,
+						studentids: this.list.filter(item => item.isCheck).map(item => item.id),
+						indate: app.filters.formatDatetime(new Date(),'yyyy-MM-dd'),
+						optype:1,
 					}
-				if(params.students == '') {
+				if(params.studentids.length == 0) {
 					app.toast('info', '请选择学员。');
 					return;
 				}
 				this.$refs.submitInfo.openSubmitInfo(2, params).then(result => {
 					if(result.type == 'confirm') {
-						params.outReason = result.text;
-						addStudentClass(params).then(res => {
-							if(res.ErrorCode == 200) {
+						params.reason = result.text;
+						params.date = params.indate;
+						delete params.indate;
+						opclassstudent(params).then(res => {
+							if(res.result.code == 200) {
 								this.opened = false;
 								this.$emit("addSucc");
 							} else {
-								app.toast('error', res.ErrorMsg);
+								app.toast('error', res.result.msg);
 							}
 						});
 					}
@@ -331,14 +332,8 @@
 			}
 		},
 		components: {
-			
 			EmptyPage,
 			submitInfo
 		}
-	}
-
-	function fixed(s){
-		s = '' + s;
-		return  s.length == 1 ? '0' + s : s;
 	}
 </script>

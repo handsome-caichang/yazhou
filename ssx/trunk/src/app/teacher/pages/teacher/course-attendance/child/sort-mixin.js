@@ -17,10 +17,6 @@ export default {
 					name:'计费',
 					attr:'isCost',
 				},
-				{
-					name:'试听',
-					attr:'isTry',
-				},
 			]
 		}
 	},

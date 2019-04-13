@@ -135,6 +135,7 @@
 		},
 		mounted() {
 			// console.log(this.$refs);
+			window.a = this
 			this.list.forEach((item, index) => {
 				if (this.$refs.content[index].clientHeight === 100) {
 					this.showArr.splice(index, 1, true)

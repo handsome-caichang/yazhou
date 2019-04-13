@@ -106,7 +106,7 @@
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-zuobianjiantou"></use>
             </svg>
-            选择{{app.sysInfo.Title_Campus}}
+            选择校区
         </div>
     </transition>
     <transition name="as-slide">
@@ -132,7 +132,7 @@
                     </div>
                 </div>
                 <div class="item-body">
-                    <div class="body-left">{{app.sysInfo.Title_Campus}}</div>
+                    <div class="body-left">校区</div>
                     <div class="body-mid" @click="changeStep(2, index)">
                         {{item.campusObj.Value&&item.campusObj.Value.Name}}
                     </div>
@@ -202,11 +202,9 @@
 </template>
 
 <script>
+    import CourseFilter from './courseFilter';
+    import {getCustomers} from 'teacher/api/customers';
     
-    
-    
-    import CourseFilter from './courseFilter'
-    import {getCustomers} from 'teacher/api/customers'
     export default {
         computed: {
             ...Vuex.mapState(['selectWillCourse']),
@@ -266,7 +264,7 @@
                 } else if (index == 3) {
                     let id = this.list[curIndex].campusObj.Key
                     if (!id) {
-                        app.toast('info', '请选择'+app.sysInfo.Title_Campus+"。");
+                        app.toast('info', '请选择校区。')
                     } else {
                         this.stepOne = false
                         this.stepThree = true
@@ -374,7 +372,6 @@
             this.$refs.scroll.$el.style.top = 0
         },
         components: {
-            
             CourseFilter
         }
     }

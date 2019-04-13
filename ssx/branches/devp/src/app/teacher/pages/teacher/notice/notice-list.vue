@@ -153,13 +153,14 @@
 				ref="noticeListIScroller">
 				<div 
 					v-for="item in list" 
+					:id="item.messageid" 
 					:key="item.messageid" 
 					@click="toDetail(item.messageid)" 
 					class="to-detail">
 					<div>
 						<div class="top-left-div">
 							<span class="notice-title">{{item.title}}</span>
-							<svg class="icon icon-guanlian" aria-hidden="true" v-if="item.isFile == 1">
+							<svg class="icon icon-guanlian" aria-hidden="true" v-if="item.isfile == 1">
 								<use xlink:href="#icon-guanlian"></use>
 							</svg>
 						</div>
@@ -168,7 +169,7 @@
 								<use xlink:href="#icon-liulan"></use>
 							</svg>
 							<span>
-								<span :class="{'strong' : item.isreadcount != item.studentcount}">{{item.isreadcount}}</span>/
+								<span :class="{'strong' : item.isreadcount === item.studentcount}">{{item.isreadcount}}</span>/
 								<span>{{item.studentcount}}</span>
 							</span>
 						</div>
@@ -177,9 +178,9 @@
 					<div>
 						<div class="bottom-left-div">
 							<span>
-								<!-- <em class="strong" v-if="item.formatDate.ymd==='今天'">{{item.formatDate.ymd}}</em>
-								<span v-else>{{item.formatDate.ymd}}</span> -->
-								<span>{{item.createtime}}</span>
+								<em class="strong" v-if="item.formatDate.ymd==='今天'">{{item.formatDate.ymd}}</em>
+								<span v-else>{{item.formatDate.ymd}}</span>
+								<span>{{item.formatDate.time}}</span>
 							</span>
 						</div>
 						<div class="bottom-right-div">
@@ -198,9 +199,9 @@
 </template>
 
 <script>
-	import { getNoticeList } from "teacher/api/notice";
+	import { getnoticelistforteacher } from "teacher/api/notice";
 	import EmptyPage from "teacher/components/common/empty-page/empty-page";
-console.log(9666666666666666655555555555555555)
+
 	export default {
 		name: "notice-list",
 		data() {
@@ -209,9 +210,12 @@ console.log(9666666666666666655555555555555555)
 				list: [],
 				quickDateIndex: -1,
 				pagingOption: {
-					api: getNoticeList,
+					api: getnoticelistforteacher,
 					params: {
-						teacherid:app.sysInfo.ID,
+						pname: "message",
+						teacherid: app.sysInfo.id,
+						flag: "",
+						type: 4,
 						starttime: app.tool.getDatesByIndex(4, app.localTimeToServer).sdate,
 						endtime: app.tool.getDatesByIndex(4, app.localTimeToServer).edate
 					},
@@ -242,29 +246,34 @@ console.log(9666666666666666655555555555555555)
 			loadData(ajaxPromise) {
 				ajaxPromise.then(res => {
 					this.isLoading = false;
-					// if(res.errcode === app.errok) {
-					// 	res.data.forEach(item => {
-					// 		let _date = item.createTime;
-					// 		// 扩展被格式化的时间对象
-					// 		item.formatDate = this.formatDate(_date);
-					// 	});
+					if(res.result.code == 200) {
+						res.data.forEach(item => {
+							let _date = item.createtime;
+							// 扩展被格式化的时间对象
+							item.formatDate = this.formatDate(_date);
+						});
 						this.list =
-						res.pageindex == 1 ? [].concat(res.data) :	this.list.concat(res.data);
-					// }
+							res.page.pageindex && res.page.pageindex > 1 ? [].concat(this.list, res.data) :	[].concat(res.data);
+					}
 				});
 			},
 			// 去详情
 			toDetail(id) {
-				
+				// 监听移除事件，如果删除成功就移除dom
+				app.eventDefine.on('removeItem', function(flag) {
+					if(flag) {
+						document.getElementById(id).remove();
+					}
+				})
 				this.$router.push({
-					path: `/noticeDetail/${id}`,
+					path: `noticeDetail/${id}`,
 					component: 'noticeDetail'
 				})
 			},
 			// 发布通知
 			pubNotice() {
-                
-				this.$router.push("/noticeAdd");
+                app.eventDefine.on('refresh', () => this.$refs.noticeListIScroller.refresh(this.pagingOption.params));
+				this.$router.push("noticeAdd");
 			},
 			formatDate(data) {
 				// 格式：2017-12-6 17:37:17
@@ -290,24 +299,7 @@ console.log(9666666666666666655555555555555555)
 					time: _time
 				};
 			}
-        },
-        created(){
-            app.eventDefine.on('refresh-notice-list', () => this.$refs.noticeListIScroller.refresh(this.pagingOption.params));
-            // 监听移除事件，如果删除成功就移除dom
-            app.eventDefine.on('removeItem-notice-list', (type,id)=> {
-                let p = -1;
-                this.list.some((item,index)=>{
-                    item.id === id && (p = index);
-                })
-                if (p> -1){
-                    this.list.splice(p,1);
-                }
-            })
-        },
-        beforeDestroy() {
-            app.eventDefine.off("refresh-notice-list");
-            app.eventDefine.off('removeItem-notice-list');
-        },
+		},
 		components: {
 			EmptyPage
 		}

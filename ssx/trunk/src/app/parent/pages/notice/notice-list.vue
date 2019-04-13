@@ -111,7 +111,7 @@
 		<div class="header">
 			<!-- 去除日期筛选,默认所有 -->
 			<!-- <div class="date">
-	        	<date-bar :sdate='pagingOption.params.sdate' :edate='pagingOption.params.edate' :index="quickDateIndex" @changeDate="changeDate"></date-bar>
+	        	<date-bar :sdate='pagingOption.params.starttime' :edate='pagingOption.params.endtime' :index="quickDateIndex" @changeDate="changeDate"></date-bar>
 			</div>
         	<div class="void"></div> -->
         	<div class="tab">
@@ -133,21 +133,19 @@
 			:pagingOption="pagingOption" 
 			ref="myScroller"
 			@loadData="loadData">
-			<router-link tag="div" class="card" v-for="item in list" :to="`/noticeDetail/${item.id}?type=${activePage}`" :key="item.id">
+			<router-link tag="div" class="card" v-for="item in list" :to="`/noticeDetail/${item.messageid || item.id}?type=${activePage}`" :key="item.messageid || item.id">
 				<div class="card-hd">
-					<span class="name">{{activePage == 0 ? item.subject :item.title}}</span>
+					<span class="name">{{item.title}}</span>
 					<span class="name-icon">
-						<svg class="icon" aria-hidden="true" v-if="item.isFile==1">
+						<svg class="icon" aria-hidden="true" v-if="item.isfile==1">
 							<use xlink:href="#icon-guanlian"></use>
 						</svg>
 					</span>
 				</div>
 				<div class="card-bd">
-					<span v-if="activePage == 0">{{item.createTime | formatDatetime('MM.dd hh:mm')}}</span>
-					<span v-if="activePage == 1">{{item.date | formatDatetime('MM.dd')}}</span>
-					<span class="cname">{{item.className}}</span>
+					<span>{{(activePage == 0 ? item.createtime : item.date) | formatDatetime('MM.dd hh:mm')}}</span><span class="cname">{{item.classname}}</span>
 				</div>
-				<div class="card-badge" v-if="item.isRead==0"></div>
+				<div class="card-badge" v-if="item.isread==0"></div>
 				<svg class="icon card-next" aria-hidden="true">
 					<use xlink:href="#icon-youjiantou"></use>
 				</svg>
@@ -159,12 +157,18 @@
 </template>
 
 <script>
-	import {processGet} from 'parent/api/common';
+	import {getnoticeinfosbyeid,getteachernoticelist} from 'parent/api/notice.js';
+	import {gethomepageinfo} from 'parent/api/personal-center.js';
 	import EmptyPage from 'parent/components/common/empty-page/empty-page';
 	
-	const TAB_PAGE = ['message','publicInfo'];
+//	const TAB_PAGE = ['message','publicInfo'];
 	let tmpPage = 0;		
 	
+	function activeAPI(){
+		return tmpPage == 1 ? 
+			getnoticeinfosbyeid(...arguments) :  getteachernoticelist(...arguments);	
+	}
+
 	export default {
 		name: 'notice-list',
 		data () {
@@ -177,20 +181,14 @@
 				msgUnRead: 0,		//未读的老师通知数量
 				pblIfUnRead: 0,		//未读的学校公告数量
 				pagingOption: {
-					api: processGet,
+					api: activeAPI,
 					params: {
-						pname: TAB_PAGE[0],
-						type: 4,
-						sdate: '',
-						edate: '',
+						sid:'',
+						starttime: '1990-01-01',
+						endtime: app.tool.getDatesByIndex(3,app.localTimeToServer).edate,
+
 					},
-					pageOpt: {
-                        indexKey: 'page', // 分页初始页码的'key'、'value'
-                        indexVal: 1,
-                        sizeKey: 'pageSize', // 每页请求数据长度的'key'、'value'
-                        sizeVal: 20,
-                        countKey: 'pageCount', // 后端返回的总页数'key'
-                    }
+
 				}
 			}
 		},
@@ -198,26 +196,27 @@
 			loadData(ajaxPromise){
 				ajaxPromise.then(res => {
 					this.isLoading = false;
-					if (res.errcode == app.errok) {
-						if (res.pageIndex === 1) {
+					if (res.result.code == app.errok) {
+						if (res.page.pageindex === 1) {
 							this.list = [];
 						}
 						this.list = this.list.concat(res.data);
 						this.activePage = tmpPage;
+						//统计未读的消息
 					}
 				})
 			},
 			/*changeDate(obj){
 				let params = this.pagingOption.params;
-				obj.sdate && (params.sdate= obj.sdate);
-				obj.edate && (params.edate = obj.edate);
+				obj.sdate && (params.starttime= obj.sdate);
+				obj.edate && (params.endtime = obj.edate);
 				(obj.index !== undefined) && (this.quickDateIndex = obj.index);
 				this.$refs.myScroller.refresh(params);
 			},*/
 			changeTab(num){
 				tmpPage = num;
 				let params = this.pagingOption.params;
-				params.pname = TAB_PAGE[num];
+				//params.pname = TAB_PAGE[num];
 				this.$refs.myScroller.refresh(params);	
 			}
 		},
@@ -225,17 +224,15 @@
 			let param = app.tool.parseHash(),
 				type = param.query.type == 1 ? 1 : 0;
 				this.activePage = tmpPage = type;
-				this.pagingOption.params.pname = TAB_PAGE[type];
+
 				if (app.sysInfo.message_unread !== undefined){
 					this.msgUnRead = app.sysInfo.message_unread;
 					this.pblIfUnRead = app.sysInfo.publicInfo_unread;
 				} else {
-						processGet({
-						pname: 'main'
-					}).then(res => {
-						if (res.errcode === app.errok) {
-							this.msgUnRead = app.sysInfo.message_unread = +res.data.message;
-							this.pblIfUnRead = app.sysInfo.publicInfo_unread = +res.data.publicInfo;
+					gethomepageinfo().then(res => {
+						if (res.result.code === app.errok) {
+							this.msgUnRead = app.sysInfo.message_unread = +res.data.taskcount;
+							this.pblIfUnRead = app.sysInfo.publicInfo_unread = +res.data.publicinfocount;
 						}
 					})
 				}
@@ -244,8 +241,8 @@
 			//一旦读取了某条未读通知,那么把该通知的置为已读
 			app.eventDefine.on('notice_list_read_event',(type,id)=>{
 				this.list.some(item=>{
-					if (item.id == id && item.isRead == 0){
-						item.isRead = 1;
+					if ((item.messageid == id || item.id == id) && (item.isread == 0)){
+						item.isread = 1;
 						if (this.activePage == 0){
 							this.msgUnRead--;
 							app.sysInfo.message_unread--;

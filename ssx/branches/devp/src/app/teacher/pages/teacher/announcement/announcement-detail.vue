@@ -4,7 +4,6 @@
 	.scroller {
 		@include position-absolute;
 		overflow: hidden;
-		background-color: #ffffff;
 		.detail-container {
 			padding: 0 15px;
 			.top {
@@ -45,7 +44,7 @@
 					<span class="date">{{ date}}</span>
 				</div>
 				<div class="bottom-content">
-					<rich-text-area :richText="content" @imgLoaded="imgState++"></rich-text-area>
+					<rich-text-area v-if="content" :richText="content" @imgLoaded="imgState++"></rich-text-area>
 				</div>
 			</div>
 			<loading class="loading" v-show="isLoading"></loading>
@@ -54,12 +53,11 @@
 </template>
 
 <script>
-    import { getnotice } from "teacher/api/common";
+    import { getnotice } from "teacher/api/announcement";
     import RichTextArea from 'teacher/components/common/rich-text-area/rich-text-area.vue';
 	
 	export default {
         name: "announcement-detail",
-        mixins: [app.mixin.shareMixin],
         components: {
             RichTextArea
         },
@@ -70,8 +68,9 @@
 				content: "",
 				date: "",
 				params: {
+					pname: 'publicInfo_detail',
 					id: this.$router.currentRoute.params.id
-				},
+                },
 				isLoading: true,
                 imgState: 0
 			};
@@ -90,27 +89,18 @@
 		methods: {
 			getDetail() {
 				getnotice(this.params).then(res => {
-					console.log(res)
 					if(res.result.code == 200) {
 						this.title = res.data.title;
 						this.date = res.data.date;
-						this.content = app.tool.richTextToHtml(app.dom.parseDom(res.data.content));
-                        this.isLoading = false;
-                        app.eventDefine.emit('refresh-announcement-list',res.data.id);
-                        this.handlerDetail(this.$router.currentRoute.params.id,this.title);
+						this.content = app.tool.richTextToHtml(res.data.content);
+						this.isLoading = false;
 					}
 				});
-			},
-            handlerDetail(id,t){
-                // 参数 id:公告ID
-                this.v_shareResolve({
-                    title:'学校公告',
-                    desc:t,
-                    link:`${location.protocol}//${location.host}/weixin/teacher/static/share/announcement/announcementShare.html?id=${id}`,
-                    imgUrl: location.protocol + "//" + location.host + '/weixin/teacher/static/share/imgs/share.png'
-                })
-            }
+			}
 		},
-
+		beforeDestroy() {
+			// 移除小红点
+			app.eventDefine.emit('refresh');
+		}
 	};
 </script>

@@ -3,23 +3,20 @@
 	<div class="global-dom-plugin">
 		<!-- 修改密码弹窗 -->
 		<actionsheet-password></actionsheet-password>
-        <!--小银星定制 完善个人信息-->
-        <xyx-edit-information></xyx-edit-information>
-		<!-- 优惠卷 -->
-		<coupon-box></coupon-box>
+        <!-- 过期提醒 -->
+        <system-overdue></system-overdue>
 	</div>
 </template>
 
 <script>
     import ActionsheetPassword from './actionsheet-password';
-	import XyxEditInformation from './xyx-edit-information';
-	import CouponBox from './coupon-box.vue';
+    import SystemOverdue from './system-overdue';
+
 	export default {
 		name: 'global-dom-plugin',
 		components: {
-			ActionsheetPassword,
-			XyxEditInformation,
-			CouponBox
+            SystemOverdue,
+			ActionsheetPassword
 		}
 	}
 </script>

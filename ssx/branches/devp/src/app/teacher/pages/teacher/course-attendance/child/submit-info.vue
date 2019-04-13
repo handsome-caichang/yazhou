@@ -79,15 +79,15 @@
 </template>
 
 <script>
-
-
 //填写取消班级或入班日期
 export default {
 	data(){
 		return {
 			openedSubmitInfo:0,		//actionsheet显示,0不显示	1为取消上课   2为入班日期
 			submitText:'',				//textarea的v-model
-			para:{},
+			para:{
+				indate:'',
+			},
 			_resolve:null,
 		}
 	},
@@ -95,7 +95,12 @@ export default {
 		//打开取消班级或入班日期
 		openSubmitInfo(type,params){
 			this.openedSubmitInfo = type;
-			this.para = params;
+			
+			this.para = Object.assign({},params);
+			let i;
+			if ((i = this.para.indate.indexOf('.')) > -1){
+				this.para.indate = this.para.indate.slice(0,i);
+			}
 			return new Promise((resolve,reject)=>{
 				this._resolve = resolve;
 			})
@@ -122,9 +127,6 @@ export default {
 			this.submitText = '';
 			this.openedSubmitInfo = 0;
 		},
-	},
-	components:{
-		
 	}
 }
 </script>

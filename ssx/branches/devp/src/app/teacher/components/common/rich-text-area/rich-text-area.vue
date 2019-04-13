@@ -42,11 +42,6 @@
                 right: 0;
             }
         }
-        .voice[data-type]{
-            &::after{
-                content: ''
-            }
-        }
         .loading {
             &::before {
                 content: '';

@@ -23,8 +23,7 @@
                 }
                 .search-button {
                     @include position-absolute(0, 0, 0, false);
-                    height: 26px;
-                    line-height: 26px;
+                    
                 }
            }
            .sort, .select, .search-button {
@@ -38,7 +37,7 @@
                 border-radius: 50px;
            }
            .sort {
-                margin-right: 10px;
+            margin-right: 10px;
            }
         }
         .void {
@@ -51,6 +50,49 @@
                 overflow: hidden;
                 background-color: $color-white;
                 @include position-absolute;
+                .card {
+                    background-color: $color-white;
+                    border-bottom: 10px solid $color-assist-1;
+                    .card-heard {
+                        @include flex-center;
+                        padding: 0 12px;
+                        height: 44px;
+                        border-bottom: 1px solid $color-assist-1;
+                        .card-heard-left {
+                            flex: 1;
+                            font-size: 16px;
+                            color: $color-3;
+                        }
+                        .card-heard-right {
+                            width: 75px;
+                            font-size: 12px;
+                            color: $color-9;
+                        }
+                    }
+                    .card-body {
+                        padding: 12px 12px 0 12px;
+                        @include flex-center;
+                        .card-body-left {
+                            flex: 1;
+                            .item {
+                                height: 12px;
+                                line-height: 12px;
+                                font-size: 12px;
+                                margin-bottom: 12px;
+                                color: $color-6;
+                                .item-content {
+                                    color: $color-3;
+                                }
+                            }
+                        }
+                        .card-body-right {
+                            width: 50px;
+                            .icon {
+                                font-size: 28px;
+                            }
+                        }
+                    }
+                }
             }
         }
         .bottom {
@@ -66,15 +108,8 @@
                 color: $color-white;
             }
             .bottom-left {
-                border-right: 1px solid #1A7CE2;
+                border-right: 1px solid $color-9;
             }
-        }
-        .loading {
-            z-index: 200;
-        }
-        .empty-page {
-            @include position-absolute(54px, 0, 49px, 0);
-            z-index: 20;
         }
     }
 </style>
@@ -83,44 +118,73 @@
     <div class="container">
         <div class="heard">
             <div class="search-wrapper">
-                <input type="text" :placeholder="app.tool.op('CustomerFilter')?'姓名/电话/公立学校':'电话'" class="input" v-model="inputText">
-                <div class="search-button" @click="searchCustomer">搜索</div>
+                <input type="text" placeholder="姓名/电话" class="input">
+                <div class="search-button">搜索</div>
             </div>
-            <div class="sort" @click="showSelectSortType=true" v-if="app.tool.op('CustomerFilter')">排序</div>
-            <div class="select" @click="showSelectMore=true" v-if="app.tool.op('CustomerFilter')">筛选</div>
+            <div class="sort" @click="showSelectSortType=true">排序</div>
+            <div class="select" @click="showSelectMore=true">筛选</div>
         </div>
         <div class="void"></div>
-        <div class="list-body" ref="listBody">
+        <div class="list-body">
             <scroller-super class="scroller"
                             :type="2"
                             :data="list"
-                            ref="scroll"
                             :pagingOption="pagingOption"
                             @loadData="loadData">
                 <div>
-                    <comm-card v-for="(card, index) in list" :card="card" :key="index"></comm-card>
+                    <div class="card" v-for="card in list">
+                        <div class="card-heard">
+                            <div class="card-heard-left">王文并
+                                <svg class="icon" aria-hidden="true">
+                                    <use xlink:href="#icon-nan1"></use>
+                                </svg>
+                            </div>
+                            <div class="card-heard-right">
+                                沟通记录
+                                <svg class="icon" aria-hidden="true">
+                                    <use xlink:href="#icon-youjiantou"></use>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                                <!-- @click="saveInfo(card)" -->
+                            <div 
+                                class="card-body-left">
+                                <div class="item">主责任人:<span class="item-content">{{card.SalePersonName}}</span></div>
+                                <div class="item">手机号码:<span class="item-content">{{card.SMSTel}}</span></div>
+                                <div class="item">客户状态:<span class="item-content">{{card.CustomerStatusName}}</span></div>
+                                <div class="item">意向级别:
+                                    <span class="item-content">
+                                        <svg class="icon" aria-hidden="true" v-for="i in card.WillLevel">
+                                            <use xlink:href="#icon-xingxingxuanzhong"></use>
+                                        </svg>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="card-body-right">
+                                <svg class="icon" aria-hidden="true">
+                                    <use xlink:href="#icon-bodadianhua"></use>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </scroller-super>
         </div>
-        <loading class="loading" v-show="isLoading" :bgType='bgType'></loading>
-        <div class="bottom" v-if="computeRights">
-            <router-link tag="div" to="/addCustomer/add" class="bottom-left" v-if="app.tool.op('CustomerAdd')">添加客户</router-link>
-            <router-link tag="div" to="/customHadle/all" class="bottom-right" >客户管理操作</router-link>
+        <div class="bottom">
+            <div class="bottom-left">添加客户</div>
+            <div class="bottom-right">客户操作管理</div>
         </div>
-        <empty-page :type="5" :text="'没有可以操作的客户哦~'" class="empty-page" v-if="!list.length" ref="emptyPage"></empty-page>
+        <select-sort-type
+            :opened.sync="showSelectSortType"
+            @selectSortType="selectSortType"
+            :sortType="sortType">
+        </select-sort-type>
         <select-more
             :opened.sync="showSelectMore"
             @selectMore="selectMore">
             
         </select-more>
-
-        <sort-sheet 
-            :list="sortArr" 
-            :opened.sync="showSelectSortType"
-            @clickSort="clickSort" 
-            :title="'排序方式'"
-            :initType="'1-0'">
-        </sort-sheet>
     </div>
 </template>
 
@@ -128,53 +192,31 @@
     import {queryCustomer} from 'teacher/api/customers'
     import SelectSortType from './selectSortType'
     import SelectMore from './selectMore'
-    import CommCard from '../commCard'
-    import EmptyPage from 'teacher/components/common/empty-page/empty-page'
-    import {mapState, mapMutations} from 'vuex'
     export default {
         data() {
             return {
-                wxTitle: "意向客户管理",
-                isLoading: app.tool.op('CustomerFilter') ? true : false,
-                bgType: 0,
                 list: [],
                 pagingOption: {
                     api: queryCustomer,
-                    autoLoadFirst: app.tool.op('CustomerFilter'),
                     params: {
                         pname:"querycustomer",
-                        sort: 'CreateTime'
-                    },
-                    pageOpt: {
-                        // 分页初始页码的'key'、'value'
-                        indexKey: 'page',
-                        indexVal: 1,
-                        // 每页请求数据长度的'key'、'value'
-                        sizeKey: 'pageSize',
-                        sizeVal: 20,
-                        // 后端返回的总页数'key'
-                        countKey: 'pageCount'
+                        CreateTime1: '2018-02-23',
+                        CreateTime2: '2018-02-23',
+                        sort: 'CreateTime,',
+                        desc: 1
                     }
                 },
                 showSelectSortType: false,
                 sortType: '',
-                sortArr: [{name: '姓名',sort: 'Name'}, {name: '录入时间',sort: 'CreateTime'}, {name: '跟进时间',sort: 'NextDate'}, {name: '沟通时间',sort: 'LastDate'}],
 
-                showSelectMore: false,
-                inputText: '',
-            }
-        },
-        computed: {
-            ...mapState(['allParams']),
-            computeRights() {
-                return !(app.tool.op('CustomerQuery') && !app.tool.op('CustomerFilter') && !app.tool.op('CustomerViewTel') && !app.tool.op('CustomerQuerySub')  && !app.tool.op('CustomerAdd'))
+                showSelectMore: false
             }
         },
         methods: {
-            ...mapMutations(['set_allParams']),
+            ...Vuex.mapMutations(['set_cunstomInfo']),
             loadData(ajaxPromise) {
                 ajaxPromise.then(res => {
-                    this.isLoading = false
+                    // this.isLoading = false
                     if (res.errcode == app.errok) {
                         if (res.pageIndex === 1) {
                             this.list = []
@@ -192,53 +234,18 @@
                 }) 
                 this.$router.push({name: 'customDetail', params: {id: obj.ID, name: obj.Name}})
             },
-            clickSort(obj) {
-                let params = {
-                    sort: obj.item.sort,
-                    desc: obj.desc ? 1 : 0
-                }
-                this.$refs.scroll.refresh(params)
+            selectSortType(type) {
+                this.sortType = type
+                this.showSelectSortType = false
             },
             selectMore(obj) {
+                console.log(obj)
                 this.showSelectMore = false
-                let params = {
-                    desc: 1,
-                    Query: this.inputText,
-                    Status: obj.Status,
-                    CreateTime1: obj.CreateTime1,
-                    CreateTime2: obj.CreateTime2,
-                    LastDate1: obj.LastDate1,
-                    LastDate2: obj.LastDate2,
-                    NextDate1: obj.NextDate1,
-                    NextDate2: obj.NextDate2,
-                    employeeid: obj.employeeid,
-                    employeename: obj.employeename
-                }
-                this.$refs.scroll.refresh(params)
-                this.isLoading = true
-                this.set_allParams(obj)
-            },
-            searchCustomer() {
-                this.$refs.scroll.refresh({Query: this.inputText})
-                app.ls.set('params', {Query: this.inputText})
             }
-        },
-        created() {
-            this.$nextTick(() => {
-                if (!this.computeRights) {
-                    this.$refs.listBody.style.bottom = 0
-                    this.$refs.emptyPage.$el.style.bottom = 0
-                }
-            })
-        },
-        watch: {
-            
-        },
+         },
         components: {
             SelectSortType,
-            SelectMore,
-            CommCard,
-            EmptyPage
+            SelectMore
         }
     }
 </script>

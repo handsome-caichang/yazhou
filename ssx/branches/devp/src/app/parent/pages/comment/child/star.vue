@@ -5,14 +5,12 @@
         display: flex;
         /*align-items: center;*/
         flex-direction: column;
-        // padding: 10px 0;
-        margin-bottom: 12px;
+        padding: 10px 0;
         .comment-star-hd{
             display: flex;
             align-items: center;
         }
         .comment-star-bd{
-            margin-right: 15px;
             margin-top: 9px;
             padding: 10px;
             background-color: #F2F2F2;
@@ -20,8 +18,6 @@
         }
         .star-name{
             flex: 1;
-            // width: 150px;
-            break-word: word-break;
         }
         .star-content{
             /*width: 150px;*/
@@ -34,12 +30,10 @@
             /*padding-left: 12px;*/
         }
         .star-more{
-            padding-right: 15px;
-            margin-left: 10px;
             width: 28px;
             height: 22px;
-            line-height: 22px;
             text-align: right;
+            margin-right: 15px;
         }
         .star-tips-wrapper{
             position: absolute;
@@ -101,9 +95,9 @@
                     @click="selectStar(star,index)">
                     <use :xlink:href="scope>=index?'#icon-xingxingxuanzhong':'#icon-xingxingweixuanzhong'"></use>
                 </svg>
-                <div class="star-tips-wrapper" v-if="showTagsArr[index]&&star.Describe">
+                <div class="star-tips-wrapper" v-if="showTagsArr[index]&&star.describe">
                     <div class="star-tips" ref="starTips">
-                    {{star.Describe}}
+                    {{star.describe}}
                     </div>
                 </div>
             </div>
@@ -119,8 +113,8 @@
                     </div>
                 </div>
             </div>
-            <div class="star-more" @click="pullDown">
-                <svg class="icon" aria-hidden="true" v-if="desc">
+            <div class="star-more">
+                <svg class="icon" aria-hidden="true" @click="pullDown" v-if="desc">
                     <use :xlink:href="isShowShangla?'#icon-shangla':'#icon-xiala'"></use>
                 </svg>
             </div>
@@ -139,7 +133,10 @@
                 default: []
             },*/
             starsDesc: {
-                type: Array
+                type: Array,
+                default: () => {
+                    return []
+                }
             },
             isClick: {
                 type: Boolean,
@@ -182,15 +179,17 @@
             selectStar(star, index) {
                 //如果该班级已经结业，那么不应该能够继续点评，但是通过推送消息可以进入。
                 //某一条维度打星了之后支持可以取消此条维度的打星交互。
-                let num
+                
                 if (!this.isClick) return
                 if (this.isFinished === 1) {
                     app.toast('info', '该班级已经结业，不能继续评价。')
                     return
                 }
+
                 for (let i = 0; i < this.showTagsArr.length; i++) {
                     this.showTagsArr[i] = false
                 }
+                let num
                 if (index == this.scope) {
                     this.scope = index - 1
                     num = index
@@ -210,7 +209,6 @@
                 this.$emit('selectStar', obj)
             },
             pullDown() {
-                if (!this.desc) return
                 this.isShowShangla = !this.isShowShangla
                 this.$emit('addScrollNum')
             }
@@ -219,14 +217,15 @@
             this.starsDesc.forEach(item => {
                 this.showTagsArr.push(false)
             })
-            this.starsDescClone = app.tool.clone(this.starsDesc)
             this.scope = this.selectedStarsNum
         },
         watch: {
-            // selectedStarsNum(newVal, oldVal) {
-            // },
-            // starIndex(val) {
-            // }
+            starsDesc(val) {
+                if (val) {
+                    console.log(val)
+                    
+                }
+            }
         }
     }
 </script>

@@ -23,7 +23,7 @@
 					margin: 3px 0 5px;
 				}
 				.count-box {
-                    color: $color-9;
+					display: flex;
 					@include flex-center;
 					.unit {
 						width: 66px;
@@ -34,15 +34,6 @@
 					.less {
 						flex: 1;
 					}
-                    .unit-s,.amount-s{
-                        color: $color-3;
-                    }
-                    .cost-s{
-                        color: #83C44E;
-                    }
-                    .less-s{
-                        color: #E74C3C;
-                    }
 				}
 			}
 		}
@@ -95,17 +86,17 @@
 			:pagingOption="pagingOption" 
 			@loadData="loadData">
 			<div class="card" v-for="(item,index) in list" :key="index">
-				<div class="class-name">{{item.ClassName}}</div>
-                <!--这里按天计费的时间后台做了处理-->
-				<div class="time">{{item.StartTime.replace(/-/g,'.')}}</div>
+				<div class="class-name">{{item.classname}}</div>
+				<div class="time" v-if="item.unit=='天'">{{item.starttime.substring(5,10).replace(/-/g,'.')}}</div>
+				<div class="time" v-else>{{item.starttime.substring(0,16).replace(/-/g,'.')}}</div>
 				<div class="count-box">
-					<div class="unit">单位：<span class="unit-s">{{item.Unit}}</span></div>
-					<div class="amount">数量：<span class="amount-s">{{item.Amount}}</span></div>
-					<div class="cost">计费：<span class="cost-s">{{item.StudentCount_Cost}}</span></div>
-					<div class="less">欠费：<span class="less-s">{{item.StudentCount_Less}}</span></div>
+					<div class="unit">单位：{{item.unit}}</div>
+					<div class="amount">数量：{{item.amount}}</div>
+					<div class="cost">计费：{{item.studentcountcost}}</div>
+					<div class="less">欠费：{{item.studentcountless}}</div>
 				</div>
 			</div>
-			<empty-page class="noData-temp" v-if="list.length == 0" text="还没有课时统计记录~" :type="7"></empty-page>
+			<empty-page class="noData-temp" v-if="list.length == 0" :type="1001"></empty-page>
 		</scroller-super>
 		<workinfoTotal 
 			class="as-total" 
@@ -114,7 +105,7 @@
 		</workinfoTotal>
 		<div class="footer" v-if="list.length !== 0" @click="totalDetails">
 			<div class="text">合计</div>
-			<div class="counts">{{footerData.TotalAmount | hadnleNumToInt}} 节</div>
+			<div class="counts">{{footerData.totalamount}}</div>
 			<div class="details">
 				更多详情
 				<svg class="icon card-next" aria-hidden="true">
@@ -127,7 +118,7 @@
 </template>
 
 <script>
-	import { processPost } from 'teacher/api/common';
+	import { getworkdetailinfo } from 'teacher/api/workinfo';
 	import EmptyPage from 'teacher/components/common/empty-page/empty-page';
 	import workinfoTotal from './child/workinfo-total-details';
 
@@ -141,38 +132,28 @@
 				list: [],
 				footerData: '',
 				pagingOption: {
-					api: processPost,
+					api: getworkdetailinfo,
 					params: {
-						pname: 'workinfoDetail',
-						CurrentRole: app.sysInfo.currole.Id,
-						teacherid: app.sysInfo.ID,
-						sdate: '',
-						edate: ''
-					},
-					pageOpt: {
-						indexKey: 'page', // 分页初始页码的'key'、'value'
-						indexVal: 1,
-						sizeKey: 'pageSize', // 每页请求数据长度的'key'、'value'
-						sizeVal: 20,
-						countKey: 'pageCount', // 后端返回的总页数'key'
+						uid:app.sysInfo.id,
+						userrole:'',
+						starttime:'',
+						endtime:'',
+                        type:1
+									
 					}
+					
 				}
 			}
 		},
-        filters: {
-            hadnleNumToInt: function (value) {
-                return parseInt(value)
-            }
-        },
 		methods: {
 			loadData(ajaxPromise) {
 				ajaxPromise.then(res => {
 					this.isLoading = false;
-					if(res.errcode == app.errok) {
-						this.list = res.pageIndex == 1 ? res.data : [].concat(this.list, res.data);
-						this.footerData = res.total;
+					if(res.result.code == app.errok) {
+						this.list = res.page.pageindex == 1 ? res.data.classstudentinfos : [].concat(this.list, res.data.classstudentinfos);
+						this.footerData = res.data.totalcountinfo;
 					} else {
-						app.toast('error', res.errmsg);
+						app.toast('error', res.result.msg);
 					}
 				})
 			},
@@ -181,8 +162,17 @@
 			}
 		},
         created(){
-            this.pagingOption.params.sdate = this.$route.params.sdate;
-            this.pagingOption.params.edate = this.$route.params.edate;
+            this.pagingOption.params.starttime = this.$route.params.sdate;
+            this.pagingOption.params.endtime = this.$route.params.edate;
+            // 1学管师 2班主任 3老师
+            let role = '';
+            if(app.sysInfo.currole.id==4){
+                this.pagingOption.params.userrole=3
+            }else if(app.sysInfo.currole.id==32){
+                this.pagingOption.params.userrole=2
+            }else if(app.sysInfo.currole.id==16){
+                this.pagingOption.params.userrole=1;
+            }
         },
 		components: {
 			EmptyPage,

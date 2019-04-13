@@ -44,9 +44,6 @@
 </template>
 
 <script>
-    
-    
-    
     export default {
         mixins: [app.mixin.popupWindowRouteMixin],
         props: {
@@ -75,10 +72,7 @@
                     vocation: str,
                     whosVocation: this.whosVocation
                 })
-                this.close()
             }
-        },
-        created() {
         },
         watch: {
             opened(val) {
@@ -86,9 +80,6 @@
                     this.list = app.customConfigInfo.Vocation
                 }
             }
-        },
-        components: {
-            
         }
     }
 </script>

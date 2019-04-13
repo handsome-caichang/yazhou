@@ -1,16 +1,31 @@
 import axios from './axios-j'
-export const homeworkAxios = {
-	// 删除作业
-	deleteHomework(param) {
-		/* 
-			id:
-		*/
-		return axios.ajax('/api/SSx/DeleteMessageItem', param);
-	}
-};
 
-
-// 作业评价选择分数(按ABCD等级)
-export function getPointsList(params) {
-	return axios.ajax('/api-mock/homework/getPointsList', params)
+// 获取作业列表
+export function gethomeworkforteacher(params) {
+	return axios.smajax('gethomeworkforteacher', params)
+}
+// 获取作业详情
+export function gethomeworkdetailforteacher(params) {
+	return axios.smajax('gethomeworkdetailforteacher', params)
+}
+// 发送作业时选择学员
+export function getcoursestudentforhomework(params) {
+	return axios.smajax('getcoursestudentforhomework')
+}
+// 发送作业
+export function ophomework(params) {
+	return axios.smajax('ophomework', params)
+}
+// 删除作业
+export function deletehomework(param) {
+	/* messageid */
+	return axios.smajax('deletehomework', param);
+}
+// 获取已读未读学员信息
+export function getmessagereadinfos(param) {
+	return axios.smajax('getmessagereadinfos', param);
+}
+// 老师评价学员提交的作业
+export function evalhomework(param) {
+	return axios.smajax('evalhomework', param);
 }

@@ -62,18 +62,14 @@
         <scroller-base class="as-details" :data="renderData">
             <div class="class-name">
                 {{className}}
-                <span v-show="list.subjectName!=''">
-                    （{{list.subjectName}}）
-                </span>
             </div>
             <div class="item">
-                <!-- TODO: 校区 -->
-                <div class="describe">{{app.sysInfo.Title_Campus}}</div>
+                <div class="describe">{{app.sysInfo.title_campus}}</div>
                 <div class="content">{{campus}}</div>
             </div>
             <div class="item">
                 <div class="describe">老师</div>
-                <div class="content teacher">{{getteacher}}</div>
+                <div class="content teacher">{{list.teachernames}}</div>
             </div>
             <div class="item">
                 <div class="describe">教室</div>
@@ -81,9 +77,8 @@
             </div>
             <div class="item">
                 <div class="describe">时间</div>
-                <!-- <div class="content" >{{timeobj.date}} &nbsp;&nbsp; {{timeobj.stime}}~{{timeobj.etime}}</div> -->
-                <!-- <div class="content" v-else>{{timeobj.date}}</div> -->
-                <div class="content" >{{getdate}}</div>
+                <div class="content" v-if="list.unit!=3">{{list.date}} &nbsp;&nbsp; {{list.stime}}~{{list.etime}}</div>
+                <div class="content" v-else>{{list.date}}</div>
             </div>
             <div class="item">
                 <div class="describe">状态</div>
@@ -91,7 +86,7 @@
             </div>
 
             <!--上课内容-->
-            <div class="content-area" v-if="list.content!=''">
+            <div class="content-area" v-if="(list.content!=null)&&(list.content!='')">
                 <div class="title">上课内容</div>
                 <div class="content" v-html="list.content"></div>
             </div>
@@ -104,10 +99,8 @@
 </template>
 
 <script>
-    // import {processGet} from "teacher/api/common";
-     import {getcourseinfoapplist} from 'teacher/api/course.js';
-
-    export default {
+    import {getcourseinfosbytime} from "teacher/api/course";
+        export default {
         name: "course-details",
         data() {
             return {
@@ -115,12 +108,7 @@
                 list: {},
                 isLoading: true,
                 className: '',
-                campus: '',
-                content:undefined,
-                teacher:undefined,
-                classroom:undefined,
-                status:undefined,
-                date:undefined
+                campus: ''
             }
         },
         computed: {
@@ -128,40 +116,39 @@
                 return {
                     list: this.list,
                     className: this.className,
-                    campus: this.campusa
+                    campus: this.campus
                 }
-            },
-            getteacher(){
-                return this.list.teachernames.join(',')
-            },
-            getdate(){
-                return `${this.list.date}  ${this.list.stime}~${this.list.etime}`
             }
         },
         methods: {
-            getData(id) {
-                getcourseinfoapplist({
-                    usertype:1,
-                    viewtype:3,
+            getData(id,user) {
+                getcourseinfosbytime({
+                    viewtype: 3,
+                    usertype: user,
                     courseid: id
                 }).then(res => {
                     this.isLoading = false;
-                    console.log(res)
                     if (res.result.code == app.errok) {
-                        res.data.date = res.data[0].date.replace(/-/g, '.');
-                        res.data.content = res.data.content&&app.dom.parseDom(res.data[0].content);
-                        this.list = res.data[0];
+                        res.data.date = res.data.date.replace(/-/g, '.');
+                        res.data.content = res.data.content&&app.dom.parseDom(res.data.content);
+                        res.data.teachernames = res.data.teachernames.join(',');
+                        this.list = res.data;
                     } else {
-                        app.toast('error', res.errmsg)
+                        app.toast('error', res.result.msg)
                     }
                 })
             }
         },
         created() {
-            this.getData(this.$route.query.id);
+            let role = app.sysInfo.currole.id;
+            if(role==4){
+                role = 1;
+            }else if (role==16){
+                role = 3;
+            }
+            this.getData(this.$route.query.id,role);
             this.className = this.$route.query.classname;
             this.campus = this.$route.query.campus;
-    
         }
     }
 </script>

@@ -75,9 +75,6 @@
                 color: $color-3;
             }
         }
-        .loading {
-            @include position-absolute;
-        }
     }
 
 </style>
@@ -97,7 +94,7 @@
             </div>
             <div class="heard-bottom">
                 <div class="heard-bottom-left">
-                    选择{{app.sysInfo.Title_Campus}}
+                    选择校区
                 </div>
                 <div class="heard-bottom-mid" @click="emit">
                     {{campusText}}
@@ -119,7 +116,6 @@
             </div>
             
         </div>
-        <loading class="loading" v-show="isLoading" :bgType='bgType'></loading>
     </scroller-base>
 </template>
 
@@ -186,20 +182,17 @@
         data() {
             return {
                 dateObj:{
-                    sdate:app.tool.getDatesByIndex(3, app.localTimeToServer).sdate,
-                    edate:app.tool.getDatesByIndex(0, app.localTimeToServer).sdate,
+                    // sdate:app.tool.getDatesByIndex(3, app.localTimeToServer).sdate,
+                    // edate:app.tool.getDatesByIndex(3, app.localTimeToServer).sdate,
                 },
                 quickDateIndex:-1,
                 list: [],
-                setOption: null,
-                isLoading: true,
-                bgType: 0
+                setOption: null
             }
         },
         methods: {
             initPage(params) {
                 getCustomers(params).then(res => {
-                    this.isLoading = false
                     if (res.errcode == app.errok) {
                         this.list = res.data.Count
                         let arr1 = this.list.map(obj => {

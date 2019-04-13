@@ -5,13 +5,7 @@
   "author": "ssx-team",
   "private": true,
   "scripts": {
-    "dev:t": "webpack-dev-server --env.pro=teacher --color --config build-webpack/build/webpack.dev.conf.js",
-    "dev:ts": "webpack-dev-server --env.pro=teacherShare --color --config build-webpack/build/webpack.dev.conf.js",
-    "dev:p": "webpack-dev-server --env.pro=parent --color --config build-webpack/build/webpack.dev.conf.js",
-    "dev:ps": "webpack-dev-server --env.pro=parentshare --color --config build-webpack/build/webpack.dev.conf.js",
-    "dev:dr": "webpack-dev-server --env.pro=dailyReport --color --config build-webpack/build/webpack.dev.conf.js",
-    "dev:wr": "webpack-dev-server --env.pro=weekReport --color --config build-webpack/build/webpack.dev.conf.js",
-    "dev:all": "webpack-dev-server --env.pro=all --color --config build-webpack/build/webpack.dev.conf.js",
+    "dev": "webpack-dev-server --color --config build-webpack/build/webpack.dev.conf.js",
     "prod": "node build-webpack/prod-server/prod-server.js",
     "build": "node build-webpack/build/build.js"
   },

@@ -29,6 +29,7 @@
 				height: 300px;
 				resize:none;
 				overflow-y:auto;
+				resize: none;
 			}
 		}
 		.enter-btn {
@@ -78,11 +79,10 @@
 			<div class="title-bar">上课内容</div>
 
 			<div class="content-box">
-				<textarea class="text-area" placeholder="500字符以内" v-model="content" maxlength="500"
+				<textarea class="text-area" placeholder="暂无上课内容" v-model="content" maxlength="150"
 				@touchstart = "app.area.start($event)"
 				@touchmove = "app.area.move($event)"
-				@touchend = "app.area.end($event)">
-				</textarea>
+				@touchend = "app.area.end($event)"></textarea>
 			</div>
 			<div slot="header" class="enter-btn">上课内容</div>
 			<div slot="footer" class="footer">
@@ -102,8 +102,8 @@
 </template>
 
 <script>
-	
-	
+
+
 	import Schedule from './course-schedule.vue';
 
 	export default {

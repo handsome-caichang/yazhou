@@ -37,11 +37,11 @@
     import img007 from './imgs/007.png';
 	import img008 from './imgs/008.png';
 	import img009 from './imgs/009.png';
-	import img012 from './imgs/012.png';
 	export default {
 		name: 'empty-page',
 		props: {
 			type: {
+				// type: Number,
 				default: 1
 			},
             text: {
@@ -113,31 +113,15 @@
                     no8: { //投诉和建议
 						img: img008,
 						width: 200,
-						height: 270
+						height: 270,
+						text: '还没有评价和建议哦'
 					},
 					no9: { //投诉与建议被删除
 						img: img009,
 						width: 350,
 						height: 320,
 						text: '建议已经被删除'
-					},
-					no10: {
-						img: img009,
-						width: 350,
-						height: 320,
-						text: '没有找到对应学员'
-					},
-					no11: { 
-						img: img002,
-						width: 259,
-						height: 264
-					},
-					no12: { //订单空
-						img: img012,
-						width: 412,
-						height: 235,
-						text: "您的订单记录空空如也~"
-					},
+					}
 				}
 			}
 		},

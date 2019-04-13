@@ -24,23 +24,23 @@
             :data="renderData">
         <!--公立学校-->
         <div v-if="type==0" class="card"
-             :class="curSchoolId == item.ID?'lighHeight':''"
+             :class="curSchoolId == item.id?'lighHeight':''"
              v-for="(item,index) in list"
              :key="index"
              @click="changeAction(item)">
-            <span>{{item.Value}}</span>
-            <svg v-if="curSchoolId == item.ID" class="icon" aria-hidden="true">
+            <span>{{item.value}}</span>
+            <svg v-if="curSchoolId == item.id" class="icon" aria-hidden="true">
                 <use xlink:href="#icon-danxuan"></use>
             </svg>
         </div>
         <!--年级-->
         <div v-if="type==1" class="card"
+             :class="(curGradeName == name.name)&&(curGradeId == name.id)?'lighHeight':''"
              v-for="(name,key) in list"
-             :class="curGradeName == name?'lighHeight':''"
              :key="key"
              @click="changeAction(name,key)">
-            <span>{{name}}</span>
-            <svg v-if="curGradeName == name" class="icon" aria-hidden="true">
+            <span>{{name.name}}</span>
+            <svg v-if="(curGradeName == name.name)&&(curGradeId == name.id)" class="icon" aria-hidden="true">
                 <use xlink:href="#icon-danxuan"></use>
             </svg>
         </div>
@@ -49,7 +49,7 @@
 </template>
 
 <script>
-    import {savePost} from "parent/api/common";
+    import {opstudentinfoforwx} from 'parent/api/personal-center.js';
 
     export default {
         name: "select-actionsheet",
@@ -72,12 +72,14 @@
                 default: false
             },
             list: {}
+        
         },
         data() {
             return {
                 curSchoolName: null,
                 curSchoolId: null,
-                curGradeName: null
+                curGradeName: null,
+                curGradeId:null
             }
         },
         computed: {
@@ -90,32 +92,30 @@
         methods: {
             changeAction(card, key) {
                 if (this.type == 0) {
-                    this.curSchoolName = card.Value;// 因为不是每次点击的时候都请求数据，所以这里要赋值
-                    this.curSchoolId = card.ID;// 因为不是每次点击的时候都请求数据，所以这里要赋值
-                    savePost({
-                        saveFlag: "modifiedPersonalInfo",
-                        school: card.Value
+                    this.curSchoolName = card.value;// 因为不是每次点击的时候都请求数据，所以这里要赋值
+                    this.curSchoolId = card.id;// 因为不是每次点击的时候都请求数据，所以这里要赋值
+                    opstudentinfoforwx({
+                        'fullTimeschool':card.value
                     }).then(res => {
-                        if (res.errcode == app.errok) {
+                        if (res.result.code == app.errok) {
                             this.$emit('informationCampu', card);
                             this.close();
                         } else {
-                            app.toast('error', res.errmsg)
+                            app.toast('error', res.result.msg)
                         }
                     })
 
                 } else if (this.type == 1) {
-                    //注意：smart 次数返回的是数组对象，次数返回的是对象。所以对应html处的v-if的判断会不同
-                    this.curGradeName = card;// 因为不是每次点击的时候都请求数据，所以这里要赋值
-                    savePost({
-                        saveFlag: "modifiedPersonalInfo",
-                        grade: key
+                    this.curGradeName = card.name;// 因为不是每次点击的时候都请求数据，所以这里要赋值
+                    this.curGradeId = card.id;
+                    opstudentinfoforwx({
+                        grade: card.id
                     }).then(res => {
-                        if (res.errcode == app.errok) {
+                        if (res.result.code == app.errok) {
                             this.$emit('informationCampu', card);
                             this.close();
                         } else {
-                            app.toast('error', res.errmsg)
+                            app.toast('error', res.result.msg)
                         }
                     })
 

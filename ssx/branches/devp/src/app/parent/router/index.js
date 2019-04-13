@@ -26,6 +26,7 @@ let routes = [
 	...transactionRouter,
 	...statisticsRouter,
 	...personalCenterRouter,
+
 	...noFindComponent
 ]
 

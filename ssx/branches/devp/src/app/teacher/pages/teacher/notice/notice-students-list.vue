@@ -18,6 +18,9 @@
 			@include position-absolute(40px);
 			overflow: hidden;
 		}
+		.noData-temp {
+			@include position-absolute;
+		}
 		.body {
 			.student {
 				position: relative;
@@ -69,7 +72,7 @@
 		<!--学员情况列表-->
 		<div class="body">
 			<scroller-base class="scroller" :data="list">
-				<div class="student" v-for="item in list">
+				<div class="student" v-for="item in list" :key="item.studentid">
 					<!--头像和名字-->
 					<div class="info">
                         <span class="photo" :style="'background-image:url('+ item.photo +')'"></span>
@@ -84,45 +87,47 @@
 			</scroller-base>
 		</div>
 
+		<!-- 空白页 -->
+		<empty-page class="noData-temp" v-if="list.length == 0" :type="8" text="没有找到班级学生哦~~"></empty-page>
+
 		<!--加载中-->
 		<loading class="loading" v-show="isLoading"></loading>
 	</div>
 </template>
 
 <script>
-import { getReadMessageStudent } from "teacher/api/notice";
+	import { getreadmessagestudent } from "teacher/api/notice";
+		import EmptyPage from "teacher/components/common/empty-page/empty-page";
 	export default {
 		name: 'homework-students-list',
 		data() {
 			return {
 				wxTitle: '通知查看情况',
-				isLoading: true,
-				shiftName: "标题字段要加 上",
+				isLoading: false,
+				shiftName: "",
 				list: [],
 			}
 		},
 		computed: {
-			
-		},
-		methods:{
-			getData(id){
-				getReadMessageStudent({
-					messageid:id
-				}).then((res)=>{
-					this.isLoading = false;
-					// if(res.result.code == app.errok){
-						this.list = res.data.studentlist;
-					// }
-				})
+			getMessageId() {
+				return this.$router.currentRoute.params.messageid;
+			},
+			getShiftName() {
+				return this.$router.currentRoute.params.shiftname;
 			}
 		},
-		created(){
-			this.getData(this.$route.params.id)
-		},
 		mounted() {
-			// console.log(app.ls.getStorage('studentList'))
-			// this.shiftName = this.getShiftName;
-			// this.list.push(...this.getStudentList)
+			this.shiftName = this.getShiftName;
+			getreadmessagestudent({
+				messageid: this.getMessageId
+			}).then(res => {
+				if(res.result.code == 200) {
+					this.list = [...res.data.studentlist]
+				}
+			})
 		},
+		components: {
+			EmptyPage
+		}
 	}
 </script>

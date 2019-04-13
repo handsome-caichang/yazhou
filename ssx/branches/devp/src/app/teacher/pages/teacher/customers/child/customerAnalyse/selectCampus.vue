@@ -64,9 +64,9 @@
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-zuobianjiantou"></use>
             </svg>
-            {{app.sysInfo.Title_Campus}}选择
+            校区选择
         </div>
-            <!-- :class="{'active':item.Id==app.sysInfo.currole.Id}" -->
+            <!-- :class="{'active':item.Id==app.sysInfo.currole.id}" -->
                 <!-- :class="{'active':campusObj.Key==item.Key}" -->
         <div class="wrapper">
             <div class="item"
@@ -83,16 +83,13 @@
             </div>
         </div>
         <div class="bottom" slot="footer">
-            <div class="cancle" @click="cancle">取消</div>
-            <div class="sure" @click="selectCampus">{{"确定("+selectNum+"/"+list.length+")"}}</div>
+            <div class="cancle" @click="close">取消</div>
+            <div class="sure" @click="selectCampus">{{"确定("+selectNum+"/"+num+")"}}</div>
         </div>
     </action-sheet>
 </template>
 
 <script>
-    
-    
-    
     export default {
         mixins: [app.mixin.popupWindowRouteMixin],
         props: {
@@ -136,40 +133,26 @@
                     })
                 })
                 this.$emit('selectCampus', arr)
-            },
-            computedIsSelect() {
-                let arr = this.campusList.map(obj => {
-                    return obj.Key
-                })
-                this.list.forEach(obj => {
-                    if (arr.indexOf(obj.Key) > -1) {
-                        this.$set(obj, 'isSelect', true)
-                    } else {
-                        this.$set(obj, 'isSelect', false)
-                    }
-                })
-            },
-            cancle() {
-                this.computedIsSelect()
-                this.close()
             }
         },
         watch: {
             opened(val) {
+                let arr = this.campusList.map(obj => {
+                    return obj.Key
+                })
                 if (val) {
-                    if (!this.list.length) {
-                        this.list = app.customConfigInfo.CampusList
-                        this.list.forEach(obj => {
+                    this.list = app.customConfigInfo.CampusList
+                    this.num = 0
+                    this.list.forEach(obj => {
+                        this.num ++
+                        if (arr.indexOf(obj.Key) > -1) {
+                            this.$set(obj, 'isSelect', true)
+                        } else {
                             this.$set(obj, 'isSelect', false)
-                        })
-                    } else {
-                        this.computedIsSelect()
-                    }
-                } 
+                        }
+                    })
+                }
             }
-        },
-        components: {
-            
         }
     }
 </script>

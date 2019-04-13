@@ -11,7 +11,7 @@ const routes=[{
         page:StatisticsList
     }
 },{
-    path:'/statisticsDetail/:shiftId',
+    path:'/statisticsDetail/:shiftid',
     name:'StatisticsDetail',
     component:routerBus,
     meta:{

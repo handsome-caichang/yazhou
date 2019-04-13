@@ -4,7 +4,6 @@
     
 
     .comment-students-list {
-        background-color: $color-white;
         .lecture {
             height: 44px;
             line-height: 44px;
@@ -63,7 +62,7 @@
                 top:54px;
             }
             &.bottom-heigher{
-                bottom:0;
+                bottom:0px;
             }
             .card {
                 min-height: 100px;
@@ -133,7 +132,7 @@
                             line-height: 12px;
                             margin-top: 6px;
                             .cant-comment{
-                                color: #4775C8;
+                                color:#4775cb;
                             }
                         }
                     }
@@ -210,7 +209,7 @@
         <scroller-base ref="commentStuListScroller" class="scroller" :data="renderData" :class="{'top-heigher': amont==0,'bottom-heigher':canSelectCounts==0}">
             <div class="card" v-for="(item,index) in list" :key="item.id" @click.stop="goToCommentDetails(item)">
                 <div class="card-lf" @click.stop>
-                    <div class="img" :style="'background-image:url('+item.imgPath+')'"></div>
+                    <div class="img" :style="'background-image:url('+item.imgpath+')'"></div>
                     <svg v-show="item.hasSquare" class="icon" aria-hidden="true" @click.stop="selectStudents(index)">
                         <use :xlink:href="item.checked==true?'#icon-duoxuan':'#icon-duoxuan-weixuanze'"></use>
                     </svg>
@@ -219,17 +218,17 @@
                     <div class="describe">
                         <div class="des-top">
                             <div class="name" v-show="item.name!=''">{{item.name}}</div>
-                            <div class="date" v-show="item.createTime!=''">{{item.createTime}}</div>
-                            <div class="content" v-show="item.comment!=''" v-html="item.comment"></div>
-                            <div class="star" v-show="item.strStar!=null">{{item.strStar}}</div>
+                            <div class="date" v-show="item.createtime!=null">{{item.createtime}}</div>
+                            <div class="content" v-show="item.comment!=null" v-html="item.comment"></div>
+                            <div class="star" v-show="item.strstar!=null">{{item.strstar}}</div>
                         </div>
-                        <div class="des-bottom" v-show="item.canComment&&item.IsBindWeixin==0">
+                        <div class="des-bottom" v-show="item.canComment&&item.isbandweixin==0">
                             未绑定师生信，无法收到老师点评消息
                         </div>
                         <div class="des-bottom" v-if="!item.canComment">此学生<span class="cant-comment">未绑定</span>师生信，您无法进行点评操作</div>
                     </div>
                     <div class="comment-arrow" v-show="item.canComment">
-                        <span v-show="item.commentId==null">立即点评</span>
+                        <span v-show="item.commentid==null">立即点评</span>
                         <svg class="icon" aria-hidden="true">
                             <use xlink:href="#icon-youjiantou"></use>
                         </svg>
@@ -262,16 +261,15 @@
 </template>
 
 <script>
-    import {getCommentStudentsList,getAmont,getStudentReview} from 'teacher/api/comment';
-    import {processGet, savePost} from 'teacher/api/common';
     import CommentParentReply from './child/comment-parents-reply'
+    import {getcommentstudent,getstudentteview,upatecoursecontent,getcoursecommentamont,gettempmessagestudent} from "teacher/api/comment";//获取排课的学员信息及评价信息
 
     export default {
         name: "comment-students-list",
         data() {
             return {
                 wxTitle: '学生列表',
-                EnablePostComment: '',//老师上课点评学生，如果该学生没有绑定师生信账号是否能提交点评。（1是(默认)，0否）
+                // EnablePostComment: '',//老师上课点评学生，如果该学生没有绑定师生信账号是否能提交点评。（1是(默认)，0否）
                 paraid: '',//传过来的参数 也是courseId
                 paradate: '',//传过来的参数
                 paratime: '',//传过来的参数
@@ -286,7 +284,8 @@
                 selectedCounts: 0, //已选择人数
                 selectAllActiveFlag: false, //全选按钮开关
                 canSelectCounts: 0, //能够被选择的人数(当天||未评价)
-                amont: '' //用于星星的标识
+                amont: '', //用于星星的标识
+                courseid:''//
             }
         },
         computed: {
@@ -298,28 +297,29 @@
         },
         methods: {
             _getAmont(id) {
-                getAmont().then(res => {
-                    this.amont = res.Data.amont;
-                    this.$refs.commentStuListScroller.refresh();
-                    if (res.Data.amont != 0) {
+                getcoursecommentamont().then(res => {
+                    this.amont = res.data;
+                    if (res.data != 0) {
                         this.getReview(id)
                     }
                 })
             },
             // 获取学生列表数据
             getData(id) {
-                processGet({
-                    pname: "comment_student",
-                    id: id
+                getcommentstudent({
+                    courseid: id
                 }).then(res => {
                     this.isLoading = false;
-                    if(res.errcode==app.errok) {
-                        res.data.studentList.forEach(item => {
+                    if(res.result.code==app.errok){
+                        this.courseid = res.data.courseid;
+                        res.data.studentlist.forEach(item => {
                             //没有绑定微信号&&配置项为0  =>  不能点评(canComment) false能点评  true不能点评
                             // checked：//是否勾选上
-                            item.createTime = item.createTime.replace(/-/g, '.');
-                            item.canComment = ((this.EnablePostComment == 0) && (item.IsBindWeixin == 0)) ? false : true;
-                            item.hasSquare = item.canComment && item.commentId == null;
+                            item.createtime = item.createtime&&item.createtime.replace(/-/g, '.');
+                            // item.canComment = ((this.EnablePostComment == 0) && (item.isbandweixin == 0)) ? false : true; //smart没有权限概念
+                            item.canComment = true;
+                            // item.hasSquare = (item.canComment && item.isToday) || (item.canComment && item.commentId == null);
+                            item.hasSquare = item.canComment && item.commentid == null;
                             if (item.hasSquare) {//有正方形(勾选框)
                                 item.checked = false;
                                 // 能被勾选的学员数量计算赋值
@@ -327,27 +327,28 @@
                             }
                         });
                         this.classContent = res.data.content;//上课内容赋值
-                        this.shiftScheduleList = res.data.shiftScheduleList;//上课进度赋值
-                        this.shiftAmount = res.data.shiftAmount;//本节课的上课进度
-                        this.list = res.data.studentList;//学员列表赋值
+                        this.shiftScheduleList = res.data.shiftschedulelist;//上课进度赋值
+                        this.shiftAmount = res.data.shiftamount;//本节课的上课进度
+                        this.list = res.data.studentlist;//学员列表赋值
+
                     }
                 })
             },
             getReview(id) {
-                getStudentReview({
-                    id: id
+                getstudentteview({
+                    courseid: id
                 }).then(res => {
-                    this.studentReview = res.Data;
+                    this.studentReview = res.studentreviewinfos;
                 })
             },
+           
             //  进入评价详情页
             goToCommentDetails(item) {
-                // 没有绑定微信且配置项EnablePostComment为0
+                // 没有绑定微信
                 if(!item.canComment){
                     return
                 }
-                app.ls.setStorage('commentIsBatch',false);
-                this.$router.push({path: `/commentDetail/${item.courseId}/${item.id}`})
+                this.$router.push({path: `/commentDetails/${this.courseid}/${item.studentid}`})
             },
             // 进入家长回复
             parentsReplyList() {
@@ -366,16 +367,13 @@
             },
             //保存上课进度
             saveClassProgress(obj) {
+              
                 let para = {
-                    saveFlag: "COURSE_CONTENT",
-                    course: this.paraid,
-                    shiftAmount: obj.schedule.ShiftAmount,
-                    ShiftScheduleID: obj.schedule.ID,
-                    Content: obj.content,
-                    LastClasstime: this.getLastTime(this.paradate, this.paratime == '00:00~23:59' ? '' : this.paratime),
-                };
-                savePost(para).then(res => {
-                    if (res.errcode == app.errok) {
+                    courseid:this.paraid,
+                    content:obj.content
+                }
+                upatecoursecontent(para).then(res => {
+                    if (res.result.code == app.errok) {
                         app.toast('success', '保存成功。');
                         this.classContent = obj.schedule.Title || '' + obj.content;
                         this.shiftAmount = obj.schedule.ShiftAmount;
@@ -431,79 +429,58 @@
                     app.toast('info', '请选择批量操作的学员。');
                     return
                 } else {
-
-                    let studentId = [],
-                        name = [],
+                    let id = [],
+                        name=[],
                         str = '';// 保存id数组的字符串
                     this.list.forEach(item => {
                         if (item.checked) {
-                            studentId.push(item.id);
+                            id.push(item.studentid);
                             name.push(item.name);
                         }
                     });
-
-                    if(studentId.length>50){
-                        app.alert({
-                            'text': '一次最多评价50个学员，您的选择已超限哦~',
-                            btn: {
-                                'text': '知道了',
-                                'style': {},
-                                'action': true
-                            }
-                        });
-                        return
-                    }
-
-                    str = studentId.join(',');
-
+                    str = id.join(',');
                     //提示批量操作覆盖草稿
-                    processGet({
-                        pname: "batchCommentQuery",
-                        studentId: str,//学生id
-                        id:this.list[0].courseId //courseID都相同
+                    gettempmessagestudent({
+                        courseid:this.paraid,
+                        studentid:id
                     }).then(res=>{
-
-                        if(res.errcode == app.errok){
-                            //有学员存了草稿
-                            if(res.data&&res.data.length){
+                        if(res.result.code==app.errok){
+                            if(res.data.length>0){
                                 app.confirm({
-                                    title: "提示",
-                                    text: res.data.join(',')+' 已有上课点评草稿，点击确定内容会被覆盖。',
-                                    btns: [{
-                                        text: '取消',
-                                        style: {color: '#333'},
-                                        action: false // 'cancel'
-                                    }, {
-                                        text: '确定',
-                                        style: {},
-                                        action: true // 'confirm'
+                                    title:"提示",
+                                    text:res.data.join(',')+' 已有上课点评草稿，点击确定内容会被覆盖。',
+                                    btns:[{
+                                        text:'取消',
+                                        style:{color:'#333'},
+                                        action:false
+                                    },{
+                                        text:'确定',
+                                        style:{},
+                                        action:true
                                     }]
-                                }).then(sel => {
-                                    if (sel) {
-                                        app.ls.setStorage('commentIsBatch', true);
+                                }).then(sel=>{
+                                    if(sel){
                                         app.ls.setStorage('commentBatchStudentName', name);//用于详情页头部显示
-                                        //不给定时器页面路由会有问题
                                         setTimeout(()=>{
-                                            this.$router.push({path: `/commentDetail/${this.paraid}/${str}`})
+                                            this.$router.push({path: `/commentDetails/${this.paraid}/${str}`})
                                         },50)
+
                                     }
-                                });
+                                })
                             }else{
-                                app.ls.setStorage('commentIsBatch', true);
                                 app.ls.setStorage('commentBatchStudentName', name);//用于详情页头部显示
-                                this.$router.push({path: `/commentDetail/${this.paraid}/${str}`})
+                                this.$router.push({path: `/commentDetails/${this.paraid}/${str}`})
                             }
 
                         }else{
-                            app.toast('error',res.errmsg)
+                            app.toast('error',res.result.msg)
                         }
-                    });
-
+                    })
 
                 }
             },
             render() {
-                this.paraid = this.$route.params.id;
+                this.paraid = this.$route.params.id;//courseid
                 this.paradate = this.$route.params.date;
                 this.paratime = this.$route.params.time;
                 this._getAmont(this.paraid);
@@ -524,7 +501,7 @@
         },
         created() {
             // 配置项赋值
-            this.EnablePostComment = app.sysInfo.EnablePostComment;
+            // this.EnablePostComment = app.sysInfo.enablepostcomment;
             this.render();
         },
         mounted() {

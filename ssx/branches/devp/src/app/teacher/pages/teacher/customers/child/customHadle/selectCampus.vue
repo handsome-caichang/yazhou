@@ -109,7 +109,7 @@
             <div>
                 <div class="title">转为正式学员(自动导入客户资料)</div>
                 <div class="selectCampus" @click="changeContent">
-                    {{campusObj.Value&&campusObj.Value.Name?campusObj.Value.Name:'选择目标'+app.sysInfo.Title_Campus}}
+                    {{campusObj.Value&&campusObj.Value.Name?campusObj.Value.Name:'选择目标校区'}}
                     <svg class="icon" aria-hidden="true">
                         <use xlink:href="#icon-youjiantou"></use>
                     </svg>
@@ -122,7 +122,7 @@
             <div class="footer-item spec" @click="sureSelect">确定</div>
         </div>
 
-        <div slot="header" class="actionsheet-hd selectTwo" v-if="selectTwo">{{app.sysInfo.Title_Campus}}选择</div>
+        <div slot="header" class="actionsheet-hd selectTwo" v-if="selectTwo">校区选择</div>
         <div class="container" v-if="selectTwo">
            <div v-for="item in list" class="item" @click="selectCampus(item)" :class="{'active':item.Key===campusObj.Key}">
                 {{item.Value.Name}}
@@ -132,10 +132,8 @@
 </template>
 
 <script>
-    
-    
-    import {getCommunicationMode} from 'teacher/api/customers'
-    
+    import {getCommunicationMode} from 'teacher/api/customers';
+
     export default {
         mixins: [app.mixin.popupWindowRouteMixin],
         props: {
@@ -182,7 +180,6 @@
                 this.$emit('selectCampusOver')
                 this.close()
             }
-            
         },
         watch: {
             opened(val) {
@@ -198,9 +195,6 @@
                     this.list = []
                 }
             }
-        },
-        components: {
-            
         }
     }
 </script>

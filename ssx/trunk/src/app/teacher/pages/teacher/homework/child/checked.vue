@@ -21,15 +21,7 @@
 		padding-left: 12px;
 		padding-right: 12px;
 		display: flex;
-		justify-content: space-between;
 		align-items: center;
-		>div:first-child {
-			display: flex;
-			align-items: center;
-		}
-		.is-send {
-			color: #999999;
-		}
 		.photo {
 			width: 40px;
 			height: 40px;
@@ -107,16 +99,11 @@
 			class="student-item" 
             :key="item.StudentID"
 			@click.stop.prevent="itemChecked(item, key, $event)">
-			<div>
-				<svg class="icon icon-duoxuan-weixuanze" aria-hidden="true">
-					<use :xlink:href="item.checked==false?'#icon-duoxuan-weixuanze':'#icon-duoxuan'"></use>
-				</svg>
-				<span class="photo" :style="'background-image:url('+ item.Photo +')'"></span>
-				<span class="student-name">{{ item.StudentName }}</span>
-			</div>
-			<div class="is-send">
-				<span v-if="item.IsSend == 1">已发送</span>
-			</div>
+			<svg class="icon icon-duoxuan-weixuanze" aria-hidden="true">
+				<use :xlink:href="item.checked==false?'#icon-duoxuan-weixuanze':'#icon-duoxuan'"></use>
+			</svg>
+            <span class="photo" :style="'background-image:url('+ item.photo +')'"></span>
+			<span class="student-name">{{ item.studentname }}</span>
 		</div>
 
 		<div v-if="checkList.length!=0" slot="footer" class="bottom-fixed-button">
@@ -155,7 +142,7 @@
 				checked: false,
 				isAll: false,
 				chooseNum: 0, // 已选择的数量
-				total: 0, // 总数
+				total: 0 // 总数
 			};
 		},
 		methods: {
@@ -186,7 +173,6 @@
 				this.num = this.chooseNum;
 				// 是否全选
 				this.chooseNum != 0 && this.chooseNum === this.total ? (this.isAll = true) : (this.isAll = false);
-				// console.log(this.chooseNum, "<--chooseNum-------total-->" , this.total);
 			}
 		},
 		watch: {

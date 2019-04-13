@@ -44,7 +44,7 @@
 				@include flex-center;
 				position:relative;
 				/*今天的样式*/
-				&.isToday { background-color:RGBA(30, 136, 245, .1) }
+				&.isToday { color:#1E88F5; }
 				/*非本月的样式*/
 				&.gray { color:#CCCCCC; }
 				/*选择该天*/
@@ -55,6 +55,7 @@
 					.day-item-number.hasCourse:after{
 						background-color: #46BEEE;
 					}
+
 				}
 				/*多少节课的显示*/
 				/*.course-amount-box{
@@ -88,10 +89,10 @@
 						position:absolute;
 						width:6px;
 						height:6px;
-						top: 100%;
 						border-radius:50%;
 						background-color:#ffdf7f;
 						left: calc(50% - 3px);
+                        top: 1.2em;
 					}
 				}
 				/*请假图标*/
@@ -158,7 +159,7 @@
 	                :key="index"
 	                :class="{'gray' : !data.thisMonth,'isToday':data.isToday,'active':selected.index == index}"
 					@click="selectDay(index,data)">
-					<div class="day-item-number" :class="{'hasCourse': dayMap[data.datestr] && dayMap[data.datestr].length>0}">{{data.day}}</div>
+					<div class="day-item-number" :class="{'hasCourse': dayMap[data.datestr] &&  dayMap[data.datestr].length>0}">{{data.day}}</div>
 					
 					<!--有多少节课的圆圈-->
 					<!--dayMap[data.datestr]可能为undefined-->
@@ -203,7 +204,7 @@
 						</svg>
 						<span>校区：</span>
 					</div>
-					<div>{{item.campusName}}</div>
+					<div>{{item.campusname}}</div>
 				</div>
 				
 				<div>
@@ -217,14 +218,14 @@
 					<div v-show="item.unit==3">{{item.date}}</div>
 				</div>
 				
-				<div v-show="item.classroom">
+				<div v-show="item.classroomname">
 					<div>
 						<svg class="icon" aria-hidden="true">
 							<use xlink:href="#icon-jiaoshi"></use>
 						</svg>
 						<span>教室：</span>
 					</div>
-					<div>{{item.classroom}}</div>
+					<div>{{item.classroomname}}</div>
 				</div>
 				
 				<div v-show="item.ClassroomLayoutName">
@@ -234,7 +235,7 @@
 						</svg>
 						<span>座位：</span>
 					</div>
-					<div>{{item.ClassroomLayoutName}}</div>
+					<div>{{item.classlayoutname}}</div>
 				</div>
 				
 				<div v-show="item.content">
@@ -254,17 +255,7 @@
 						</svg>
 						<span>老师：</span>
 					</div>
-					<div>{{item.teacher}}</div>
-				</div>
-
-				<div v-show="item.teacherAssistant">
-					<div>
-						<svg class="icon" aria-hidden="true">
-							<use xlink:href="#icon-laoshiicon1"></use>
-						</svg>
-						<span>助教：</span>
-					</div>
-					<div>{{item.teacherAssistant}}</div>
+					<div>{{item.teachernames.join(',')}}</div>
 				</div>
 				
 				<div>
@@ -278,7 +269,7 @@
 						<span :class="computeStatus(item.status)">
 							{{item.status || '未上课'}}
 						</span>
-						<span class="red" v-show="item.isNotAttend">(请假)</span>
+						<span class="red" v-show="item.isnoteattend">(请假)</span>
 					</div>
 				</div>
 				
@@ -299,7 +290,7 @@
 </template>
 
 <script>
-	import {processGet} from 'parent/api/common';
+	import {getcourseinfosbytime} from 'parent/api/course';
 	import MonthCalenderCommon from 'parent/components/common/month-calender/month-calender-common';
 	import EmptyPage from "parent/components/common/empty-page/empty-page";
 
@@ -318,7 +309,7 @@
 				dayMap:{},		//42天的Map对象
 				itemCourseMap:{},	//用id做key(每节课)的Map对象
 				calenderHeight:335,	//课表的高度,mounted后更新高度,使得所有格子为正方形.
-				month:_dateMonth.getFullYear() + '-' + fixed(_dateMonth.getMonth()+1) + '-' + fixed(_dateMonth.getDate()),
+				month:_dateMonth.getFullYear() + '-' + fixZero(_dateMonth.getMonth()+1,2) + '-' + fixZero(_dateMonth.getDate(),2),
 				selected:{
 					index: 0
 				}
@@ -333,7 +324,7 @@
 			},
 			changeMonth(num){
 				_dateMonth.setMonth(_dateMonth.getMonth()+num);
-				this.month = _dateMonth.getFullYear() + '-' + fixed(_dateMonth.getMonth()+1) + '-' + fixed(_dateMonth.getDate());
+				this.month = _dateMonth.getFullYear() + '-' + fixZero(_dateMonth.getMonth()+1,2) + '-' + fixZero(_dateMonth.getDate(),2);
 			},
 			openEditTime(){
 				app.datetimePicker({
@@ -341,7 +332,7 @@
 					format:'YYYY-MM',
 				}).then(data=>{
                     data = data + '-01';
-					_dateMonth = new Date(data);
+                    _dateMonth = new Date(data);
 					this.month = data;
 				})
 			},
@@ -351,39 +342,35 @@
 				if (!ids){
 					this.list = [];
 				} else {
-					this.getDayData(ids);
+					this.getDayData(data.datestr);
 				}
 			},
-			loadData(sdate,edate) {
-				let params = {
-					pname,
-					sdate,
-					edate,
-					week:'MONTH'
-				};
+			loadData(mstartdate,menddate) {
 				this.isLoading = true;
-				processGet(params).then(res=>{
+				monthQueue(mstartdate,menddate).then(res=>{
 					this.isLoading = false;
 					this.itemCourseMap = {};
-					res.data.forEach(item=>{
+					res.forEach(item=>{
 						this.itemCourseMap[item.id] = item;
 					})
-					this.dayMap = transformData(res.data,_daysArr);
+					this.dayMap = transformData(res,_daysArr);
 					//直接定位到今天
 					if (_isFirst){
 						this.selected.index = getTodayIndex(_daysArr);						
 						_isFirst = false;
 					}
 					this.selectDay(this.selected.index,_daysArr[this.selected.index]);
-				})
+				});
 			},
-			getDayData(ids){
+			getDayData(datestr){
 				let params = {
-					pname,
-					courseIdList:ids,
+					startdate:datestr,
+					enddate:datestr,
+					usertype:0,
+					viewtype:0,
 				}
 				this.isLoading = true;
-				processGet(params).then(res=>{
+				getcourseinfosbytime(params).then(res=>{
 					this.isLoading = false;
 					res.data.forEach(item=>{
 						item.isNotAttend = this.itemCourseMap[item.id] && this.itemCourseMap[item.id].isNotAttend == 1;
@@ -400,7 +387,7 @@
 			//进入时直接定位到当月,并选择今天
 			_isFirst = true;
 			_dateMonth = new Date();
-			this.month = _dateMonth.getFullYear() + '-' + fixed(_dateMonth.getMonth()+1) + '-' + fixed(_dateMonth.getDate());
+			this.month = _dateMonth.getFullYear() + '-' + fixZero(_dateMonth.getMonth()+1,2) + '-' +  fixZero(_dateMonth.getDate(),2);
 			
 			let w = parseFloat(getComputedStyle(this.$refs.calenderDIV).width);
 			this.calenderHeight = Math.ceil(w / 7 * 6 + 2);	//w/7*6只是粗略处理的正方形
@@ -444,9 +431,60 @@
 		})
 		return today;
 	}
-
-	function fixed(s){
-		s = '' + s;
-		return  s.length == 1 ? '0' + s : s;
+	
+	
+	//第一次请求iscount传1,表示后台要进行统计,依据统计结果一次性返回或分次返回.
+	//接受第一次请求的返回后,依据返回的字段'hasnext'决定要不要进行下4次请求(分次返回)
+	//后4次请求iscount传0,表示后台不再进行统计.
+	//mstartdate:月历的开始时间,menddate:月历的结束时间
+	function monthQueue(mstartdate,menddate){
+		return new Promise((resolve,reject)=>{
+			//请求1:
+			let params = {
+				mstartdate,
+				menddate,
+				startdate:mstartdate,
+				enddate:dateStrChange(mstartdate,6),					
+				iscount:1,
+                viewtype:2,
+				usertype:0
+			};
+            getcourseinfosbytime(params).then(res=>{
+				if (res.result.code == app.errok){
+					if (!res.hasnext){		//如果一次性给完数据,无须进行多余的请求
+						resolve(res.data);	
+					} else {	//进行多次请求
+						let proArr = [];
+						params.iscount = 0;		//剩下的不用统计
+						for (let i = 0; i < 5; i++){	//下一个区间
+							params.startdate = dateStrChange(params.enddate,1);
+							params.enddate = dateStrChange(params.startdate,6);
+							proArr.push(getcourseinfosbytime(Object.assign({},params)));
+						}
+						Promise.all(proArr).then(proArrRes=>{
+							let returnArr = res.data;		//第一次请求返回的数组
+							proArrRes.forEach(proRes=>{
+								returnArr.push(...proRes.data);		//拼接上所有的的请求数组,作为一个完整的数组返回
+							});
+							resolve(returnArr);
+						});
+					}
+				} 
+			});
+		});
+	}
+	
+	
+	//给定date的字符串,加减多少天后给出新date的字符串
+	function dateStrChange(date,days){
+		let dateObj = new Date(date);
+		dateObj.setDate(dateObj.getDate()+days);
+		return dateObj.getFullYear() + '-' + fixZero(dateObj.getMonth()+1,2) + '-' + fixZero(dateObj.getDate(),2);
+	}
+	
+	
+	function fixZero(m, n){
+		m = m + '';
+		return m.length >= n ? m : Array(n - m.length + 1).join('0') + m;  
 	}
 </script>

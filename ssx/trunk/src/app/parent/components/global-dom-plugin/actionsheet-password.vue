@@ -1,5 +1,8 @@
 <!-- 修改密码弹窗 -->
 <style lang="scss" scoped>
+	
+	
+	
 	.actionsheet-password{
 		z-index: 10;
 		line-height: 1;
@@ -12,9 +15,9 @@
 			background-color: $color-primary;
 		}
 		.card-bd{
-			padding: 0 15px;
+			padding: 12px 15px 9px 15px;
 			.title{
-				padding: 20px 0 10px 0;
+				line-height: 42px;
 			}
 			input[type=password]{
 				height: 40px;
@@ -22,7 +25,7 @@
 				border: 1px solid $color-border-2;
 			}
 			.tips{
-				padding: 40px 0 10px 0;
+				padding: 18px 0;
 				font-size: 14px;
 				&:before{
 					content: "*";
@@ -49,12 +52,6 @@
 		}
 	}
 </style>
-<style>
-    .actionsheet-password .actionsheet-wrap .as-box.middle.center {
-        left: 15px !important;
-        right: 15px !important;
-    }
-</style>
 
 <template>
 	<action-sheet 
@@ -78,7 +75,7 @@
 </template>
 
 <script>
-	import {processPost} from 'parent/api/common';
+	import {opuserpwd} from 'parent/api/personal-center';
 	
 	export default{
 		name: 'actionsheet-password',
@@ -92,28 +89,13 @@
 		},
 		computed: {
 			...Vuex.mapState([
-				'userConfig',
-				'couponFlag'
+                'userConfig'
             ]),
 			openFlag(){
-                let isChangePwd = app.ls.getStorage('ssxParent_pwd_'+app.sysInfo.userId);
-                // EnableSSXStudentInfo  0关闭 1开启
-                // perfectUserInfo  0不需要完善 1需要完善
-                // isStudent 0非正式学员 1正式学员
-                if(this.userConfig.EnableSSXStudentInfo==1 && this.userConfig.perfectUserInfo==1 && this.userConfig.isStudent==1 ){
-                    return false
-                }else{
-                    if (this.userConfig && this.userConfig.changePassword && this.opened) {
-                        if (!isChangePwd) {
-							if (!this.couponFlag) {  // 是否显示优惠卷弹窗
-								return true;
-							}else {
-								return false
-							}
-                        }
-                    }
-                    return false;
-                }
+				// if (this.userConfig && this.userConfig.changePassword && this.opened) {
+				// 	return true;
+				// }
+				return false;
 			}
 		},
 		methods: {
@@ -121,8 +103,7 @@
                 'set_userConfig',
             ]),
 			cancel(){ //取消
-                this.opened = false;
-                app.ls.setStorage('ssxParent_pwd_'+app.sysInfo.userId,true);
+				this.opened = false;
 			},
 			confirm(){ //确认
 				if (this.oldPwd.length===0 || this.newPwd.length===0 || this.confirmPwd.length===0) {
@@ -136,19 +117,19 @@
 					app.toast('info', '新密码格式不正确，请重新输入。');
                     return;                    
 				}else{
-					processPost({
-						pname: 'password',
-						action: 'change',
-						oldpwd: this.oldPwd,
-						newpwd: this.newPwd
-					}).then(res => {
-						if (res.errcode == app.errok) {
-							this.opened = false;
-							app.toast('success', '修改密码成功。');
-						}else{
-							app.toast('error', res.errmsg);
-						}
-					})
+                    opuserpwd({
+                        oldpwd: this.oldPwd,
+                        newpwd: this.newPwd
+                    }).then(res => {
+                        this.isLoading = false;
+                        if (res.result.code == app.errok) {
+                            this.opened = false;
+                            this.$router.back();
+                            app.toast('success', '修改密码成功。');
+                        }else{
+                            app.toast('error', res.result.msg);
+                        }
+                    });
 				}
 			}
 		}

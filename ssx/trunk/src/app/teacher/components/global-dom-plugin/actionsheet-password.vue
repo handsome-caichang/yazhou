@@ -1,5 +1,7 @@
 <!-- 修改密码弹窗 -->
 <style lang="scss" scoped>
+	
+	
 	.actionsheet-password{
 		z-index: 10;
 		line-height: 1;
@@ -12,9 +14,9 @@
 			background-color: $color-primary;
 		}
 		.card-bd{
-            padding: 0 15px;
+			padding: 12px 15px 9px 15px;
 			.title{
-                padding: 20px 0 10px 0;
+				line-height: 42px;
 			}
 			input[type=password]{
 				height: 40px;
@@ -22,7 +24,7 @@
 				border: 1px solid $color-border-2;
 			}
 			.tips{
-                padding: 40px 0 10px 0;
+				padding: 18px 0;
 				font-size: 14px;
 				&:before{
 					content: "*";
@@ -72,8 +74,7 @@
 </template>
 
 <script>
-	import { processPost } from 'teacher/api/common';
-	
+	import {opuserpwd} from 'teacher/api/personal-center';
 	
 	export default{
 		name: 'actionsheet-password',
@@ -82,24 +83,17 @@
 				oldPwd: '', //旧密码
 				newPwd: '', //新密码
 				confirmPwd: '',
-				opened: true                
+				opened: false                
 			}
 		},
 		computed: {
 			openFlag(){
-                let isChangePwd = app.ls.getStorage('ssxTeacher_pwd_'+app.sysInfo.ID);
-				if (app.sysInfo.changePassword==1 && this.opened) {
-                    if (!isChangePwd) {
-                        return true;
-                    }
-				}
 				return false;
 			}
 		},
 		methods: {
 			cancel(){ //取消
-                this.opened = false;
-                app.ls.setStorage('ssxTeacher_pwd_'+app.sysInfo.ID,true);
+				this.opened = false;
 			},
 			confirm(){ //确认
 				if (this.oldPwd.length===0 || this.newPwd.length===0 || this.confirmPwd.length===0) {
@@ -113,24 +107,20 @@
 					app.toast('info', '新密码格式不正确，请重新输入。');
                     return;
 				}else{
-					processPost({
-						pname: 'password',
-						action: 'change',
-						oldpwd: this.oldPwd,
-						newpwd: this.newPwd
-					}).then(res => {
-						if (res.errcode == app.errok) {
-							this.opened = false;
-							app.toast('success', '修改密码成功。');
-						}else{
-							app.toast('error', res.errmsg);
-						}
-					})
+					opuserpwd({
+                        oldpwd: this.oldPwd,
+                        newpwd: this.newPwd
+                    }).then(res => {
+                        this.isLoading = false;
+                        if (res.result.code == app.errok) {
+                            app.toast('success', '修改密码成功。');
+                            this.$router.back();
+                        }else{
+                            app.toast('error', res.result.msg);
+                        }
+                    });
 				}
 			}
-		},
-		components: {
-			
 		}
 	}
 </script>

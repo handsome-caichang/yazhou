@@ -18,6 +18,9 @@
 			@include position-absolute(40px);
 			overflow: hidden;
 		}
+		.noData-temp {
+			@include position-absolute;
+		}
 		.body {
 			.student {
 				position: relative;
@@ -69,20 +72,23 @@
 		<!--学员情况列表-->
 		<div class="body">
 			<scroller-base class="scroller" :data="list">
-				<div class="student" v-for="item in list">
+				<div class="student" v-for="item in list" :key="item.studentid">
 					<!--头像和名字-->
 					<div class="info">
                         <span class="photo" :style="'background-image:url('+ item.photo +')'"></span>
-						<div class="stu-name">{{ item.name }}</div>
+						<div class="stu-name">{{ item.studentname }}</div>
 					</div>
 					<!--已读未读-->
 					<div class="read">
-						<span v-if="item.isRead == 1" class="hasRead">已读</span>
+						<span v-if="item.isread == 1" class="hasRead">已读</span>
 						<span v-else class="notRead">未读</span>
 					</div>
 				</div>
 			</scroller-base>
 		</div>
+
+		<!-- 空白页 -->
+		<empty-page class="noData-temp" v-if="list.length == 0" :type="8" text="没有找到班级学生哦~~"></empty-page>
 
 		<!--加载中-->
 		<loading class="loading" v-show="isLoading"></loading>
@@ -90,6 +96,8 @@
 </template>
 
 <script>
+	import { getreadmessagestudent } from "teacher/api/notice";
+		import EmptyPage from "teacher/components/common/empty-page/empty-page";
 	export default {
 		name: 'homework-students-list',
 		data() {
@@ -101,20 +109,25 @@
 			}
 		},
 		computed: {
-			getList() {
-				return app.ls.getStorage('studentlist');
+			getMessageId() {
+				return this.$router.currentRoute.params.messageid;
 			},
 			getShiftName() {
-				return this.getList.shiftName;
-			},
-			getStudentList() {
-				return this.getList.studentList;
+				return this.$router.currentRoute.params.shiftname;
 			}
 		},
 		mounted() {
-			console.log(app.ls.getStorage('studentList'))
 			this.shiftName = this.getShiftName;
-			this.list.push(...this.getStudentList)
+			getreadmessagestudent({
+				messageid: this.getMessageId
+			}).then(res => {
+				if(res.result.code == 200) {
+					this.list = [...res.data.studentlist]
+				}
+			})
 		},
+		components: {
+			EmptyPage
+		}
 	}
 </script>

@@ -4,10 +4,17 @@ export function getSuggestionList(params) {
 	return axios.ajax('/api/SSX/QuerySuggest', params);
 }
 
-export function getSuggestDetail(params) {
-	return axios.ajax('/api/SSX/GetSuggestionInfo', params);
+export function getsuggestionforteacherlist(params){
+	return axios.smajax('getsuggestionforteacherlist', params);
 }
 
-export function receiveSuggest(params) {
-	return axios.ajax('/api/SSX/ReceiveSuggest', params);
+
+export function getsuggestionforteacherinfo(params){
+	return axios.smajax('getsuggestionforteacherinfo', params);
 }
+
+
+export function addsuggestionforteacher(params){
+	return axios.smajax('addsuggestionforteacher', params);
+}
+ 

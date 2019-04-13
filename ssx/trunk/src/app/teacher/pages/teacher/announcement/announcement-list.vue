@@ -3,6 +3,30 @@
 	
 	
 	.announcement-container {
+		// .top-serach {
+		// 	width: 100%;
+		// 	padding-left: 12px;
+		// 	padding-right: 12px;
+		// 	background: #fff;
+		// 	height: 44px;
+		// 	display: inline-flex;
+		// 	justify-content: space-between;
+		// 	align-items: center;
+		// 	.date {
+		// 		height: 28px;
+		// 	}
+		// 	.top-serach-button {
+		// 		width: 48px;
+		// 		height: 28px;
+		// 		text-align: center;
+		// 		line-height: 28px;
+		// 		font-size: 12px;
+		// 		color: rgba(102, 102, 102, 1);
+		// 		border: none;
+		// 		border-radius: 100px;
+		// 		background: rgba(238, 241, 246, 1);
+		// 	}
+		// }
 		.body {
 			position: absolute;
 			top: 0;
@@ -63,6 +87,15 @@
 
 <template>
 	<div class="announcement-container">
+		<!-- <div class="top-serach">
+			<date-bar 
+				class="date" 
+				:sdate='pagingOption.params.startdate' 
+				:edate='pagingOption.params.enddate' 
+				:index="quickDateIndex" 
+				@changeDate="changeDate">
+			</date-bar>
+		</div> -->
 
 		<div class="body">
 			<scroller-super 
@@ -72,13 +105,13 @@
 				:pagingOption="pagingOption" 
 				@loadData="loadData" 
 				ref="announcementListIScroller">
-				<div v-for="item in list" :key="item.id" @click="toDetail(item)" class="to-detail">
+				<div v-for="item in list" :key="item.id" @click.stop="toDetail(item)" class="to-detail">
 					<div class="flex-left">
 						<span class="title">{{ item.title }}</span>
 						<span class="date">{{ item.date }}</span>
 					</div>
 					<div class="flex-right">
-						<span :class="{'readed': item.isRead == 0}"></span>
+						<span :class="{'readed': item.isread == 0}"></span>
 						<svg class="icon" aria-hidden="true">
 							<use xlink:href="#icon-youjiantou"></use>
 						</svg>
@@ -95,7 +128,7 @@
 </template>
 
 <script>
-	import { processPost } from "teacher/api/common";
+	import { getnoticeinfosbyeid } from "teacher/api/announcement";
 	import EmptyPage from "teacher/components/common/empty-page/empty-page";
 
 	export default {
@@ -106,60 +139,51 @@
 				list: [],
 				// quickDateIndex: -1,
 				pagingOption: {
-					api: processPost,
+					api: getnoticeinfosbyeid,
 					params: {
-						pname: "publicInfo",
-						flag: "",
-						type: "",
+						// startdate: app.tool.getDatesByIndex(4, app.localTimeToServer).sdate,
+						// enddate: app.tool.getDatesByIndex(4, app.localTimeToServer).edate,
+						startdate: '1990-01-01',
+						enddate: app.tool.getDatesByIndex(4, app.localTimeToServer).edate,
 					},
 					pageOpt: {
-						// 分页初始页码的'key'、'value'
-						indexKey: "page",
-						indexVal: 1,
-						// 每页请求数据长度的'key'、'value'
-						sizeKey: "pageSize",
-						sizeVal: 20,
-						// 后端返回的总页数'key'
-						countKey: "pageCount"
+						isdesc: true
 					}
 				},
 				isLoading: true
 			};
 		},
 		methods: {
+			/* // 日期搜索
+			changeDate(date) {
+				this.pagingOption.params.startdate = date.sdate;
+				this.pagingOption.params.enddate = date.edate;
+				this.quickDateIndex = date.index;
+				this.isLoading = true;
+				this.$refs.announcementListIScroller.refresh(this.pagingOption.params);
+			}, */
 			// 加载更多
 			loadData(ajaxPromise) {
 				ajaxPromise.then(res => {
 					this.isLoading = false;
-					if(res.errcode == 200) {
+					if(res.result.code == 200) {
 						res.data.forEach(item => {
-							this.$set(item, 'isRead', item.isRead);
+							this.$set(item, 'isread', item.isread);
 						});
 						this.list =
-							res.pageIndex == 1 ? res.data : [].concat(this.list, res.data);
+							res.page.pageindex == 1 ? res.data : [].concat(this.list, res.data);
 					}
 				});
 			},
 			toDetail(item) {
-			   
-				this.$router.push({
-					path: `/announcementDetail/${item.id}`,
-					component: "announcementDetail"
+				this.$router.push({	path: `/announcementDetail/${item.id}`, component: "announcementDetail" });
+				// 派发事件，移除未读样式
+				app.eventDefine.on('refresh', ()=> {
+					item.isread = 0 ? 1 : item.isread;
+					app.eventDefine.off('refresh');
 				});
-				
 			}
-        },
-        created(){
-            // 派发事件，移除未读样式
-			app.eventDefine.on('refresh-announcement-list', (type,id)=> {
-                this.list.some(item=>{
-                    item.id == id && (item.isRead = 1);
-                })
-            });
-        },
-        beforeDestroy(){
-            app.eventDefine.off('refresh-announcement-list');
-        },
+		},
 		components: {
 			EmptyPage
 		}

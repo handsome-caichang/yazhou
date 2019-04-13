@@ -1,5 +1,7 @@
-<!--工作统计=>出勤率-->
+<!--工作统计 出勤率-->
 <style scoped lang="scss">
+	
+	
 	.workinfo-details-container {
 		background-color: $color-assist-1;
 		.scroller {
@@ -63,22 +65,17 @@
 
 <template>
 	<div class="workinfo-details-container">
-		<scroller-super 
-            class="scroller" 
-            :type="2" 
-            :data="list" 
-            :pagingOption="pagingOption" 
-            @loadData="loadData">
+		<scroller-super class="scroller" :type="2" :data="list" :pagingOption="pagingOption" @loadData="loadData">
 			<div class="card" v-for="(item,index) in list" :key="index">
 				<div class="class-name">{{item.classname}}</div>
 				<div class="count-box">
-                    <!--这里按天计费的时间后台做了处理-->
-					<div class="time">{{item.starttime.replace(/-/g,'.')}}</div>
+                    <div class="time" v-if="item.unit=='天'">{{item.starttime.substring(5,10).replace(/-/g,'.')}}</div>
+                    <div class="time" v-else>{{item.starttime.substring(0,16).replace(/-/g,'.')}}</div>
 					<div class="ought">应到：{{item.studentcountought}}</div>
 					<div class="real">实到：{{item.studentcountreal}}</div>
 				</div>
 			</div>
-			<empty-page class="noData-temp" v-if="list.length == 0" text="还没有出勤统计记录~" :type="7"></empty-page>
+			<empty-page class="noData-temp" v-if="list.length == 0" :type="1001"></empty-page>
 		</scroller-super>
 		<div class="footer" v-if="list.length !== 0">
 			<div class="text">合计</div>
@@ -87,12 +84,12 @@
 		</div>
 		<loading class="loading" v-show="isLoading"></loading>
 	</div>
+
 </template>
 
 <script>
-	import {getworkdetailinfo} from 'teacher/api/personal-center.js';
-	import EmptyPage from 'teacher/components/common/empty-page/empty-page.vue';
-
+	import EmptyPage from 'teacher/components/common/empty-page/empty-page'
+import { getworkdetailinfo } from 'teacher/api/workinfo';
 	export default {
 		name: "workinfo-attendance-details",
 		data() {
@@ -104,21 +101,11 @@
 				pagingOption: {
 					api: getworkdetailinfo,
 					params: {
-						starttime: '',
-						endtime: '',
-                        type: 2
-					},
-						pageOpt:{
-						isdesc:false,
-						// 分页初始页码的'key'、'value'
-						indexKey: 'pageindex',
-						sortfield:'',
-                        indexVal: 1,
-                        // 每页请求数据长度的'key'、'value'
-                        sizeKey: 'pagesize',
-                        sizeVal: 20,
-                        // 后端返回的总页数'key'
-                        countKey: 'totalpage'
+						uid:app.sysInfo.id,
+						userrole:'',
+						starttime:'',
+						endtime:'',
+                        type:2
 					}
 				}
 			}
@@ -128,10 +115,7 @@
 				ajaxPromise.then(res => {
 					this.isLoading = false;
 					if(res.result.code == app.errok) {
-                        if (res.page.pageindex === 1) {
-							this.list = [];
-						}
-						this.list = this.list.concat(res.data.classstudentinfos);
+						this.list = res.page.pageindex == 1 ? res.data.classstudentinfos : [].concat(this.list, res.data.classstudentinfos);
 						this.footerData = res.data.totalcountinfo;
 					} else {
 						app.toast('error', res.result.msg);
@@ -142,6 +126,15 @@
         created(){
             this.pagingOption.params.starttime = this.$route.params.sdate;
             this.pagingOption.params.endtime = this.$route.params.edate;
+            // 1学管师 2班主任 3老师
+            let role = '';
+            if(app.sysInfo.currole.id==4){
+                this.pagingOption.params.userrole=3
+            }else if(app.sysInfo.currole.id==32){
+                this.pagingOption.params.userrole=2
+            }else if(app.sysInfo.currole.id==16){
+                this.pagingOption.params.userrole=1;
+            }
         },
 		components: {
 			EmptyPage

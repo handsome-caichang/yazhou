@@ -105,11 +105,10 @@
 						.btn{
 							display: inline-block;
 							padding: 4px;
-                            border-radius: 3px;
-							color: #999999;
+							color: #666666;
 							margin-left: 10px;
 							text-decoration: none;
-							border: 1px solid #cccccc;
+							border: 1px solid #666666;
 						}
 					}
 				}
@@ -136,8 +135,8 @@
 					:index="quickDateIndex" 
 					@changeDate="changeDate">
 				</date-bar>
-				<div class="search-btn" v-show="!searchFlag" @click="()=>{searchFlag=!searchFlag}">搜索</div>
-				<div class="search-cancel-btn" v-show="searchFlag" @click="()=>{searchFlag=!searchFlag}">取消</div>
+				<div class="search-btn" v-show="!searchFlag" @click="()=>searchFlag=!searchFlag">搜索</div>
+				<div class="search-cancel-btn" v-show="searchFlag" @click="()=>searchFlag=!searchFlag">取消</div>
 			</div>
 			<!-- 搜索 -->
 			<div class="search-wrapper" v-if="searchFlag">
@@ -209,7 +208,7 @@
 					api: processCPost,
 					params: {
 						pname: 'examscore',
-						sdate: app.filters.formatDatetime(new Date(new Date().getFullYear()-2,0,1),'yyyy-MM-dd'),
+						sdate: app.tool.getDatesByIndex(3,app.localTimeToServer).sdate,
 						edate: app.tool.getDatesByIndex(3,app.localTimeToServer).edate,
 						search: ''
 					},
