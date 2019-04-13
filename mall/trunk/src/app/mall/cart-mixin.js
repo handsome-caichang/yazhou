@@ -52,12 +52,12 @@ export const CartMixin = {
                         ClassInfo: null, //班级信息
                         ShiftInfo: null, //課程信息
                         IsPreMoney: p.IsPreMoney, //是否定金支付
-                        SchemeID: ""
+                        // SchemeID: ""
                     };
 
-                if (p.ChooseScheme) {
+                /*if (p.ChooseScheme) {
                     pro.SchemeID = p.ChooseScheme.ID;
-                }
+                }*/
                 if (p.Type == 1) {
                     //班级类型->获取绑定物品
                     p.Bindings.forEach(binding => {
@@ -126,7 +126,7 @@ export const CartMixin = {
                     if (this.config.EnableChargeSubjectCompare == 1 && res.Data.MoneyInfo.ReloadSchemes && res.Data.MoneyInfo.ReloadSchemes.length > 0) {
                         // 新增 续科 定制需求
                         let flag = false;
-                        let newVaildCartList = app.tool.clone(this.vaildCartList);  // 当前购物车的列表
+                        let newVaildCartList = app.tool.clone(this.vaildCartList); // 当前购物车的列表
                         let appCartCampus = app.tool.clone(this.appCartCampus.Products); // 用来存储后面重新插入vuex的数据
                         for (let index = 0; index < res.Data.MoneyInfo.ReloadSchemes.length; index++) {
                             const element = res.Data.MoneyInfo.ReloadSchemes[index];
@@ -165,25 +165,23 @@ export const CartMixin = {
                                                                 this.isChange = true;
                                                                 allflag = true;
                                                                 appCartCampus.forEach(n => {
-                                                                    if ( n.ID == vals.ID ) {
+                                                                    if (n.ID == vals.ID) {
                                                                         n.ChooseScheme = vals.ChooseScheme;
                                                                     }
                                                                 });
                                                                 break;
-                                                            } 
+                                                            }
                                                         }
                                                         if (index == vals.Schemes.length - 1 && !allflag) {
-                                                            console.log(vals);
                                                             if (flagScheme) {
                                                                 vals.ChooseScheme = null;
                                                                 this.isChange = true;
-                                                                console.log('原来的不能用了');
                                                                 appCartCampus.forEach(n => {
                                                                     if (n.ID == vals.ID) {
                                                                         n.ChooseScheme = null;
                                                                     }
                                                                 });
-                                                            }   
+                                                            }
                                                         }
                                                     };
                                                 }
@@ -200,18 +198,18 @@ export const CartMixin = {
                                 let appCartCampuss = app.tool.clone(this.appCartCampus);
                                 appCartCampuss.Products = appCartCampus;
                                 this.set_appCartCampus(appCartCampuss);
-                            }else {
+                            } else {
                                 this.set_cartTotalMoney(res.Data.MoneyInfo.Money);
                             }
-                        }else {
+                        } else {
                             this.set_cartTotalMoney(res.Data.MoneyInfo.Money);
                         }
-                    }else {
+                    } else {
                         this.set_cartTotalMoney(res.Data.MoneyInfo.Money);
                     }
                 }
             });
-          
+
         }
     },
     watch: {
@@ -234,7 +232,7 @@ export const CartMixin = {
                         if (res[0].Data.length > 0) {
                             this.set_appCartCampus(res[0].Data[0]);
                         }
-                    }else {
+                    } else {
                         this.set_appCartCampus({
                             ID: "",
                             Name: "",
@@ -296,6 +294,5 @@ export const CartMixin = {
             this.set_expiredCartList(expired);
         }
     },
-    created() {
-    },
+    created() {},
 };

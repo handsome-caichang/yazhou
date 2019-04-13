@@ -1,5 +1,7 @@
 <!-- 注册页面 -->
 <style lang="scss" scoped>
+    
+    
 	.register {
 		@include position-absolute;
 		background-color: $color-assist-3;
@@ -244,24 +246,22 @@
 					</div>
 					<div class="form-item">
 						<div class="form-item-bd">
-							<input type="text" :placeholder="fullTimeSchoolText" v-model="user.fullTimeSchool"/>
+							<input type="text" :placeholder="source ? '公立学校' : '公立学校(选填)'" v-model="user.fullTimeSchool"/>
 						</div>
 					</div>
 					<div class="form-item" v-if="!source">
-						<div class="form-item-bd select" :class="{active:user.gradeId!='00000000-0000-0000-0000-000000000000'}" @click="openGradeActionsheet">
-							<div>{{user.grade}}</div>
-						</div>
+						<div class="form-item-bd select" :class="{active:user.gradeId!='00000000-0000-0000-0000-000000000000'}" @click="openGradeActionsheet"><div>{{user.grade}}</div></div>
 						<svg class="icon sel" aria-hidden="true">
 							<use xlink:href="#icon-xiala"></use>
 						</svg>
 					</div>
-					<p class="form-item-title" v-if="isRegist">设置师生信账号</p>
-					<div class="form-item" v-if="isRegist">
+					<p class="form-item-title">设置师生信账号</p>
+					<div class="form-item">
 						<div class="form-item-bd">
 							<input type="text" placeholder="用户名" v-model="user.ssxName"/></div>
 						<div class="form-item-ft">@{{companySuffix}}</div>
 					</div>
-					<!-- <div class="form-item">
+					<div class="form-item">
 						<div class="form-item-bd">
 							<input type="password" placeholder="请输入6位数以上的密码" v-model="user.pwd"/>
 						</div>
@@ -270,7 +270,7 @@
 						<div class="form-item-bd">
 							<input type="password" placeholder="请重新输入密码" v-model="user.rePwd"/>
 						</div>
-					</div> -->
+					</div>
 					<div class="form-btn primary" @click="regMoreSubmit">提&emsp;交</div>
 				</div>
 
@@ -308,7 +308,6 @@
 					
 	export default {
 		name: 'register',
-		mixins: [app.mixin.shareMixin],
 		data() {
 			return {
 				wxTitle: '手机商城',
@@ -333,7 +332,7 @@
 					fullTimeSchool: '', //公立学校名
 					ssxName: '', //师生信用户名
 					pwd: '', //密码
-					grade: '', //年级
+					grade: '年级', //年级
 					gradeId: '00000000-0000-0000-0000-000000000000', //年级ID
 					phone: '',
 					rePwd: '',
@@ -341,7 +340,6 @@
 					birthday: '出生日期'
 				},
 				source: false, // true 代表微信扫码注册 地址栏加上 source = scan
-				isRegist: false, // true 代表 已经点击注册了，并且是注册失败用户名一样的原因
 			}
 		},
 		computed: {
@@ -349,15 +347,7 @@
 				'config',//配置项SmsVerify：是否开启短信验证：1是（默认），0否
         		'campuslist',
 				'companySuffix'
-        	]),
-        	fullTimeSchoolText() {
-        		if (this.companySuffix === 'xiaogj.com') {
-        			return "机构名称"
-        		} else {
-        			return this.source ? '公立学校' : '公立学校(选填)'
-        		}
-        		
-        	}
+        	])
 		},
 		methods: {
 			...Vuex.mapMutations(['set_registerUser']),
@@ -506,7 +496,7 @@
 					this.user.gradeId = arr[0].ID;				
 				}
 			},
-			regMoreSubmit(){ //提交更多信息的表单	
+			regMoreSubmit(){ //提交更多信息的表单
 				if (this._moreValidate()) {
 					this.isLoading = true;
 					userRegister({
@@ -526,17 +516,14 @@
 						if (res.ErrorCode == app.errok) {
 							app.toast('success', '注册成功。');
 							this.set_registerUser({
-								SSXUserName: res.Data.UserName,
-								SSXUserPwd: res.Data.Password
+								SSXUserName: this.user.ssxName,
+								SSXUserPwd: this.user.pwd
 							})
 							if (app.mallApp.allPages['login']) {
 								this.$router.back();
 							} else {
 								this.$router.replace('/login')
 							}
-						}else if (res.ErrorCode == 421) {
-							app.toast('error', res.ErrorMsg);
-							this.isRegist = true;
 						}else{
 							app.toast('error', res.ErrorMsg);
 						}
@@ -607,37 +594,33 @@
 					return;
 				}
 				if (this.user.SelectCampusId == '00000000-0000-0000-0000-000000000000') {
-					app.toast('info', '报名校区不能为空。');
-					return;
-				}
-				if (this.companySuffix === 'xiaogj.com' && !this.user.fullTimeSchool) {
-					app.toast('info', `${this.fullTimeSchoolText}不能为空。`)
+					app.toast('info','报名校区不能为空。');
 					return;
 				}
 				if (!this.source && this.user.gradeId == '00000000-0000-0000-0000-000000000000') {
-					app.toast('info',  `${this.user.grade}不能为空。`);
+					app.toast('info','年级不能为空。');
 					return;
 				}
 				if (this.source && !this.user.fullTimeSchool) {
 					app.toast('info','公立学校不能为空。');
 					return;
 				}
-				// if (!this.user.ssxName) {
-				// 	app.toast('info','用户名不能为空。');
-				// 	return;
-				// }
-				// if ((this.user.pwd.length<6) || (this.user.rePwd.length<6)){
-				// 	app.toast('info', '密码不能少于6个字符。');
-				// 	return;
-				// }
-				// if ((this.user.pwd.length>20) || (this.user.rePwd.length>20)){
-				// 	app.toast('info', '密码不能多于20个字符。');
-				// 	return;
-				// }
-        		// if (this.user.pwd != this.user.rePwd) {
-        		// 	app.toast('info', '您输入的两次密码不相同，请重新输入。');
-				// 	return;
-        		// }
+				if (!this.user.ssxName) {
+					app.toast('info','用户名不能为空。');
+					return;
+				}
+				if ((this.user.pwd.length<6) || (this.user.rePwd.length<6)){
+					app.toast('info', '密码不能少于6个字符。');
+					return;
+				}
+				if ((this.user.pwd.length>20) || (this.user.rePwd.length>20)){
+					app.toast('info', '密码不能多于20个字符。');
+					return;
+				}
+        		if (this.user.pwd != this.user.rePwd) {
+        			app.toast('info', '您输入的两次密码不相同，请重新输入。');
+					return;
+        		}
 				return true;
 			},
 			_beginReCheck(t){
@@ -669,10 +652,6 @@
 			}
 		},
 		created(){
-			// start 针对内部系统'https://mall.xiaogj.com/xiaogj.com/html/index.html'做的专门的处理;
-			this.user.grade = this.companySuffix==='xiaogj.com' ? '职务' : '年级'
-			// end 针对内部系统'https://mall.xiaogj.com/xiaogj.com/html/index.html'做的专门的处理;
-
 			console.log(this.$route.query);
 			this.source = (this.$route.query.source && this.$route.query.source == "scan")  ? true : false;
 			this.user.SelectCampusId = this.$route.query.cid  ? this.$route.query.cid : "";
@@ -698,8 +677,7 @@
 			// 刷新对输入框表单元素进行input的监听,以做到在ipnut输入内容时,可以动态的滚动到相应的表单元素;
 			stepFlag(val) {
 				this.$nextTick(() => {
-					this.$refs.scroller.refresh();
-					console.log(val);
+					this.$refs.scroller.refreshFormInputlisten()
 					if (val === 2 && this.config.DefaultUserNameRule === 1) {
 						this.user.ssxName = this.user.phone;
 					}

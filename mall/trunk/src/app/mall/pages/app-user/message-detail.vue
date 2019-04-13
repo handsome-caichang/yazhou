@@ -1,5 +1,9 @@
 <!-- 消息详情界面 -->
+
 <style lang="scss" scoped>
+    
+    
+
     .message-detail {
         @include position-absolute;
 		background-color: $color-assist-1;
@@ -65,7 +69,6 @@
 	import { getMessageDetail } from 'api/lc';
 	export default {
 		name:'message-detail',
-        mixins: [app.mixin.shareMixin],
         data() {
             return {
             	isLoading: true,

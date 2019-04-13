@@ -1,8 +1,5 @@
 <!-- 商品 搜索结果/分类结果 列表展示组件 -->
 <style lang="scss" scoped>
-	
-	
-	
 	.goods-list-scroller {
 		@include position-absolute;
 		background-color: $color-assist-1;

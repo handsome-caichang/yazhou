@@ -13,7 +13,7 @@ module.exports = {
 
     dev: {
         assetsSubDirectory: 'static',
-        assetsPublicPath: '',
+        assetsPublicPath: '/',
 
         cacheBusting: true,
 

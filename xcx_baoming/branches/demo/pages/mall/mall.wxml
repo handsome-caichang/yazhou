@@ -1,2 +1,0 @@
-<!--pages/mall/mall.wxml-->
-<web-view src="{{mallURL}}"></web-view>

@@ -1,8 +1,5 @@
 <!-- 购物车的共用组件 -->
 <style lang="scss" scoped>
-    
-    
-
     .cart {
         @include position-absolute;
         overflow: hidden;
@@ -20,9 +17,8 @@
 
 		    }
         	.campus-tips{
-        		height: $h-3;
-        		line-height: $h-3;
         		padding-left: 16px;
+                line-height: 24px;
         		@include flex-between;
         		@include border-bottom;
         		color: $color-assist-2;
@@ -71,7 +67,7 @@
 					@include flex-center;
 					color: $color-white;
 					font-size: $fs-big;
-					background: $color-primary;
+					background: linear-gradient(to right, #F23030, #FE7544);
 					.num{
 						font-size: $fs-small-x;
 					}
@@ -91,7 +87,7 @@
                 ref="cartScrollfer">
     			<!-- 提示语 -->
 		        <div class="campus-tips" v-if="vaildCartList.length>0&&ctips">
-		        	不同{{config.TitleCampus}}的商品不可一起购买
+		        	套餐XXX中已包含XXXX班级，不能同时购买。且将套餐中包含的项目展开。
 		        	<span class="campus-tips-icon" @click="colseCampusTips">
 			        	<svg class="icon" aria-hidden="true">
 			        		<use xlink:href="#icon-guanbi"></use>
@@ -103,27 +99,27 @@
 	        	<empty-cart v-if="vaildCartList.length==0"></empty-cart>
 	        	
 		        <!-- 有效商品 -->
-	        	<shop-list 
-	        		v-if="vaildCartList.length>0" 
-	        		:campusList="vaildCartList" 
-	        		ref="ShopList"
-	        		@openScheme="openScheme"
+	        		<!-- @openScheme="openScheme" -->
+                <shop-list 
+                    v-if="vaildCartList.length>0" 
+                    :campusList="vaildCartList" 
+                    ref="ShopList"
 	        		@refreshScroll="refreshScroll"
 	        		></shop-list>
 	        		
 		        <!-- 失效商品 -->
-	        	<invalidshop-list 
-	        		v-if="expiredCartList.length>0" 
-	        		:campusList="expiredCartList"
-	        		@emptyInvalid="emptyInvalid"
-	        	></invalidshop-list>
+	        	<!-- <invalidshop-list 
+                    v-if="expiredCartList.length>0" 
+                    :campusList="expiredCartList"
+                    @emptyInvalid="emptyInvalid"
+                ></invalidshop-list> -->
 	        	
 		        <!-- 您喜欢的：喜欢的商品大于0 -->
-	        	<section-grid 
-	        		v-if="userInfo.Name&&(appFavorite.length>0)" 
-	        		:data="appFavorite" 
-	        		:title="'我喜欢的'"
-	        	></section-grid>
+	        	<!-- <section-grid 
+                    v-if="userInfo.Name&&(appFavorite.length>0)" 
+                    :data="appFavorite" 
+                    :title="'我喜欢的'"
+                ></section-grid> -->
         	</scroller-super>
         </div>
         <div class="footer" v-if="vaildCartList.length>0">
@@ -136,15 +132,6 @@
         </div>
         
         <loading v-if="isLoading" :bgType='1'></loading>
-        
-		<!-- 选择单科优惠 -->
-		<cart-scheme 
-			ref="cartScheme"
-			:opened.sync="openedScheme"
-			:campusId="selectSchemeCid"
-			:product="selectSchemePro"
-			@selectScheme="selectScheme">
-		</cart-scheme>
     </div>
 </template>
 
@@ -152,7 +139,6 @@
 	import ShopList from '../shop-list/shop-list.vue';
 	import EmptyCart from '../empty-cart/empty-cart.vue';
 	import SectionGrid from '../section-grid/section-grid.vue';
-	import CartScheme from '../cart-scheme/cart-scheme.vue';
 	import invalidshopList from '../invalidshop-list/invalidshop-list.vue';
 	import { getAppCart,clearDisabledProducts,getFavorites } from 'api/lc';
      
@@ -170,8 +156,6 @@
 				ctips: true, //是否关闭提示
 				isLoading: false,
 				openedScheme: false,
-				selectSchemeCid: '', //选择单科优惠的商品所在校区
-				selectSchemePro: null, //选择单科优惠的商品
 				clickNum: 0,
 				num: 0
             }
@@ -232,7 +216,6 @@
                 promise.then(res => {
                     this.isLoading = false;
                     if ((res[0].ErrorCode==app.errok)&&(res[1].ErrorCode==app.errok)) {
-						console.log(res[0].Data);
 						res[0].Data.forEach((v,i)=> {
 							v.Products.forEach((t, y)=> {
 								if (t.hasOwnProperty('isSelect')) {
@@ -277,20 +260,6 @@
 				}
 				this.$router.push({path:'/order',query:{type:1}});
 			},
-			openScheme(cid,pro){ //选择单科优惠
-				this.selectSchemeCid = cid;
-				this.selectSchemePro = pro;
-				console.log(cid);
-				console.log(pro);
-				pro.isSelect = true;
-				this.$refs.cartScheme.setDefaultScheme(pro.ChooseScheme);
-				this.openedScheme = true;
-			},
-			selectScheme(cid,pro,obj){
-				console.log(pro);
-				// obj.isSelect = true;
-				this.$refs.ShopList.updateScheme(cid,pro,obj);
-			},
 			refreshScroll(){
 				this.clickNum++;
 			}
@@ -330,7 +299,6 @@
         	ShopList,
         	EmptyCart,
         	SectionGrid,
-        	CartScheme,
         	invalidshopList
         }
     };

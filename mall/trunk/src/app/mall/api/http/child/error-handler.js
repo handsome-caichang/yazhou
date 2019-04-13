@@ -13,10 +13,10 @@ function httpCodeErrorHandler(httpCode) {
     }
 }
 
-export function serverErrorHandler (res) {
-        // console.log(res);
+export function serverErrorHandler(res) {
+    // console.log(res);
     if (res.data.ErrorCode !== 200) {
-        console.warn(`ErrorCode: ${res.data.ErrorCode}, ErrorMsg: ${res.data.ErrorMsg}, api:${res.config.url}`);
+        // console.warn(`ErrorCode: ${res.result.code}, ErrorMsg: ${res.result.msg}, api:${res.config.url}`);
 
         if (res.data.ErrorCode === 411) {
             //提示“会话过期”，返回首页，清空状态机的数据
@@ -51,7 +51,8 @@ export function serverErrorHandler (res) {
     }
 }
 
-export function httpErrorHandler (res) {
+export function httpErrorHandler(res) {
+    // console.log(res);
     if (axios.isCancel(res)) {
         // http请求被取消时
         return {
@@ -72,4 +73,3 @@ export function httpErrorHandler (res) {
         }
     }
 }
-

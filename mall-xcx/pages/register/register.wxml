@@ -1,0 +1,41 @@
+<view class="register-wrapper">
+    <view wx:if="{{showStep1}}">
+        <input placeholder="手机号" class="phone"></input>
+
+        <view class="pic-identifying" wx:if="{{true}}">
+            <input class="pic-left" placeholder="图形验证码"></input>
+            <view class="pic-mid">m8k2</view>
+            <view class="pic-right">
+                <view class="pic-right-text">换一张</view>
+            </view>
+        </view>
+        <view class="identifying-code-wrapper">
+            <input class="identifying-code" placeholder="验证码"></input>
+            <view class="get-code">
+                <view class="code">获取验证码</view>
+            </view>
+        </view>
+        <view class="tips" wx:if="{{true}}">
+            <view class="icon icon-tips"></view>
+            <view class="tips-text">验证码已发送，可能会有延后，请耐心等待</view>
+        </view>
+        <view class="next-btn" bindtap="nextStep">下一步</view>
+        <view class="text">
+            <view class="left">已有账号？</view>
+            <view class="right">立即登陆</view>
+        </view>
+    </view>
+    <view wx:if="{{showStep2}}">
+        <input placeholder="学员姓名" class="phone"></input>
+        <view class="campus" >
+            <view class="name" bindtap="openCampus">{{curCampusName?curCampusName:'意向校区'}}（选填）</view>
+            <view class="icon icon-xiala"></view>
+        </view>
+        <view class="next-btn">提交</view>
+        <view class="text">
+            <view class="left">已有账号？</view>
+            <view class="right">立即登陆</view>
+        </view>
+    </view>
+    <campus-actionsheet list="{{list}}" id="campusActionsheet" bindselectCampus="selectCampus"></campus-actionsheet>
+</view>

@@ -4,7 +4,6 @@ import {
 } from './child/error-handler.js'
 
 import store from "mall/store/index.js";
-
 var http = {}
 
 http.ajax = function(opts) {
@@ -27,6 +26,8 @@ http.ajax = function(opts) {
 
     var b = a.then(res => {
         serverErrorHandler(res)
+        if (typeof res.data === 'string') return JSON.parse(res.data)
+
         return res.data
     }).catch(error => {
         return httpErrorHandler(error)

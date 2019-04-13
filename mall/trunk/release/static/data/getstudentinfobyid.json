@@ -1,0 +1,16 @@
+{
+    "studentinfo": {
+        "id": "2b790f77-156c-4a6c-b10c-5cf3bf03d3de",
+        "gradename": "二年级",
+        "sex": "男",
+        "name": "yy888",
+        "birthday": "851245",
+        "fulltimeschool": "北京大学",
+        "classname": "计算机一班",
+        "photo": "https://thirdwx.qlogo.cn/mmopen/wJibWkqN1bUNuviaYoB6MicXbQlbgeXzbbxnF41p11Q7c1icibowMLshg0cN6xe5B1k6okIHIhrXaVZNYmDkaL23lWcSmK5es7glv/132"
+    },
+    "result": {
+        "code": 200,
+        "msg": ""
+    }
+}

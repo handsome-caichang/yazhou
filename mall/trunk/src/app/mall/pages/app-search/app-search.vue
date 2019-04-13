@@ -44,7 +44,7 @@
 				<input class="search-bar-input" v-model="searchText">
 				<div class="search-bar-icon" @click="gotoSearchList(searchWord)">
 					<svg class="icon heard-icon" aria-hidden="true">
-					    <use xlink:href="#icon-sousuo"></use>
+					    <use xlink:href="#icon-sousuoicon"></use>
 					</svg>
 				</div>				
 			</div>

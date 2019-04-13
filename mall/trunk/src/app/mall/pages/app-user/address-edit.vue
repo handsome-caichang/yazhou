@@ -1,6 +1,9 @@
 <!-- 地址新增界面  -->
 
 <style lang="scss" scoped>
+    
+    
+
     .address-edit {
         @include position-absolute;
 		background-color: $color-assist-1;
@@ -82,7 +85,6 @@
  	
 	export default{
 		name:'address-edit',
-        mixins: [app.mixin.shareMixin],
         data() {
             return {
             	defaultAddr: {

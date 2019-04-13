@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	    <meta charset="utf-8" />
+	    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+	    <meta name="format-detection" content="telephone=no">
+	    <meta name="msapplication-tap-highlight" content="no">
+	    <meta name="HandheldFriendly" content="true">
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0,minimum-scale=1.0,maximum-scale=1.0" />
+	    <meta name ="screen-orientation" content="portrait">
+	    <meta http-equiv="Cache-Control" content="no-cache" />
+		<meta http-equiv="Pragma" content="no-cache" />
+		<meta http-equiv="Expires" content="0" />
+	    <script type="text/javascript">
+	        var cssEl = document.createElement('style');
+	        var pxPerRem;
+	        document.documentElement.firstElementChild.appendChild(cssEl);
+	        function setPxPerRem(){
+	            var dpr = 1;
+	            //把viewport分成10份的rem，html标签的font-size设置为1rem的大小;
+	            var pxPerRem = document.documentElement.clientWidth * dpr / 10;
+	            cssEl.innerHTML = 'html{font-size:' + pxPerRem + 'px!important;}';
+	        }
+	        setPxPerRem();
+	        window.onresize = function(){
+	        	setPxPerRem();
+	        }
+   		</script>
+   		<link rel="stylesheet" href="./css/normalize.css?v=1.03" />
+   		<link rel="stylesheet" href="./css/iconfont.css?v=1.03"/>
+   		<link rel="stylesheet" href="./css/reportIndex-rem.css?v=1.10"/>
+   		<link rel="stylesheet" href="./css/comm.css?v=1.03">
+   		<!-- 校长端字体图标库 -->
+   		<script type="text/javascript" src="//at.alicdn.com/t/font_eb2d4lanf1935wmi.js" charset="utf-8"></script>
+   		<title>运营日报</title>
+	</head>
+	<body>
+		<p class="text-center loading" > 数据正在加载中.......</p>
+		
+		<div id="summary" style="display: none;">
+			<div class="header">
+				<img src="./image/banner.png?v=1"/>
+				<div id="summaryDate" class="date"></div>
+			</div>
+			<div class="text-center module-tab">
+				<div class="tab active" data-type="0">日报表</div>
+				<div class="tab" data-type="1">当月累计</div>
+				<div class="tab" data-type="2">当年累计</div>
+			</div>
+			<div class="module-wrapper"></div>
+			<div class="btn-cancel" id="cancelReceive">
+				<span>不再接收此消息</span>
+			</div>
+			<div class="goto-old" id="gotoNew">
+				<span class="iconfont icon-goto"></span>
+				<span>返回新版</span>
+			</div>
+
+		</div>
+		<div class="dialog_confirm">
+			<div class="mask"></div>
+			<div class="dialog">
+				<div class="dialog_hd">提示</div>
+				<div class="dialog_bd">取消后再次接收此消息需在校管家电脑端设置，确认不接收？</div>
+				<div class="dialog_ft">
+					<a class="weui_btn_dialog default">取消</a>
+					<a class="weui_btn_dialog primary">确定</a>
+				</div>
+			</div>
+		</div>
+		
+		<div id="noCampusTips" class="noCampus" style="display: none;">
+			<span class="title"><i class="iconfont icon-jinggao1"></i>&nbsp;您的用户还没有分配可操作校区<br/></span>
+			只有分配了可操作校区才能看到此报表<br/>
+			请联系管理员进行分配。<br/>
+		</div>
+		
+		<script id="reportFeeTemp" type="text/html">
+			<div class="grid module">
+				<i class="icon-arrow"></i>
+				<div class="grid_center l-module" >
+					<div class="l-module-title">报名收费</div>
+				</div>
+				<ul class="r-module">
+					<li class="list {{if feedata.NewStuCount.value!==0}}target{{/if}}" data-para='{"showPlus":1,"tid":"NewStuCount","title":"新增学员人数","unit":"人","desc":"新增学员"}'>
+						<div class="content">
+							<div class="grid vcenter">
+								<div class="left">新增学员人数</div>
+								<div class="right">
+									<span class="num">{{feedata.NewStuCount.value}}</span>
+									<span class="unit">人</span>
+									<span class="nav {{if feedata.NewStuCount.value==0}}hidden{{/if}}"></span>
+								</div>
+							</div>
+							<div class="desc">新录入系统的学员人数</div>
+						</div>
+					</li>
+					<li class="list {{if feedata.FeeCount.value!==0}}target{{/if}}" data-para='{"showPlus":1,"tid":"FeeCount","title":"{{feeDailyReportIncludeGoods==0?'课程收费人次':'收费人次'}}","unit":"人次","desc":"收费"}'>
+						<div class="grid content">
+							<div class="left">{{feeDailyReportIncludeGoods==0?'课程收费人次':'收费人次'}}</div>
+							<div class="right">
+								<span class="num">{{feedata.FeeCount.value}}</span>
+								<span class="unit">人次</span>
+								<span class="nav {{if feedata.FeeCount.value==0}}hidden{{/if}}"></span>
+							</div>
+						</div>
+					</li>
+					<li class="list {{if feedata.FeeMoney.value!==0}}target{{/if}}" data-para='{"showPlus":1,"tid":"FeeMoney","title":"收费金额","unit":"元","desc":"收费金额"}'>
+						<div class="grid content">
+							<div class="left">收费金额</div>
+							<div class="right">
+								<span class="num">{{formatNum(feedata.FeeMoney.value)}}</span>
+								<span class="unit">元</span>
+								<span class="nav {{if feedata.FeeMoney.value==0}}hidden{{/if}}"></span>
+							</div>
+						</div>
+						{{if feedata.FeeMoney.data && feedata.FeeMoney.data.length>0}}
+							{{each feedata.FeeMoney.data as list}}
+								{{if transNum(list.value)!==0}}
+									<li class="list target" data-para='{"showPlus":1,"tid":"{{list.id}}","title":"{{list.item}}","unit":"元","desc":"{{list.item}}"}'>
+										<div class="grid ml content">
+											<div class="left">{{list.item}}</div>
+											<div class="right">
+												<span class="num">{{formatNum(list.value)}}</span>
+												<span class="unit">元</span>
+												<span class="nav"></span>
+											</div>
+										</div>
+									</li>
+								{{/if}}
+							{{/each}}
+						{{/if}}
+					</li>
+					<li class="list {{if feedata.FeeBackCount.value!==0}}target{{/if}}" data-para='{"showPlus":0,"tid":"FeeBackCount","title":"退费人次","unit":"人次","desc":"退费"}'>
+						<div class="grid content">
+							<div class="left">退费人次</div>
+							<div class="right">
+								<span class="num">{{feedata.FeeBackCount.value}}</span>
+								<span class="unit">人次</span>
+								<span class="nav {{if feedata.FeeBackCount.value==0}}hidden{{/if}}"></span>
+							</div>
+						</div>
+					</li>
+					<li class="list {{if feedata.FeeBackMoney.value!==0}}target{{/if}}" data-para='{"showPlus":0,"tid":"FeeBackMoney","title":"退费金额","unit":"元","desc":"退费金额"}'>
+						<div class="grid content">
+							<div class="left">退费金额</div>
+							<div class="right">
+								<span class="num">{{formatNum(feedata.FeeBackMoney.value)}}</span>
+								<span class="unit">元</span>
+								<span class="nav {{if feedata.FeeBackMoney.value==0}}hidden{{/if}}"></span>
+							</div>
+						</div>
+					</li>
+					<li class="list">
+						<div class="grid content">
+							<div class="left">净业绩金额</div>
+							<div class="right">
+								<span class="num">{{formatNum(feedata.NetEarningMoney.value)}}</span>
+								<span class="unit">元</span>
+								<span class="nav hidden"></span>
+							</div>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</script>
+		<script id="reportCourseTemp" type="text/html">
+			<div class="grid module shangke">
+				<i class="icon-arrow"></i>
+				<div class="grid_center l-module" >
+					<div class="l-module-title">上课及课消</div>
+				</div>
+				<ul class="r-module">
+					<li class="list {{if CourseCount.value!==0}}target{{/if}}" data-para='{"showPlus":0,"tid":"CourseCount","title":"上课节数","unit":"节","desc":"上课节数"}'>
+						<div class="grid content">
+							<div class="left">上课节数</div>
+							<div class="right">
+								<span class="num">{{CourseCount.value}}</span>
+								<span class="unit">节</span>
+								<span class="nav {{if CourseCount.value==0}}hidden{{/if}}"></span>
+							</div>
+						</div>
+					</li>
+					<li class="list {{if AttendCount.value!==0}}target{{/if}}" data-para='{"showPlus":0,"tid":"AttendCount","title":"上课人次数","unit":"人次","desc":"上课人次数"}'>
+						<div class="grid content">
+							<div class="left">上课人次数</div>
+							<div class="right">
+								<span class="num">{{AttendCount.value}}</span>
+								<span class="unit">人次</span>
+								<span class="nav {{if AttendCount.value==0}}hidden{{/if}}"></span>
+							</div>
+						</div>
+					</li>
+					<li class="list {{if ConsumeMoney.value!==0}}target{{/if}}" data-para='{"showPlus":0,"tid":"ConsumeMoney","title":"课消金额","unit":"元","desc":"课消金额"}'>
+						<div class="grid content">
+							<div class="left">课消金额</div>
+							<div class="right">
+								<span class="num">{{formatNum(ConsumeMoney.value)}}</span>
+								<span class="unit">元</span>
+								<span class="nav {{if ConsumeMoney.value==0}}hidden{{/if}}"></span>
+							</div>
+						</div>
+						<li class="list {{if ConsumeLessMoney.value!==0}}target{{/if}}" data-para='{"showPlus":0,"tid":"ConsumeLessMoney","title":"欠费课消金额","unit":"元","desc":"欠费课消金额"}'>
+							<div class="grid ml content">
+								<div class="left">其中:欠费课消金额</div>
+								<div class="right">
+									<span class="num">{{formatNum(ConsumeLessMoney.value)}}</span>
+									<span class="unit">元</span>
+									<span class="nav {{if ConsumeLessMoney.value==0}}hidden{{/if}}"></span>
+								</div>
+							</div>
+						</li>
+					</li>
+					<li class="list">
+						<div class="grid content">
+							<div class="left">课消数量</div>
+						</div>
+						<li class="list {{if ConsumeUnitCount.value!==0}}target{{/if}}" data-para='{"showPlus":0,"tid":"ConsumeUnitCount","title":"按次计费的课消","unit":"次","desc":"按次计费的课消"}'>
+							<div class="grid ml content">
+								<div class="left">按次计费的课消</div>
+								<div class="right">
+									<span class="num">{{formatNum(ConsumeUnitCount.value)}}</span>
+									<span class="unit">次</span>
+									<span class="nav {{if ConsumeUnitCount.value==0}}hidden{{/if}}"></span>
+								</div>
+							</div>
+						</li>
+						<li class="list {{if ConsumeHourCount.value!==0}}target{{/if}}" data-para='{"showPlus":0,"tid":"ConsumeHourCount","title":"按小时计费的课消","unit":"时","desc":"按小时计费的课消"}'>
+							<div class="grid ml content">
+								<div class="left">按小时计费的课消</div>
+								<div class="right">
+									<span class="num">{{formatNum(ConsumeHourCount.value)}}</span>
+									<span class="unit">时</span>
+									<span class="nav {{if ConsumeHourCount.value==0}}hidden{{/if}}"></span>
+								</div>
+							</div>
+						</li>
+					</li>
+				</ul>
+			</div>
+		</script>
+		<script id="reportMsgTemp" type="text/html">
+			<div class="grid module">
+				<i class="icon-arrow"></i>
+				<div class="grid_center l-module" >
+					<div class="l-module-title">消息统计</div>
+				</div>
+				<ul class="r-module">
+					<li class="list {{if SendMsgCount.value!==0}}target{{/if}}" data-para='{"showPlus":0,"tid":"SendMsgCount","title":"发送消息数","unit":"条","desc":"发送消息数"}'>
+						<div class="grid content">
+							<div class="left">发送消息数</div>
+							<div class="right">
+								<span class="num">{{SendMsgCount.value}}</span>
+								<span class="unit">条</span>
+								<span class="nav {{if SendMsgCount.value==0}}hidden{{/if}}"></span>
+							</div>
+						</div>
+					</li>
+					<li class="list {{if ReceiveMsgCount.value!==0}}target{{/if}}" data-para='{"showPlus":0,"tid":"ReceiveMsgCount","title":"收到消息数","unit":"条","desc":"收到消息数"}'>
+						<div class="grid content">
+							<div class="left">收到消息数</div>
+							<div class="right">
+								<span class="num">{{ReceiveMsgCount.value}}</span>
+								<span class="unit">条</span>
+								<span class="nav {{if ReceiveMsgCount.value==0}}hidden{{/if}}"></span>
+							</div>
+						</div>
+					</li>
+					<li class="list">
+						<div class="grid content">
+							<div class="left">节省短信费用</div>
+							<div class="right">
+								<span class="num">{{formatNum(SaveMoney.value)}}</span>
+								<span class="unit">元</span>
+								<span class="nav hidden"></span>
+							</div>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</script>
+		<script type="text/javascript" src="./js/jquery.js?v=1.01"></script>
+		<script type="text/javascript" src="./js/template.js?v=1.01"></script>
+        <script type="text/javascript">
+			var dateType = 0;
+			var indexData={};
+			var userId='',
+				campanyid='',
+				reportDate='',
+				comeFrom=0,
+				currentSel='';			
+		    var due_dialog = '<div id="due_dialog">'+
+						        '<marquee direction="left"></marquee>'+
+						        '<div id="due_close" onclick="$(\'#due_dialog\').remove();">'+
+						           '<svg class="iconfont_xz" aria-hidden="true">'+
+						                '<use xlink:href="#ixz-close"></use>'+
+						            '</svg>'+
+						        '</div>'+
+						    '</div>';
+		    var due_page = '<div id="due_page" class="ab_full flex flex_center none">'+
+		    			        '<div class="due_page_con">'+
+		    			            '<img src="image/due.png">'+
+		    			            '<p class="due_info_1"></p>'+
+		    			            '<p class="due_info_2">如有疑问，请致电：'+
+		    			                '<svg class="iconfont_xz" aria-hidden="true">'+
+		    			                    '<use xlink:href="#ixz-zaixianbangzhu-dianhua"></use>'+
+		    			                '</svg>'+
+		    			            '</p>'+
+		    			        '</div>'+
+		    			    '</div>';
+
+			//获取请求参数
+			function getQueryString(name) { 
+				var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i"); 
+				var r = window.location.search.substr(1).match(reg); 
+				if (r != null) return decodeURIComponent(r[2]); return null; 
+			}
+			userId = getQueryString('userid');
+			reportDate = getQueryString('time');
+			companyid = getQueryString('companyid');
+			comeFrom = getQueryString('comeFrom');
+			//请求数据
+			$(document).ready(function(){
+				currentSel=getQueryString('type');
+				$('#summaryDate').html(getTime(reportDate));
+				if(!getCookie('looked'+reportDate)||!getCookie('reportFeeDataCookie'+reportDate)){
+					$.ajax({
+				    	type:'POST',
+				    	url:"/api/PrincipalDaily/GetCampusDailyContent",
+				    	data:{
+					     	time:reportDate,
+					     	userid:userId,
+							companyid:companyid,
+							comeFrom:comeFrom
+				     	},
+				     	success:function(data){
+				     		if (data.ErrorCode==200) {
+				     			indexData=data.Data;
+	
+							    if (indexData.SystemStatus.IsPastDue == 1) {
+							        $(due_dialog).find('marquee').html(indexData.SystemStatus.PastInfo.One)
+							        	.end().appendTo('body');
+							    }
+							    if (indexData.SystemStatus.IsPastDue == 2) {
+							        $(due_page).find('.due_info_1').html(indexData.SystemStatus.PastInfo.One)
+							        	.end().find('.due_info_2').append(indexData.SystemStatus.PastInfo.Two)
+							        	.end().appendTo('body');
+		
+						        	$("#summary").hide();
+		
+						        	return ; 
+							    }
+							    setCookie("reportFeeDataCookie"+reportDate,JSON.stringify(indexData.feedata));
+							    setCookie("reportCourseDataCookie"+reportDate,JSON.stringify(indexData.coursedata));
+							    setCookie("reportMsgDataCookie"+reportDate,JSON.stringify(indexData.msgdata));
+						     	$('.loading').hide();
+						     	$('#summary').show();
+						     	if (currentSel) {//如果有选择日报表/月报表
+									$(".tab[data-type='"+currentSel+"']").addClass('active').siblings().removeClass('active');
+									setData(indexData,currentSel);
+									dateType=currentSel;
+									return;
+								}
+								if (data.Data.SystemStatus.EnableNewDailyReport != '1'){
+									$("#gotoNew").hide();
+								}
+						     	setData(indexData,0);//设置日报表数据
+				     		}else if(data.ErrorCode==404){
+				     			$('.loading').hide();
+				     			$('#noCampusTips').show();
+				     		}else{
+								$(".loading").html(data.ErrorMsg);
+						    }
+					    }
+					});
+				}else{
+					indexData.coursedata=JSON.parse(getCookie("reportCourseDataCookie"+reportDate));
+					indexData.feedata=JSON.parse(getCookie("reportFeeDataCookie"+reportDate));
+					indexData.msgdata=JSON.parse(getCookie("reportMsgDataCookie"+reportDate));
+					$('.loading').hide();
+				    $('#summary').show();
+				    if (currentSel) {
+						$(".tab[data-type='"+currentSel+"']").addClass('active').siblings().removeClass('active');
+						setData(indexData,currentSel);
+						dateType=currentSel;
+						return;
+					}
+				    setData(indexData,0);//设置日报表数据
+				}
+			});
+			//切换tab选项卡
+			$('.tab').bind('click',function(){
+				$(this).addClass('active').siblings().removeClass('active');
+				var type = $(this).attr('data-type');
+				dateType=type;
+				setData(indexData,dateType);
+                history.replaceState(null,'', "?time="+reportDate+"&type="+dateType);
+			});
+			//取消接收
+			$('#cancelReceive').bind('click',function(){
+				$('.dialog_confirm').show();
+			});
+			//取消按钮
+	        $(".dialog_confirm .default").bind('click',function(){
+	            $(".dialog_confirm").hide();
+	        });
+	        //确定按钮
+	        $(".dialog_confirm .primary").bind('click',function(){
+	            $(".dialog_confirm").hide();
+				$.ajax({
+			    	type:'POST',
+			    	url:"/api/PrincipalDaily/SetNotReceive",
+			     	success:function(data){
+			     		if(data.ErrorCode!=200){
+				     		alert(data.ErrorMsg)
+				     		return;
+					    }
+						window.location.href="./reportCancel.html";
+				    },
+				    error: function(e) {
+						alert(e.ErrorMsg);
+					}
+				});
+			});
+			
+			//转到新版
+			$("#gotoNew").bind('click',function(){
+				window.location.replace('../daily_report.html#/home?date=' + reportDate);
+			});
+			//设置数据
+			function setData(data,flag){
+				var str='';
+				if (flag==0) {//设置日报表数据
+					str+=template('reportFeeTemp',{
+                        feedata: data.feedata.theYestodayData,
+                        feeDailyReportIncludeGoods: indexData.SystemStatus.FeeDailyReportIncludeGoods
+                    });
+					str+=template('reportCourseTemp',data.coursedata.theYestodayData);
+					str+=template('reportMsgTemp',data.msgdata.theYestodayData);
+				}else if (flag==1) {//设置月报表数据
+					str+=template('reportFeeTemp', {
+                        feedata: data.feedata.theCurrentMonthData,
+                        feeDailyReportIncludeGoods: indexData.SystemStatus.FeeDailyReportIncludeGoods
+                    });
+					str+=template('reportCourseTemp',data.coursedata.theCurrentMonthData);
+					str+=template('reportMsgTemp',data.msgdata.theCurrentMonthData);
+				}else if (flag==2) {//设置年报表数据
+					str+=template('reportFeeTemp',{
+                        feedata: data.feedata.theCurrentYearData,
+                        feeDailyReportIncludeGoods: indexData.SystemStatus.FeeDailyReportIncludeGoods
+                    });
+					str+=template('reportCourseTemp',data.coursedata.theCurrentYearData);
+					str+=template('reportMsgTemp',data.msgdata.theCurrentYearData);
+				}
+				$('.module-wrapper').html(str);
+				$('.icon-arrow').each(function(i,item){//设置左边的箭头上下居中
+					var height=$(item).siblings('.l-module').height();
+					$(item).css('margin-top',(height/2-4.5)+'px');
+				});
+			}
+			//点击每一行 显示详情
+	        $('.module-wrapper').on('click','ul .target',function () {
+				var $this = $(this),
+					para = JSON.parse($this.attr('data-para')),
+					count = $this.find('.num').text();
+				window.location.href="./reportDetail.html?itemId="+para.tid+"&dateType="+dateType+"&title="+para.title+"&desc="+para.desc+"&unit="+para.unit+"&count="+count+"&userId="+userId+"&time="+reportDate+"&companyid="+companyid+"&showPlus="+para.showPlus;
+			})
+			function getCookie(name){ 
+			    var arr,reg=new RegExp("(^| )"+name+"=([^;]*)(;|$)");
+			    if(arr=document.cookie.match(reg)){
+			    	return unescape(arr[2]); 
+			    }else{
+			    	return null;
+			    }
+			}
+			function setCookie(name,value){ 
+			    var exp = new Date(); 
+			    exp.setTime(exp.getTime() +30*1000); 
+				document.cookie = name + "="+ escape (value) + ";expires=" + exp.toGMTString();
+			} 
+			//获取运营日报日期
+			function getTime(date) {
+				var date=new Date(date),
+					year=date.getFullYear(),
+					month=date.getMonth()+1,
+					day=date.getDate(),
+					index=date.getDay(),
+					weekArr=['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+				return year+"年"+month+"月"+day+"日&nbsp;"+weekArr[index];
+			}
+			template.helper('formatNum', function(num) {
+			    return new Number(num).toFixed(2);
+			});
+			template.helper('transNum', function(num) {
+			    return parseFloat(num);
+			});
+		</script>
+	</body>
+</html>

@@ -1,0 +1,14 @@
+{
+    "pages": [
+        "pages/index/index",
+        "pages/register/register",
+        "pages/mall/mall",
+        "pages/searchPwd/searchPwd"
+    ],
+    "window": {
+        "backgroundTextStyle": "light",
+        "navigationBarBackgroundColor": "#fff",
+        "navigationBarTitleText": "加载中...",
+        "navigationBarTextStyle": "black"
+    }
+}

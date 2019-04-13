@@ -29,7 +29,7 @@
             @include flex-between;            
         }
         &.active {
-            color: $color-primary;
+            color: #F03232FF;
         }
     }
 </style>
@@ -50,11 +50,11 @@
             <li 
                 class="cs-item"
                 v-for="campus in campuslist"
-                :class="[position === 'center' ? 'center': 'between', {'active': curCampus.id === campus.ID}]"
+                :class="[position === 'center' ? 'center': 'between', {'active': curCampus.id === campus.id}]"
                 @click="changeCampus(campus)">
-                <span>{{campus.Name}}</span>
-                <svg v-if="position !== 'center' && curCampus.id === campus.ID" class="icon" aria-hidden="true">
-                    <use xlink:href="#icon-xuanzhong"></use>
+                <span>{{campus.name}}</span>
+                <svg v-if="position !== 'center' && curCampus.id === campus.id" class="icon"  aria-hidden="true">
+                    <use xlink:href="#icon-xuanzhong3"></use>
                 </svg>
             </li>
         </ul>
@@ -104,14 +104,14 @@
         methods: {
             ...Vuex.mapMutations(['set_curCampus']),
             changeCampus(campus) {
-                if (this.curCampus.id !== campus.ID) {
+                if (this.curCampus.id !== campus.id) {
                     // 发送转变校区请求，并'commit'当前校区
                     // 必需在请求成功的回调里'commit'
-                    setcampus({CampusID: campus.ID}).then(res => {
+                    setcampus({CampusID: campus.id}).then(res => {
                         if (res.ErrorCode === 200) {
                             this.set_curCampus({
-                                id: campus.ID,
-                                name: campus.Name
+                                id: campus.id,
+                                name: campus.name
                             })
                             // 选择好初始化校区后, 切换路由; 目的在于把校区ID放到url上，以便以后的分享；
                             this.$router.replace(this.$route.fullPath);

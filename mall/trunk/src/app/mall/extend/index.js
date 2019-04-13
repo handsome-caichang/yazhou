@@ -6,7 +6,7 @@ import appExtend from './app-extend/app-extend.js'
 const extend = {
     install: function(Vue, options) {
         Vue.mixin({
-            // components: vueComponents
+            components: vueComponents
         });
     }
 };

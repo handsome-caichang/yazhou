@@ -1,6 +1,9 @@
 <!-- 地址管理界面 -->
 
 <style lang="scss" scoped>
+    
+    
+
     .address-setting {
         @include position-absolute;
 		background-color: $color-assist-1;
@@ -132,7 +135,6 @@
 	
 	export default{
 		name:'address-setting',
-        mixins: [app.mixin.shareMixin],
 		data() {
             return {
             	isLoading: true,

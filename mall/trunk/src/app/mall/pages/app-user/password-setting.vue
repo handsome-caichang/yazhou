@@ -1,6 +1,9 @@
 <!-- 设置密码界面 -->
 
 <style lang="scss" scoped>
+    
+    
+
     .password-setting {
         @include position-absolute;
 		background-color: $color-white;
@@ -28,9 +31,10 @@
 				text-align: center;
 				color: $color-white;
 				font-size: $fs-big-s;
-				background-color: #E2E2E2;
+				background-color: #F03232FF;
+                opacity: .3;
 				&.active{
-					background-color: $color-primary;
+					opacity: 1;
 				}
 			}
 		}
@@ -59,7 +63,6 @@
 	
 	export default{
 		name:'password-setting',
-        mixins: [app.mixin.shareMixin],
 		data() {
 		    return {
 		    	oldPwd: '',

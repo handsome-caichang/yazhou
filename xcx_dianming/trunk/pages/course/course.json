@@ -1,6 +1,0 @@
-{
-    "usingComponents":{
-        "role-list":  "/components/role-list/role-list"
-    },
-    "navigationBarTitleText": "上课点名"
-}

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	    <meta charset="utf-8" />
+	    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+	    <meta name="format-detection" content="telephone=no">
+	    <meta name="msapplication-tap-highlight" content="no">
+	    <meta name="HandheldFriendly" content="true">
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0,minimum-scale=1.0,maximum-scale=1.0" />
+	    <meta name ="screen-orientation" content="portrait">
+	    <meta http-equiv="Cache-Control" content="no-cache" />
+		<meta http-equiv="Pragma" content="no-cache" />
+		<meta http-equiv="Expires" content="0" />
+	    <link rel="stylesheet" href="./css/normalize.css?v=1.01" />
+	    <script type="text/javascript">
+	        var cssEl = document.createElement('style');
+	        document.documentElement.firstElementChild.appendChild(cssEl);
+	        function setPxPerRem(){
+	            var dpr = 1;
+	            //把viewport分成10份的rem，html标签的font-size设置为1rem的大小;
+	            var pxPerRem = document.documentElement.clientWidth * dpr / 10;
+	            cssEl.innerHTML = 'html{font-size:' + pxPerRem + 'px!important;}';
+	        }
+	        setPxPerRem();
+	        window.onresize = function(){
+	        	setPxPerRem();
+	        }
+   		</script>
+   		<link rel="stylesheet" href="./css/reportDetail-rem.css?v=1.02"  />
+   		<link rel="stylesheet" href="./css/iconfont.css?v=1.02"/>
+   		<title>运营日报</title>
+	</head>
+	<body>
+		<div id="detail">
+			<div class="title" id="titleNav"><i class="iconfont icon-xiangzuo"></i><span></span></div>
+			<p class="text-center loading" id="detail_loading"> 数据正在加载中.......</p>
+			<div class="noData text-center" style="display: none;">
+				<img src="image/nodata.png" />
+				<p >暂无明细数据</p>
+			</div>
+			<div id="detailContent"></div>
+		</div>
+		<script type="text/javascript" src="./js/jquery.js?v=1.01"></script>
+		<script type="text/javascript" src="./js/template.js?v=1.01"></script>
+		<script type="text/javascript">
+			function getQueryString(name) { 
+				var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i"); 
+				var r = window.location.search.substr(1).match(reg); 
+				if (r != null) return decodeURIComponent(r[2]); return null; 
+			}
+			var userId='',
+				campanyid='',
+				reportDate='';
+			var itemId = getQueryString('itemId');//明细页面的type值
+			var dateType = getQueryString('datetype');
+			var title = getQueryString('title');//明细页面的标题
+			var desc = getQueryString('desc');//明细页面的说明文字
+			var unit = getQueryString('unit');//明细页面的单位
+			var showPlus = getQueryString('showPlus');//是否显示加号
+			userId = getQueryString('userId');
+			reportDate = getQueryString('time');
+			companyid = getQueryString('companyid');
+			var totalCount  = getQueryString('count');
+			setCookie('looked'+reportDate,'true')
+			//设置标题
+			$('#detail .title span').text(title+"明细");
+			//获取数据请求
+			$.ajax({
+			    type:'POST',
+			    url:"/api/PrincipalDaily/GetDailyDetail" ,
+			    data:{
+			    	attainFlag:dateType,
+			     	type:itemId,
+			     	time:reportDate,
+			     	userid:userId,
+			     	companyid:companyid
+			    },
+			    success:function(data){
+			     	$("#detail_loading").hide();
+			     	var resData = data.Data;
+			     	if(resData.length>0){
+			     		$('.noData').hide();
+			     		setDataEl(resData)	
+			     	}else{
+			     		$('.noData').show();
+			     	}
+			    }
+			});
+			//设置数据
+			function setDataEl(data){
+				var html = '';
+				var gcount = data[0]['Count'];
+				html +='<div class="text-center summary-count"><div class="orange">';
+				if (showPlus==1) {
+					html+='+';
+				}
+				html +=totalCount+'</div>'+(dateType==0?'昨日':(dateType==1?'本月':'今年'))+desc+'（'+unit+'）</div><div class="split"></div>';
+				data.forEach(function(obj,index){
+					var count = obj['Count'];
+					if (parseFloat(count)!==0) {
+						if (itemId==1||itemId==2||itemId==5||itemId==8||itemId==9) {
+							count=new Number(count).toFixed(2);
+						}
+						html +='<div class="row">';
+						if (index<5) {
+							html +='<span class="row-tip">'+(index+1)+'</span>';
+						}
+						var cWidth=count>0?(count/gcount):0;
+						html+='<div class="campusname">'+obj['CampusName']+'</div>'+
+						'<div class="pull-right">'+
+						'<div class="number">'+
+						''+ count +'<span class="unit">'+unit+'</span>'+
+						'</div>'+
+						'<div class="progress" style="width:'+ (cWidth*250)/64 +'rem;"></div>'+
+						'</div>'+
+						'<div class="clearFloat"></div>'+
+						'</div>'
+					}
+				});
+				$('#detailContent').html(html);
+			}
+			$('#titleNav').bind('click',function(){
+				window.location.href="./reportIndex.html?time="+reportDate+"&type="+dateType;
+			})
+			function setCookie(name,value){
+			    var exp = new Date(); 
+			    exp.setTime(exp.getTime() + 30*1000); 
+			    document.cookie = name + "="+ escape (value) + ";expires=" + exp.toGMTString();
+			} 
+		</script>
+	</body>
+</html>

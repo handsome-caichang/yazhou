@@ -17,13 +17,16 @@
         			position: relative;
         			height: $h-3;
         			line-height: $h-3;
+                    &.active {
+                        color: #F03232;
+                    }
         			&.active:after{
     				    content: '';
 					    position: absolute;
 					    bottom: 0px;
 					    left: 0;
 					    right: 0;
-        				border-bottom: 2px solid $color-primary;
+        				border-bottom: 2px solid #F03232;
         			}
         		}
         	}
@@ -63,7 +66,7 @@
 							}
 						}
 						.status{
-							color: $color-primary;
+							color: #F03232;
 						}
 					}
         		}
@@ -90,11 +93,11 @@
 				    	line-height: 26px;
 				    	text-align: center;
 				    	font-size: $fs-small-x;
-				    	border-radius: 50px;
+				    	border-radius: 4px;
 				    	margin-right: 10px;
 				    	&.default{
-				    		color: $color-primary;
-				    		border: 1px solid $color-primary;
+				    		color: #F03232;
+				    		border: 1px solid #F03232;
 				    	}
 				    	&.default1{
 				    		color: $color-6;
@@ -156,9 +159,6 @@
 						<div v-for="pro in item.Items" v-if="item.Type==1">
 							<order-card :product="pro" :type="1" :campus="item"></order-card>
 						</div>
-						<div v-if="item.Type==10">
-							<order-package-card :packageOrder="item"></order-package-card>
-						</div>
 					</div>
 					<div class="card-ft">
 						<div class="total">
@@ -171,13 +171,8 @@
                             </span>
 						</div>
 						<div>
-							<span class="btn default" v-if="(item.Status==1)&&(!item.IsExpired)" @click="payOrder(item.ID)">立即支付</span>
-							<span class="btn default1" v-if="item.Status==1" @click="deleteOrder(0,item.ID)">关闭订单</span>
-							
-							<span class="btn default1" v-if="item.Status==0" @click="deleteOrder(1,item.ID)">删除订单</span>
-							
-							<span class="btn default" v-if="(item.Status==2||item.Status==3)&&(!item.IsComment)" @click="gotoComment(item.ID)">等待评价</span>
-							<span class="btn default1" v-if="(item.Status==2||item.Status==3)&&(item.IsComment)">评价成功</span>
+							<span class="btn default" v-if="(Math.random()>0.3)" @click="payOrder(item.ID)">立即支付</span>
+							<span class="btn default1" v-if="Math.random()>0.6" @click="deleteOrder(0,item.ID)">关闭订单</span>
 						</div>
 					</div>
 					<div class="void"></div>
@@ -193,16 +188,14 @@
 <script>
     import OrderCard from './children/order-card/order-card.vue';
     import EmptyPage from 'common/empty-page/empty-page.vue'
-    import OrderPackageCard from './children/order-package-card/order-package-card.vue';
      
     import { getOrderList,orderDelete,orderClose,getWXPayData } from 'api/lc';
 
 	export default{
 		name:'order-list',
-        mixins: [app.mixin.shareMixin],
         data() {
             return {
-            	headerList:['全部','待付款','已付款','待评价'], //选项卡： 0-全部，1-待付款，2-已付款，3-待评价
+            	headerList:['全部','待付款','已付款','已关闭'], //选项卡： 0-全部，1-待付款，2-已付款，3-待评价
             	stype: -1,
         		list: [], //iscroll监听refresh的数组
         		isLoading: true,
@@ -284,10 +277,7 @@
                 })
         	},
         	gotoDetail(id){ //查看订单详情
-				this.$router.push({path:'/orderDetail',query:{orderId:id}});
-        	},
-        	gotoComment(id){ //评价订单
-        		this.$router.push({path:'/orderComment',query:{orderId:id,type:1}});
+				this.$router.push({path:`/orderDetail/${id}`});
         	},
         	deleteOrder(type,id){ //关闭、删除订单
         		let typeName = ['关闭','删除'],
@@ -308,7 +298,7 @@
 	  				}
 	  			});
         	},
-            payOrder(id){ //立即支付
+        	payOrder(id){ //立即支付
         		if (this.isPaySkip) {
     				return;
         		}
@@ -318,36 +308,13 @@
 					ID: id	//订单ID
 				}).then(res => {
 					if (res.ErrorCode == app.errok) {
-                        this.isPaySkip = false;
-                        if (window.__wxjs_environment === 'miniprogram'){
-                            let succUrl = 'succUrl='+ encodeURIComponent(window.location.href.match(/[^#]*#/)[0] + '/orderList/1'),
-                                //succUrl = 'succUrl='+ encodeURIComponent(window.location.href.match(/[^#]*#/)[0] + '/orderDetail?isPay=1&orderId='+ res.Data.OrderId),
-                                failUrl =  'failUrl=' + encodeURIComponent(window.location.href.match(/[^#]*#/)[0] + '/orderList/1'),                       
-                                infoData = 'info=' + encodeURIComponent(JSON.stringify({
-                                    OrderNumber:res.Data.OrderNumber,
-                                    CompanyName:res.Data.CompanyName,
-                                    StudentName:res.Data.StudentName,
-                                    PayMoney:res.Data.PayMoney,
-                                    Product:res.Data.ProductItem
-                                })),
-                                payData = 'data=' + encodeURIComponent(res.Data.PayInfo);
-                            wx.miniProgram.navigateTo({
-                                url:`/pages/payment/payment?${succUrl}&${failUrl}&${payData}&${infoData}`,
-                                success: function(){
-                                },
-                                fail: function(){
-                                    app.alert('跳转失败，请刷新页面重试。');            
-                                },
-                            });                            
-                        } else {
-                            try{
-                                document.getElementById('wxData').value = res.Data.WXData;
-                                document.getElementById('wxPayForm').action = res.Data.PayURL;
-                                document.getElementById("wxPayForm").submit();
-						    }catch(e){
-							    app.toast('error', e.message);
-						    }
-                        }                    						
+						try{
+							document.getElementById('wxData').value = res.Data.WXData;
+        					document.getElementById('wxPayForm').action = res.Data.PayURL;
+							document.getElementById("wxPayForm").submit();
+						}catch(e){
+							app.toast('error', e.message);
+						}
 					} else if (res.ErrorCode == 423) {
 						app.alert('您有一笔未支付未过期的预制订单，可前往“师生信->个人中心->预制订单”进行支付。');
 					} else {
@@ -387,8 +354,7 @@
 			},
         },
         created(){
-        	this.stype = Number.parseInt(this.$route.params.status);
-
+        	this.stype = parseInt(this.$route.params.status) + 1 > 3 ? 0 : parseInt(this.$route.params.status) + 1;
         	app.event.on('appActive', (e, args) => {
         		let diff = args.diffTime;
         		this.list.forEach((orders,index)=>{
@@ -418,7 +384,6 @@
 		components: {
 			OrderCard,
 			EmptyPage,
-			OrderPackageCard
 		}
 	}
 </script>

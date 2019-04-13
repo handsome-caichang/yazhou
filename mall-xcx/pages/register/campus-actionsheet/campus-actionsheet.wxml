@@ -1,0 +1,8 @@
+<action-sheet id="campusActionSheet">
+    <view class="item" wx:for="{{list}}" data-index="{{index}}" wx:key="index" bindtap="selectCampus">
+        <view class="item-left {{curIndex===index?'active':''}}">{{item.Name}}</view>
+        <view class="item-right {{curIndex===index?'icon':''}}">
+            
+        </view>
+    </view>
+</action-sheet>

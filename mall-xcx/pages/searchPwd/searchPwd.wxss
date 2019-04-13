@@ -1,0 +1,115 @@
+.searchPwd {
+    padding: 60px 33px 0 33px;
+}
+
+.searchPwd .name-wrapper {
+    display: flex;
+    height: 44px;
+}
+
+.searchPwd .name-wrapper .name {
+    flex: 1;
+    height: 44px;
+    font-size: 14px;
+    line-height: 44px;
+    padding-left: 15px;
+}
+.searchPwd .name-wrapper .company-name-wrapper {
+    padding: 10px 0;
+    width: 90px;
+    font-size: 14px;
+    color: #999;
+}
+
+.searchPwd .name-wrapper .company-name-wrapper .company-name {
+    height: 20px;
+    border-left: 1px solid #999;
+    text-align: center;    
+}
+
+.searchPwd .btn {
+    margin-top: 80px;
+    height: 44px;
+    line-height: 44px;
+    color: #FFF;
+    text-align: center;
+    background-color: #F03232;
+    border-radius: 6px;
+    font-size: 16px;
+    opacity: 0.3;
+}
+
+.searchPwd .btn-active {
+    opacity: 1;
+}
+
+.searchPwd .item-wrapper {
+    height: 44px;
+    line-height: 44px;
+    padding-left: 15px;
+    display: flex;
+    font-size: 14px;
+    color: #333;
+}
+
+.searchPwd .item-wrapper .text1 {
+    width: 42px;
+}
+.searchPwd .item-wrapper .text2 {
+    flex: 1;
+    margin-left: 21px;
+    font-size: 15px;
+}
+
+.searchPwd .item-wrapper .code {
+    flex: 1;
+}
+.searchPwd .identifying-code-wrapper {
+    margin-top: 20px;
+    display: flex;
+}
+.searchPwd .identifying-code-wrapper .identifying-code {
+    flex: 1;
+    padding-left: 15px;
+    height: 44px;
+    font-size: 14px;
+    line-height: 44px;
+}
+.searchPwd .identifying-code-wrapper .get-code {
+    width: 95px;
+    color: #F03232;
+    font-size: 13px;
+    padding: 12px 0;
+}
+.searchPwd .identifying-code-wrapper .get-code .code {
+    border-left: 1px solid #999;
+    text-align: center;
+}
+
+.searchPwd .pic-identifying {
+    height: 44px;
+    display: flex;
+    margin-top: 20px;
+}
+.searchPwd .pic-identifying .pic-left {
+    flex: 1;
+    height: 44px;
+    line-height: 44px;
+    padding-left: 15px;
+    font-size: 17px;
+}
+
+.searchPwd .pic-identifying .pic-mid {
+    width: 99px;
+    height: 44px;
+}
+.searchPwd .pic-identifying .pic-right {
+    width: 50px;
+    height: 44px;
+    font-size: 12px;
+    padding: 12px 0;
+}
+.searchPwd .pic-identifying .pic-right .pic-right-text {
+    border-left: 1px solid #999;
+    text-align: center;
+}

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	    <meta charset="utf-8" />
+	    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+	    <meta name="format-detection" content="telephone=no">
+	    <meta name="msapplication-tap-highlight" content="no">
+	    <meta name="HandheldFriendly" content="true">
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0,minimum-scale=1.0,maximum-scale=1.0" />
+	    <meta name ="screen-orientation" content="portrait">
+	    <meta http-equiv="Cache-Control" content="no-cache" />
+		<meta http-equiv="Pragma" content="no-cache" />
+		<meta http-equiv="Expires" content="0" />
+	    <link rel="stylesheet" href="./css/normalize.css?v=1" />
+	    <script type="text/javascript">
+	        var cssEl = document.createElement('style');
+	        document.documentElement.firstElementChild.appendChild(cssEl);
+	        function setPxPerRem(){
+	            var dpr = 1;
+	            //把viewport分成10份的rem，html标签的font-size设置为1rem的大小;
+	            var pxPerRem = document.documentElement.clientWidth * dpr / 10;
+	            cssEl.innerHTML = 'html{font-size:' + pxPerRem + 'px!important;}';
+	        }
+	        setPxPerRem();
+	        window.onresize = function(){
+	        	setPxPerRem();
+	        }
+   		</script>
+   		<link rel="stylesheet" href="./css/iconfont.css"  />
+   		<link rel="stylesheet" href="./css/reportIndex-rem.css?v=1.01"  />
+   		<title>运营日报</title>
+	</head>
+	<body>
+		<div class="text-center cancel-success">取消成功！</div>
+		<div class="text-center cancel-success-tips">如需再次接收此消息，请在校管家电脑端设置</div>
+	</body>
+</html>

@@ -1,6 +1,0 @@
-{
-    "usingComponents": {
-        "submit-actionsheet": "../../components/submit-actionsheet/submit-actionsheet"
-    },
-    "navigationBarTitleText": "添加学员"
-}

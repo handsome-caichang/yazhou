@@ -59,8 +59,76 @@
 		.app-search-list-scroller {
 			@include position-absolute(40px, 0, 0, 0);
 			&.top {
-				// @include position-absolute(0, 0, 0, 0);
 				top: 0;
+			}
+			.card {
+			    padding: 13px 12px 14px 12px;
+			    display: flex;
+			    background-color: $color-white;
+			    border-bottom: 1px solid $color-assist-1;
+			    .card-left {
+			        width: 104px;
+			        .img {
+			            // height: 78px;
+			            position: relative;
+			            border: 1px solid $color-white;
+			            border-radius: 2px;
+			            @include dynamic-wh(104px, 0.75);
+			            @include background-img(false, cover);
+			            .tags {
+			                width: 64px;
+			                height: 15px;
+			                line-height: 15px;
+			                text-align: center;
+			                background-color: #E93A0F;
+			                border-radius: 0px 8px 8px 0px;
+			                font-size: 11px;
+			                color: $color-white;
+			                @include position-absolute(0, false, false, 0);
+			            }
+			            .sale-not {
+			                .icon {
+			                    font-size: 55px;
+			                }
+			                width: 100%;
+			                height: 100%;
+			                @include flex-between;
+			                padding-left: 24px;
+			            }
+			        }
+			    }
+			    .card-right {
+			        flex: 1;
+			        margin-left: 12px;
+			        .name {
+			            font-size: 15px;
+			            color: $color-3;
+			            @include ellipsis-multi(2);
+			        }
+			        .info {
+			            margin-top: 6px;
+			            font-size: 12px;
+			            color: $color-9;
+			        }
+			        .other {
+			            margin-top: 16px;
+			            display: flex;
+			            .price {
+			                font-size: 17px;
+			                color: #E93A0F;
+			                max-width: 75px;
+			            }
+			            .num {
+			                flex: 1;
+			                margin-left: 40px;
+			                width: 0;
+			                text-align: right;
+			                @include ellipsis-single;
+			                font-size: 12px;
+			                color: $color-6;
+			            }
+			        }
+			    }
 			}
 		}
 	}
@@ -69,21 +137,7 @@
 
 <template>
 	<div class="app-search-list">
-		<div class="package-filter" :class="{unfold: unfoldPackageFilter}" v-if="$route.params.searchType === '100'">
-			<div class="filter-list" v-if="unfoldPackageFilter" @click="togglePackageParams">
-				<svg class="icon" aria-hidden="true">
-				    <use :xlink:href="!IsShowAll_PackageParams ? '#icon-danxuanxuanzhong1' : '#icon-danxuanweixuanzhong'"></use>
-				</svg>
-				<span>只显示可报套餐</span>
-			</div>
-			<div class="toggle-btn" @click="togglePackageFilter">
-				<svg class="icon" aria-hidden="true">
-				    <use :xlink:href="unfoldPackageFilter ? '#icon-youhua' :  '#icon-zuohua'"></use>
-				</svg>
-			</div>
-		</div>
-
-		<div class="select-camplus" v-if="$route.query.showHeard==='true'">
+		<div class="select-camplus">
 			<div class="item" @click="active = 'cur'">
 				<div class="curCampus" :class="{active: active === 'cur'}">当前校区</div>
 			</div>
@@ -91,15 +145,44 @@
 				<div class="allCampus" :class="{active: active === 'all'}">全部校区</div>
 			</div>
 		</div>
-		<goodsList class="app-search-list-scroller" 
-			:class="{'top': $route.query.showHeard!=='true'}"
-			:searchType="parseInt($route.params.searchType)"
-			:api="api" 
-			:params="params"
-			:emptyPageType="emptyPageType"
-			:selectCamplusStr="active"
-			@loadFirst="changMask">
-		</goodsList>
+		<scroller-super class="app-search-list-scroller"
+		:type="2"
+		:data="list"
+		:pagingOption="pagingOption"
+		@loadData="loadData">
+			<div>
+			    <router-link tag="div" 
+			        :to="`/detail/${item.ID}/${item.Type}`" 
+			        class="card" 
+			        v-for="(item,index) in list"
+			        :key="index">
+			        <div class="card-left">
+			            <div class="img" :style="'background-image:url('+item.Image+')'">
+			                <div class="tags" v-if="Math.random()>0.5">
+			                    <svg class="icon" aria-hidden="true">
+			                        <use xlink:href="#icon-huo"></use>
+			                    </svg>仅剩10名
+			                </div>
+			                <div class="sale-not" v-else>
+			                    <svg class="icon" aria-hidden="true">
+			                        <use xlink:href="#icon-yishouqing"></use>
+			                    </svg>
+			                </div>
+			            </div>
+			        </div>
+			        <div class="card-right">
+			            <div class="name">{{item.Name}}</div>
+			            <div class="info">学校20周年庆/20年一遇大促销</div>
+			            <div class="other">
+			                <div class="price">&#165;{{item.Money|formatNumber}}</div>
+			                <div class="num">
+			                    10课时|20课时|30课时
+			                </div>
+			            </div>
+			        </div>
+			    </router-link>
+			</div>
+		</scroller-super>
 
 		<!-- 加载中... -->
 		<loading class="loading" v-show="loading" :bgType="1"></loading>
@@ -110,74 +193,46 @@
 <script>
 	 
 	import GoodsList from 'common/goods-list/goods-list.vue'
-	import {getSearchList, getPackageList} from 'api/jie.js'
+	import {getSearchList} from 'api/jie.js'
 
 	export default {
 	  	name: 'app-search-list',
 	  	mixins: [app.mixin.shareMixin],
 	  	data () {
 		    return {
+		    	wxTitle: '商品搜索列表',
 		    	loading: true,
-		    	unfoldPackageFilter: false,
-		    	IsShowAll_PackageParams: true,
-	    		api: (this.$route.params.searchType === '100' ? getPackageList : getSearchList),
-	    		params: null,
+		    	list: [],
+	    		pagingOption: {
+	    		    api: getSearchList,
+	    		    params: {
+	    		        CampusID: '',
+	    		    }
+	    		},
+	    		
 	    		active: 'cur',
 		    };
 	  	},
 	  	computed: {
-	  	    wxTitle() {
-	  	        let params = this.$route.params;
-	  	        return `${params.searchType === "-1" ? "商品搜索列表 -" : ""}${params.title}`
-	  	    },
-	  	    emptyPageType() {
-	  	    	return this.$route.params.searchType === "-1" ? 1 : 11;
-	  	    }
+	  	    
 	  	},
 	  	methods: {
-	  		init() {
-	  			let q = this.$route.params;
-		  		if (q.searchType === '-1') {
-  					this.params = {
-  						Keyword: q.searchVal,
-  					}
-		  		} else if (q.searchType == '100') {
-		  			this.params = {
-		  				FloorID: q.searchVal,
-		  				IsShowAll: ""
-		  			}
-		  		} else {
-		  			this.params = {FloorID: q.searchVal}
-		  		}
-  			},
-  			togglePackageFilter() {
-  				this.unfoldPackageFilter = !this.unfoldPackageFilter;
-  			},
-  			togglePackageParams() {
-  				this.IsShowAll_PackageParams = !this.IsShowAll_PackageParams;
-  				this.unfoldPackageFilter = false;
-  				this.params.IsShowAll = this.IsShowAll_PackageParams;
-  				this.loading = true;
-  			},
-  			changMask(firstAjaxPromise) {
-  				// this.loading = true;
-  				firstAjaxPromise.then(res => {
-  					this.loading = false;
-  				})
-  			}
+	  		loadData(ajaxPromise) {
+	  		    ajaxPromise.then(res => {
+	  		        this.loading = false
+	  		        if (res.ErrorCode === app.errok) {
+	  		            if (res.PageIndex === 1) {
+	  		                this.list = []
+	  		            } 
+	  		            this.list = this.list.concat(res.Data)
+	  		            this.list = this.list.filter(obj => obj.Type !== 3)
+	  		        }
+	  		    })
+	  		}
 	  	},
 	  	created() {
-	  		this.init();
 
-	  		this.v_shareResolve(function () {
-	  			return app.tool.mallShare({
-	  			    // title: `${this.$route.params.searchType === "-1" ? "商品搜索列表 -" : ""}${this.$route.params.title}`,
-	  			    title: `${this.$route.params.title}`,
-	  			    desc: this.$store.state.config.Summary,
-	  			    link: app.tool.parseToWXshareUrl(this.$route.fullPath),
-	  			    imgUrl: this.$store.state.config.Logo
-	  			});
-	  		})
+	  		
 	  	},
 	  	mounted() {
 	  	},

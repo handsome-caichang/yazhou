@@ -1,0 +1,80 @@
+.loading {
+	padding-top: 12px;
+	font-size: 12px;
+}
+.title{
+	padding: 0 12px;
+	line-height: 45px;
+	color: white;
+	font-size: 16px;
+	background-color: #0367ae;
+}
+.title span{
+	padding-left: 3px;
+}
+.orange{
+	margin-bottom: 5px;
+	color: #FF3C00;
+	font-size: 22px;
+}
+.summary-count{
+	padding: 16px 0;
+	font-size: 14px;
+	color: #999999;
+}
+.split{
+	height: 10px;
+	background-color: #F0F0F0;
+}
+.row{
+	margin-top: 7px;
+	padding: 6px 12px;
+	color:#333;
+	font-size: 14px;
+	border-bottom: 1px solid #eaeaea;
+}
+.row-tip{
+    float: left;
+    width: 16px;
+    height: 16px;
+    line-height: 18px;
+    margin-top: 2px;
+    border-radius: 50%;
+    background-color: #43adf9;
+    text-align: center;
+    color: white;
+    font-size: 10px;
+    letter-spacing: 0;
+}
+.campusname{
+	position: absolute;
+	padding-left: 20px;
+	max-width: 70%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.progress{
+	float: right;
+	height: 0.0936rem;
+	width: 2.02808rem;
+	background-color: #46B0FB;
+	border-radius: 0.0936rem;
+	margin-bottom: 0.05601rem;
+	margin-top: 0.0468rem;
+}
+.number{
+	font-size: 15px;
+	text-align: right;
+}
+.unit{
+	font-size: 12px;
+}
+.noData>img{
+	width: 4.07176rem;
+    margin-top: 0.78003rem;
+}
+.noData>p{
+	font-size: 0.43682rem;
+    color: #777777;
+}

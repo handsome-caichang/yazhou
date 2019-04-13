@@ -7,7 +7,7 @@
 			padding: 15px;
 			background-color: #F8800A;
 			color: $color-white;
-			background-image: url(./img/order-error-bg.png);
+			// background-image: url(./img/order-error-bg.png);
 			background-attachment: scroll;
 			background-repeat: no-repeat;
 			background-position: right 15px bottom 0px;
@@ -44,38 +44,62 @@
     			height: $h-3;
     			line-height: $h-3;
     			padding: 0 $edge;
-    			font-size: $fs-normal;
-    			@include border-bottom;
-    			.tag{
-    				padding: 1px 5px;
-    				margin-right: 5px;
-    				color: $color-assist;
-    				font-size: $fs-small-x;
-    				border: 1px solid $color-assist;
-    			}
+    			font-size: 14px;
+                display: flex;
+                color: $color-3;
+    			span {
+                    flex: 1;
+                }
+                .phone {
+                    text-align: right;
+                }
     		}
+            .campus-info {
+                height: $h-3;
+                line-height: $h-3;
+                padding: 0 $edge;
+                font-size: 13px;
+                color: $color-3;
+            }
     		.card-bd{
-    			position: relative;
-    			padding: 8px $edge 0 $edge;
-    			color: $color-3;
-    			@include border-bottom;
-    			.card-bd-item,
-    			.card-bd-item1{
-    				padding-bottom: 6px;
-    				@include flex-between;
-    			}
-    			.card-bd-item{
-    				@include fs-lh(12);
-    			}
-    			.card-bd-item1{
-    				@include fs-lh(14);
-    				.total{
-			    		font-size: $fs-big-s;
-			    		color: $color-assist;
-			    	}
-    			}
+    			padding: 20px 12px;
+    			.card-bd-item {
+                    display: flex;
+                    font-size: 13px;
+                    color: $color-3;
+                    height: 28px;
+                    line-height: 28px;
+                    .card-bd-item-l {
+                        flex: 1;
+                        .spec {
+                            font-size: 10px;
+                            color: $color-9;
+                        }
+                    }
+                    .card-bd-item-r {
+                        flex: 1;
+                        text-align: right
+                    }
+                    .red {
+                        color: #F03232;
+                    }
+                }
     		}
-    	}
+        }
+        .card-1 {
+            background-color: #F5F8FC;
+            padding: 15px 12px;
+            .item {
+                @include flex-between;
+                &:not(:first-child) {
+                    margin-top: 12px;
+                    color: #E93A0E;
+                }
+                label {
+                    color: $color-3;
+                }
+            }
+        }
     	.info{
     		background-color: $color-white;
     		.info-hd{
@@ -87,25 +111,15 @@
     			@include border-bottom;
     		}
     		.info-bd{
-    			padding: 14px 10px 13px 10px;
+    			padding: 20px 12px;
     			.info-bd-item{
     				@include flex-between;
-    				@include fs-lh(12);
-    				padding-bottom: 6px;
+                    font-size: 13px;
+                    height: 28px;
+                    color: $color-3;
     				label{
-					    width: 80px;
-    				}
-    				&:last-child{
-    					padding-bottom: 0;
-    				}
-    			}
-    			&.memo{
-    				@include border-top;
-    				font-size: $fs-small;
-    				line-height: 1;
-    				.memo-body{
-						padding-top: 10px;    					
-    					color: $color-3;
+					    width: 100px;
+                        color: $color-9;
     				}
     			}
     		}
@@ -139,7 +153,7 @@
 		}
 		.void{
 			height: $void;
-			background-color: $color-assist-1;
+			background-color: $color-white;
 		}
 		.pay-loading{
 			@include position-absolute;
@@ -158,10 +172,6 @@
 	        	color: $color-primary;
 	        }
 		}
-        .qr-code {
-            @include position-absolute;
-            z-index: 20;
-        }
     }
     .scroller {
         @include position-absolute;
@@ -175,13 +185,22 @@
 			<div v-if="Order">
 				<!-- 订单状态 -->
 				<div class="order-err" v-if="Order.ErrorMessage">
-					<div class="title">支付成功(有异常)</div>
-					<div class="desc">{{Order.ErrorMessage}} 请联系校方处理。</div>
-				</div>
-				<div class="status" :style="'backgroundImage:url('+orderDetailBg+')'" v-else-if="(Order.Status==0)||(Order.Status==1&&Order.IsExpired)||(Order.Status==2)||(Order.Status==3)">
+                    <div class="title">支付成功(有异常)</div>
+                    <div class="desc">{{Order.ErrorMessage}} 请联系校方处理。</div>
+                </div>
+                <div class="status" 
+                     :style="'backgroundImage:url('+orderDetailSucssBg+')'" 
+                     v-else-if="getStatusStr(Order)=='交易成功'">
+                    <div class="desc">{{getStatusStr(Order)}}</div>
+                </div>
+				<div class="status" 
+                     :style="'backgroundImage:url('+orderDetailClose+')'" 
+                     v-else-if="(Order.Status==0)||(Order.Status==1&&Order.IsExpired)||(Order.Status==2)||(Order.Status==3)">
 					<div class="desc">{{getStatusStr(Order)}}</div>
 				</div>
-				<div class="status" :style="'backgroundImage:url('+orderDetailBg+')'" v-else-if="(Order.Status==1)&&(!Order.IsExpired)">
+				<div class="status" 
+                     :style="'backgroundImage:url('+orderDetailWait+')'" 
+                     v-else-if="(Order.Status==1)&&(!Order.IsExpired)">
 					<div class="title">等待付款</div>
 					<div class="time">{{Order.ExpiredSeconds|formatSeconds}}后订单关闭</div>
 				</div>				
@@ -189,94 +208,62 @@
 				
 				<!-- 订单商品 -->
 				<div class="card">
-					<div class="card-title">{{Order.CampusName}}</div>
+					<div class="card-title">
+                            <span>使用学员：{{Order.StudentName}}</span>
+                            <span class="phone">13585652585</span>
+                    </div>
+                    <div class="void"></div>
+                    <div class="campus-info">
+                        长沙市岳麓区望月湖中心校区
+                    </div>
 					<div class="card-hd">
-						<div v-for="pro in Order.Items" v-if="Order.Type==1">
-							<order-card :product="pro" :type="2" :campus="Order"></order-card>
-						</div>
-						<div v-if="Order.Type==10">
-							<order-detail-package :product="Order"></order-detail-package>
+						<div v-for="pro in Order.Items">
+							<order-card :product="pro"  :campus="Order"></order-card>
 						</div>
 					</div>
 					<div class="card-bd">
                         <div class="card-bd-item">
-                            <label>合计金额</label>&#165;{{Order.TotalMoney|formatNumber}}
+                            <div class="card-bd-item-l">商品总额 <span class="spec">（共1件商品）</span></div>
+                            <div class="card-bd-item-r">&#165;35.00</div>
                         </div>
-                        <div class="card-bd-item" v-if="Order.IsPreMoney">
-                            <label>应付定金</label>&#165;{{Order.PreMoney|formatNumber}}
+                        <div class="card-bd-item">
+                            <div class="card-bd-item-l">积分抵扣 <span class="spec">(可用3000积分抵扣)</span></div>
+                            <div class="card-bd-item-r">-&#165;30.00</div>
                         </div>
-						<div class="card-bd-item" v-if="Order.SingelSchemeMoney">
-                            <label>单科优惠汇总</label>-&nbsp;&#165;{{Order.SingelSchemeMoney|formatNumber}}
+                        <div class="card-bd-item">
+                            <div class="card-bd-item-l">订单金额</div>
+                            <div class="card-bd-item-r">&#165;1855.00</div>
                         </div>
-						<div class="card-bd-item" v-if="Order.WholeSchemeMoney && Order.DiscountSchemeOrder == 0">
-                            <label>优惠活动</label>-&nbsp;&#165;{{Order.WholeSchemeMoney|formatNumber}}
-                        </div>
-						<div class="card-bd-item" v-if="Order.WholeSchemeMoney && Order.DiscountSchemeOrder == 0">
-                            <label></label>{{Order.WholeSchemeName}}
-                        </div>
-						<div class="card-bd-item" v-if="Order.CouponMoney">
-                            <label>优惠券</label>-&nbsp;&#165;{{Order.CouponMoney|formatNumber}}
-                        </div>
-						<div class="card-bd-item" v-if="Order.CouponMoney">
-                            <label></label>{{Order.CouponName}}</div>
-						<div class="card-bd-item" v-if="Order.WholeSchemeMoney && Order.DiscountSchemeOrder == 1">
-                            <label>优惠活动
-                            </label>-&nbsp;&#165;{{Order.WholeSchemeMoney|formatNumber}}
-                        </div>
-						<div class="card-bd-item" v-if="Order.WholeSchemeMoney && Order.DiscountSchemeOrder == 1">
-                            <label></label>{{Order.WholeSchemeName}}
-                        </div>
-						<div class="card-bd-item" v-if="Order.PointMoney">
-                            <label>积分</label>-&nbsp;&#165;{{Order.PointMoney|formatNumber}}
-                        </div>
-						<div class="card-bd-item" v-if="Order.ReserveMoney">
-                            <label>电子钱包</label>-&nbsp;&#165;{{Order.ReserveMoney|formatNumber}}
-                        </div>
-						<div class="card-bd-item1">
-                            <label>实际支付</label><span class="total">&#165;{{Order.PayMoney|formatNumber}}</span>
-                        </div>
+                        <div class="card-bd-item">
+                            <div class="card-bd-item-l">微信支付</div>
+                            <div class="card-bd-item-r red">&#165;855.00</div>
+                        </div>  
 					</div>
-				</div>
+                </div>
+                <div class="void"></div>
 				
-				<!-- 收货信息 -->
-				<div class="void"></div>
 				<div class="info">
-					<div class="info-hd">收货信息</div>
 					<div class="info-bd">
-						<div class="info-bd-item" v-if="Order.ReceiveContact"><label>收货人：</label>{{Order.ReceiveContact}}&emsp;{{Order.ReceiveMobile}}</div>
-						<div class="info-bd-item" v-if="Order.ReceiveAddress"><label>收货地址：</label><div>{{Order.ReceiveAddress}}</div></div>
-						<div class="info-bd-item"><label>使用学员：</label>{{Order.StudentName}}</div>
-					</div>
-					<div class="info-bd memo" v-if="Order.UserRemark">
-						<div>买家留言：</div>
-						<div class="memo-body">{{Order.UserRemark}}</div>
-					</div>
-				</div>
-				
-				<!-- 订单信息 -->
-				<div class="void"></div>
-				<div class="info">
-					<div class="info-hd">订单信息</div>
-					<div class="info-bd">
-						<div class="info-bd-item"><label>订单编号：</label>{{Order.OrderNumber}}</div>
-						<div class="info-bd-item"><label>下单时间：</label>{{Order.Date | formatDatetime('yyyy-MM-dd hh:mm:ss')}}</div>
-						<div class="info-bd-item" v-if="Order.PayDateTime"><label>支付时间：</label>{{Order.PayDateTime | formatDatetime('yyyy-MM-dd hh:mm:ss')}}</div>
+						<div class="info-bd-item">
+                            <label>订单编号：</label>{{Order.OrderNumber}}
+                        </div>
+						<div class="info-bd-item">
+                            <label>下单时间：</label>{{Order.Date | formatDatetime('yyyy-MM-dd hh:mm:ss')}}
+                        </div>
+						<div class="info-bd-item">
+                            <label>支付时间：</label>{{Order.PayDateTime | formatDatetime('yyyy-MM-dd hh:mm:ss')}}
+                        </div>
+                        <div class="info-bd-item">
+                            <label>支付流水号：</label>12358524456644
+                        </div>
+                        <div class="info-bd-item">
+                            <label>买家留言：</label>时间端氨基酸看了觉得拉丝机达拉斯的垃圾上单拉萨看得见快乐
+                        </div>
 					</div>
 				</div>
 				<div class="operate" v-if="Order.Status==1">
-                    <span class="btn1 btn2" @click="showQrCode=true" v-if="showQrCodeBtn">关注学校公众号</span>
 					<span class="btn" @click="payOrder(Order.ID)" v-if="!Order.IsExpired">立即支付</span>
 					<span class="btn1" @click="closeOrder(Order.ID)">关闭订单</span>
-				</div>
-				<div class="operate" v-if="(Order.Status==2||Order.Status==3)&&(!Order.IsComment)">
-                    <span class="btn1 btn2" @click="showQrCode=true" v-if="showQrCodeBtn">关注学校公众号</span>
-					<span class="btn" @click="gotoComment(Order.ID)">等待评价</span>
-					<span class="btn" v-if="config.EnableElectronicInvoice == 1 && Order.PayMoney != 0" @click="clickInvoice">开具发票</span>
-				</div>
-				<div class="operate" v-if="(Order.Status==2||Order.Status==3)&&Order.IsComment">
-                    <span class="btn1 btn2" @click="showQrCode=true" v-if="showQrCodeBtn">关注学校公众号</span>
-					<span class="btn1">评价成功</span>
-					<span class="btn" v-if="config.EnableElectronicInvoice == 1 && Order.PayMoney != 0" @click="clickInvoice">开具发票</span>
 				</div>
 			</div>
 		</scroller-base>
@@ -287,34 +274,26 @@
 			<span class="loading-img" :style="'backgroundImage:url('+loadingSvg+')'"></span>
 			<p class="loading-tips">正在处理，请稍后...</p>
 		</div>
-
-        <!-- 没关注公众号的弹出二维码 -->
-        <qr-code class="qr-code" :opened.sync="showQrCode" @close="showQrCode=false" :qrUrl="qrUrl"></qr-code>
-
- 		<!-- 没关注公众号的弹出二维码 -->
-        <action-sheets class="qr-code" :opened.sync="showInvoice" @close="showInvoice=false" :code="InvoiceCode" :typeCode="'2'" :contentText="InvoiceEndTime"></action-sheets>
-
 	</div>
 </template>
 
 <script>
 	 
 	import { getOrderDetail,getWXPayData,getIsPaid,orderClose} from 'api/lc';
-    import {getQrcode} from 'api/yy.js'
     import OrderCard from './children/order-card/order-card.vue';
-    import OrderDetailPackage from './children/order-detail-package/order-detail-package.vue';
-    import orderDetailBg from './orderDetailBg.png';
     import loadingSvg from 'mall/static/svg/loading-bars.svg';
-    import QrCode from 'mall/components/qrCode/qrCode.vue'
-    import ActionSheets from 'mall/components/actionsheets/actionsheets-ssh.vue'
+    import orderDetailSucssBg from './img/1.png';
+    import orderDetailClose from './img/2.png';
+    import orderDetailWait from './img/4.png';
 	
 	export default{
 		name:'order-detail',
-        mixins: [app.mixin.shareMixin],
         data() {
             return {
             	isPaySkip: false,
-            	orderDetailBg,
+            	orderDetailSucssBg,
+                orderDetailClose,
+                orderDetailWait,
             	loadingSvg,
             	isLoadingDetail: false, //加载订单详情的动画
             	isLoadingPay: false, //等待支付结果的动画
@@ -323,13 +302,12 @@
                	wxTitle:"订单详情",
                	timeout: null, //订单倒计时
 
-                showQrCode: false,
-                showQrCodeBtn: false,
+          
+         
 				qrUrl: '',
 				
 				InvoiceCode: '',
 				InvoiceEndTime: '',
-				showInvoice: false,
 
             }
         },
@@ -344,16 +322,6 @@
         		'set_orderListRefreshFlag',
         		'set_orderDetailRefreshFlag'
 			]),
-			clickInvoice() {
-				this.showQrCodeClick();
-			},
-			showQrCodeClick() {
-				if (this.InvoiceCode) {
-					this.showInvoice = true;
-				}else {
-					this._getOrderDetail(this.queryPara.orderId, true);
-				}
-			},
         	getStatusStr(item){
         		if (item.Status==0) {
         			return "交易关闭";
@@ -371,40 +339,17 @@
 					return;
 	    		}
 	    		this.isPaySkip = true;
-      		    //document.getElementById('wxPayForm').action = this.config.WXPayURL;
 				getWXPayData({
 					ID: id	//订单ID
 				}).then(res => {
 					if (res.ErrorCode == app.errok) {
-                        if (window.__wxjs_environment === 'miniprogram'){
-                             let succUrl = 'succUrl='+ encodeURIComponent(window.location.href.match(/[^#]*#/)[0] + '/orderList/1'),
-                                //succUrl = 'succUrl='+ encodeURIComponent(window.location.href.match(/[^#]*#/)[0] + '/orderDetail?isPay=1&orderId='+ res.Data.OrderId),
-                                failUrl =  'failUrl=' + encodeURIComponent(window.location.href.match(/[^#]*#/)[0] + '/orderList/1'),                       
-                                infoData = 'info=' + encodeURIComponent(JSON.stringify({
-                                    OrderNumber:res.Data.OrderNumber,
-                                    CompanyName:res.Data.CompanyName,
-                                    StudentName:res.Data.StudentName,
-                                    PayMoney:res.Data.PayMoney,
-                                    Product:res.Data.ProductItem
-                                })),
-                                payData = 'data=' + encodeURIComponent(res.Data.PayInfo);
-                            wx.miniProgram.navigateTo({
-                                url:`/pages/payment/payment?${succUrl}&${failUrl}&${payData}&${infoData}`,
-                                success: function(){
-                                },
-                                fail: function(){
-                                    app.alert('跳转失败，请刷新页面重试。');            
-                                },
-                            });
-                        } else {
-                            try{
-                                document.getElementById('wxData').value = res.Data.WXData;
-                                document.getElementById('wxPayForm').action = res.Data.PayURL;
-                                document.getElementById("wxPayForm").submit();
-                            }catch(e){
-                                app.toast('error', e.message);
-                            }
-                        }
+						try{
+							document.getElementById('wxData').value = res.Data.WXData;
+							document.getElementById('wxPayForm').action = res.Data.PayURL;
+							document.getElementById("wxPayForm").submit();
+						}catch(e){
+							app.toast('error', e.message);
+						}
 					} else if (res.ErrorCode == 423) {
 						app.alert('您有一笔未支付未过期的预制订单，可前往“师生信->个人中心->预制订单”进行支付。');
 					} else {
@@ -434,7 +379,7 @@
         	_getOrderDetail(id, flag){
         		this.isLoadingDetail = true;
         		getOrderDetail({
-	    			ID: id
+	    			ID: this.$route.params.id
 	    		}).then(res => {
 	    			this.isLoadingDetail = false;
 	    			if (res.ErrorCode == app.errok) {
@@ -445,16 +390,7 @@
 						if (this.Order.Status==1&&!this.Order.IsExpired) {
 	    					this._diffOrderTime();
 	    				}
-						if (flag) {
-							if (this.InvoiceCode) {
-								this.showInvoice = true;
-							}else {
-								app.alert({
-									title: '',
-									text: '此收据需开具发票，发票获取失败，请稍后再试'
-								})
-							}
-						}
+						
 	    			}
 				})
         	},
@@ -490,24 +426,11 @@
 	    			}
         		},1000);
         	},
-            checkQrCode() {
-                getQrcode().then(res => {
-                    if (res.ErrorCode === app.errok) {
-                        if (res.Data.IsBindWx) {
-                            this.showQrCode = false
-                            this.showQrCodeBtn = false
-                        } else {
-                            this.showQrCode = true
-                            this.showQrCodeBtn = true
-                        }
-                        this.qrUrl = res.Data.QrCode
-                    }
-                })
-            }
+            
         },
         created(){
         	this.queryPara = this.$route.query;
-            this.checkQrCode()
+            
             //如果正在执行订单
             if (this.queryPara.isPay && (this.queryPara.isPay==1)) {
                 this.isLoadingPay = true;
@@ -531,13 +454,10 @@
         watch: {
 		    orderDetailRefreshFlag: function (val, oldVal) {// 切换订单类型，重新拉取数据
             	this._getOrderDetail(this.queryPara.orderId);
-		    },
+		    }
 		},
         components: {
 			OrderCard,
-			OrderDetailPackage,
-			QrCode,
-			ActionSheets
 		}
 	}
 </script>

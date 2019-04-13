@@ -1,5 +1,7 @@
 <!-- 登录页面 -->
-<style lang="scss" scoped>    
+<style lang="scss" scoped>
+    
+    
 	.login {
 		@include position-absolute;
 		@include background-img(false, contain);
@@ -129,7 +131,6 @@
 	
 	export default {
 		name: 'login',
-		mixins: [app.mixin.shareMixin],
 		data() {
 			return {
 				wxTitle: '手机商城',

@@ -1,0 +1,168 @@
+<!-- 我的课表->班级详情 -->
+<style scoped lang="scss">
+    
+    
+
+    .course-details-container {
+        .as-details {
+            @include position-absolute;
+            background-color: $color-assist-1;
+            font-size: 15px;
+            .class-name {
+                padding:12px;
+                text-align: center;
+                font-size: 16px;
+                color: $color-6;
+            }
+            .item {
+                background-color: $color-white;
+                padding: 12px 15px;
+                margin-bottom: 10px;
+                @include flex-between;
+                .describe {
+                    color: $color-6;
+                }
+                .content {
+                    color: $color-3;
+                    max-width: 80%;
+                }
+                .teacher {
+                    color: #1A97F2;
+                }
+                .classroom{
+                    @include ellipsis-single;
+                }
+            }
+            .content-area {
+                padding: 0 12px 12px 12px;
+                margin-bottom: 10px;
+                color: $color-6;
+                background-color: $color-white;
+                .title {
+                    height: 41px;
+                    line-height: 41px;
+                    text-align: left;
+                }
+                .content {
+                    color: $color-3;
+                    padding: 5px;
+                    border: 1px solid $color-border;
+                }
+            }
+            .void {
+                height: 1px;
+                width: 100%;
+            }
+        }
+    }
+</style>
+
+<template>
+    <div class="course-details-container">
+        <scroller-base class="as-details" :data="renderData">
+            <div class="class-name">
+                {{className}}
+                <span v-show="list.subjectName!=''">
+                    （{{list.subjectName}}）
+                </span>
+            </div>
+            <div class="item">
+                <!-- TODO: 校区 -->
+                <div class="describe">{{app.sysInfo.Title_Campus}}</div>
+                <div class="content">{{campus}}</div>
+            </div>
+            <div class="item">
+                <div class="describe">老师</div>
+                <div class="content teacher">{{getteacher}}</div>
+            </div>
+            <div class="item">
+                <div class="describe">教室</div>
+                <div class="content classroom">{{list.classroomname}}</div>
+            </div>
+            <div class="item">
+                <div class="describe">时间</div>
+                <!-- <div class="content" >{{timeobj.date}} &nbsp;&nbsp; {{timeobj.stime}}~{{timeobj.etime}}</div> -->
+                <!-- <div class="content" v-else>{{timeobj.date}}</div> -->
+                <div class="content" >{{getdate}}</div>
+            </div>
+            <div class="item">
+                <div class="describe">状态</div>
+                <div class="content">{{list.status||"未上课"}}</div>
+            </div>
+
+            <!--上课内容-->
+            <div class="content-area" v-if="list.content!=''">
+                <div class="title">上课内容</div>
+                <div class="content" v-html="list.content"></div>
+            </div>
+            <!--备注：老师评语这项内容，查了后台，返回的一直是空值，所以根本不需要相关代码 28.04.28-->
+            <div class="void"></div>
+        </scroller-base>
+        <loading class="loading" v-show="isLoading"></loading>
+    </div>
+
+</template>
+
+<script>
+    // import {processGet} from "teacher/api/common";
+     import {getcourseinfoapplist} from 'teacher/api/course.js';
+
+    export default {
+        name: "course-details",
+        data() {
+            return {
+                wxTitle: '班级详情',
+                list: {},
+                isLoading: true,
+                className: '',
+                campus: '',
+                content:undefined,
+                teacher:undefined,
+                classroom:undefined,
+                status:undefined,
+                date:undefined
+            }
+        },
+        computed: {
+            renderData() {
+                return {
+                    list: this.list,
+                    className: this.className,
+                    campus: this.campusa
+                }
+            },
+            getteacher(){
+                return this.list.teachernames.join(',')
+            },
+            getdate(){
+                return `${this.list.date}  ${this.list.stime}~${this.list.etime}`
+            }
+        },
+        methods: {
+            getData(id) {
+                getcourseinfoapplist({
+                    usertype:1,
+                    viewtype:3,
+                    courseid: id
+                }).then(res => {
+                    this.isLoading = false;
+                    console.log(res)
+                    if (res.result.code == app.errok) {
+                        res.data.date = res.data[0].date.replace(/-/g, '.');
+                        res.data.content = res.data.content&&app.dom.parseDom(res.data[0].content);
+                        this.list = res.data[0];
+                    } else {
+                        app.toast('error', res.errmsg)
+                    }
+                })
+            }
+        },
+        created() {
+            this.getData(this.$route.query.id);
+            this.className = this.$route.query.classname;
+            this.campus = this.$route.query.campus;
+    
+        }
+    }
+</script>
+
