@@ -1,0 +1,21 @@
+<scroll-view class="img-area" scroll-y="true">
+    <view class="img-box">
+        <view class="img-item" wx:for="{{list}}" wx:key="{{index}}">
+            <view class="img-grid">
+                <view class="img-wrap">
+                    <image class="img" src="{{item.path}}" mode="aspectFit" bindtap="previewImage" data-src="{{item.path}}"></image>
+                </view>
+                <image class="icon img-delete" src="{{IMG.deleteStu}}" data-index="{{index}}" bindtap="delete"></image>
+            </view>
+        </view>
+
+        <view class="img-item" wx:if="{{showAdd < 9}}">
+            <view class="img-grid" bindtap="chooseImg">
+                <view class="img-wrap">
+                    <image class="icon icon-add-pic" src="{{IMG.addPic}}"></image>
+                    <view class="img-add-tips">添加图片</view>
+                </view>
+            </view>
+        </view>
+    </view>
+</scroll-view>

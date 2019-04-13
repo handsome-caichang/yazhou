@@ -1,0 +1,76 @@
+.calendar {
+    background-color: #fff;
+}
+.top-handle {
+    height: 80rpx;
+    font-size: 16px;
+}
+.handle {
+    flex: 1;
+}
+.prev,
+.next {
+    width: 80px;
+    text-align: center;
+}
+.prev-handle {
+    display: inline-block;
+    height: 100%;
+    width: 10px;
+    height: 10px;
+    border: 1px solid #1e88f5;
+    border-top: none;
+    border-right: none;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+.next-handle {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border: 1px solid #1e88f5;
+    border-top: none;
+    border-right: none;
+    -webkit-transform: rotate(-135deg);
+    -ms-transform: rotate(-135deg);
+    transform: rotate(-135deg);
+}
+.date-area {
+    width: 50%;
+    height: 80rpx;
+    text-align: center;
+}
+.weeks {
+    height: 50rpx;
+    line-height: 50rpx;  
+}
+.week {
+    text-align: center;
+    font-size: 14px;
+    color: #000;
+}
+.days {
+    height: 500rpx;
+}
+.grid {
+    width: 107.1428571429rpx;
+}
+.day {
+    width: 60rpx;
+    height: 60rpx;
+    font-size: 16px;
+    color: #444;
+}
+.select {
+    border-radius: 50%;
+    position: relative;
+    left: 0;
+    top: 0;
+    color: #fff;
+    background-color: #1e88f5;
+}
+.current {
+    color: #1e88f5;
+    background: #fff;
+}

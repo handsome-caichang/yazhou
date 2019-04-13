@@ -1,0 +1,53 @@
+<!-- 处理未登录 -->
+<view class="login" wx:if="{{showLoginForm}}">
+    <!-- 登录表单 -->
+    <view class="form">
+        <view class="form-group">
+            <view class="form-group-left">
+                <view class="icon icon-yonghumingicon"></view>
+                <input value="{{uname}}" type="text" placeholder="请输入登录校管家的用户名" bindinput="unameInput" bindblur="unameBlur" placeholder-class="placeholder"/>
+            </view>
+            <view class="form-error-tips" wx:if="{{isShowUnameTips}}">请输入正确的用户名</view>
+        </view>
+        <view class="form-group">
+            <view class="form-group-left">
+                <view class="icon icon-mimaicon"></view>
+                <input value="{{upwd}}" placeholder="请输入密码" bindinput="upwdInput" focus="{{focus}}" password="{{true}}" wx:if="{{!isShowPwd}}" placeholder-class="placeholder"/>
+                <input value="{{upwd}}" placeholder="请输入密码" bindinput="upwdInput" focus="{{focus}}" type="text" wx:else placeholder-class="placeholder"/>
+            </view>
+            <view class="form-group-right" bindtap="changePwdType">
+                <view class="{{isShowPwd?'icon-xianshi':'icon-buxianshi'}}"></view>
+            </view>
+        </view>
+        <!-- 忘记密码 -->
+        <view class="forget-password-container">
+            <view class="forget-password" bindtap="showForgetPwd" hover-class="navigator-hover">忘记密码？</view>
+        </view>
+        <view class="form-btn {{(upwd.length>0&&uname.length>0)?'active':''}}" bindtap="login">登 录</view>
+        <navigator class="form-btn exit" open-type="exit" target="miniProgram" wx:if="{{showExitBtn}}">退出小程序</navigator>         
+
+        <view class="exit-tips" wx:if="{{showExitBtn}}">点击“退出小程序”，下次打开时会自动登录绑定的公众号账号，无须重新登录</view>
+    </view>
+    <view class="login-pic"></view>
+</view>
+
+
+<!-- 处理微信授权 -->
+<view class="auth-box" wx:if="{{showAuthBtn}}">
+    <view class="auth-logo"></view>
+    <view class="auth-title">选课报名</view>
+    <view class="auth-describe">申请获得您的微信昵称和头像</view>
+    <view class="auth-btn-wrap">
+        <button class="auth-btn" open-type="getUserInfo" bindgetuserinfo="getUserInfoFN">微信授权</button>
+    </view>
+</view>
+
+
+<!-- 处理页面回退 -->
+<view class="exit-box" wx:if="{{count>0 && !showLoginForm}}">
+    <view class="exit-logo"></view>
+    <view class="exit-tips">点击“退出小程序”，下次打开时会自动登录绑定的公众号账号，无须重新登录</view>
+    <view class="exit-btn goto-index" bindtap="enterIndex">进入首页</view> 
+    <navigator class="exit-btn change" url="/pages/selectUser/selectUser" wx:if="{{showSelectUser}}">切换账号</navigator>
+    <navigator class="exit-btn" open-type="exit" target="miniProgram">退出小程序</navigator> 
+</view>

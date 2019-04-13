@@ -1,0 +1,105 @@
+.icon{
+    width: 10px;
+    height: 10px;
+    vertical-align: middle;
+    overflow: hidden;
+    margin-left:3px;
+}
+
+.header{
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    color: #999;
+}
+
+.body{
+    height:370px;
+}
+
+.body .start,.body .dur, .body .end{
+    height: 44px;
+    line-height: 44px;
+    padding: 0 15px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+}
+
+
+.body .time{
+    text-align: right;
+    flex:1;
+}
+.body .title{
+    flex:1;
+}
+
+.body .end{
+    color:#999;
+}
+
+
+.body .picker-view{
+    height:238px; width:100%;
+}
+
+.body .picker-indicator{
+    height:34px; background:rgba(211,211,211,0.4);
+}
+
+.body .picker-mask{
+    background:rgba(218,221,226,0.4);
+}
+.body .picker-item{
+    line-height:34px; text-align:center;
+}
+
+
+
+
+
+.footer{
+    height: 48px;
+    line-height: 48px;
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px 15px;
+    position: relative;
+}
+
+
+
+.footer .btn{
+    width: 93px;
+    height: 28px;
+    line-height: 28px;
+    border: 1px solid transparent;
+    border-radius: 27px;
+    text-align: center;
+    margin-left: 15px;
+}
+
+.footer .cancel{
+    border: 1px solid #1e88f5;
+    color: #1e88f5;
+}
+
+.footer .submit{
+    background-color: #1e88f5;
+    color: #fff;
+}
+
+
+
+.body .start:before,.body .dur:before,.body .end:before,.footer:before{
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    border-top: 1px solid rgba(224,229,238,.6);
+    content: "";
+}

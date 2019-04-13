@@ -1,0 +1,19 @@
+{
+    "pages": [
+        "pages/index/index",
+        "pages/course/course",
+        "pages/calendar/calendar",
+        "pages/courseAttendanceStudent/courseAttendanceStudent",
+        "pages/detail/detail",
+        "pages/courseContent/courseContent",
+        "pages/courseSchedule/courseSchedule",
+        "pages/detail/photograph/photograph"
+    ],
+    "window": {
+        "backgroundTextStyle": "light",
+        "navigationBarBackgroundColor": "#fff",
+        "navigationBarTitleText": "加载中...",
+        "navigationBarTextStyle": "black",
+        "debug": true
+    }
+}

@@ -1,0 +1,71 @@
+<!-- 处理未登录 -->
+<view class="login" wx:if="{{showLoginForm}}">
+    <!-- 登录表单 -->
+    <view class="form">
+        <view class="form-group">
+            <view class="form-group-left">
+                <image class="icon icon-yonghumingicon" src="{{IMG.yonghumingicon}}"></image>
+                <input value="{{uname}}" type="text" placeholder="请输入用户名" bindinput="unameInput" bindblur="unameBlur" placeholder-class="placeholder"/>
+            </view>
+            <view class="form-group-right flex-center" bindtap="userActionsheetOpen">
+                <image class="icon icon-name" src="{{isShowUserActionsheet?IMG.upicon:IMG.downicon}}"></image>
+            </view>
+            <view class="form-error-tips" wx:if="{{isShowUnameTips}}">请输入正确的用户名</view>
+        </view>
+        <view class="form-group">
+            <view class="form-group-left">
+                <image class="icon" src="{{IMG.mimaicon}}"></image>
+                <input value="{{upwd}}" placeholder="请输入密码" bindinput="upwdInput" focus="{{focus}}" password="{{true}}" wx:if="{{!isShowPwd}}" placeholder-class="placeholder"/>
+                <input value="{{upwd}}" placeholder="请输入密码" bindinput="upwdInput" focus="{{focus}}" type="text" wx:else placeholder-class="placeholder"/>
+            </view>
+            <view class="form-group-right flex-center" bindtap="changePwdType">
+                <image class="icon {{isShowPwd?'icon-xianshi':'icon-buxianshi'}}" src="{{isShowPwd?IMG.xianshi:IMG.buxianshi}}"></image>
+            </view>
+        </view>
+        <!-- 忘记密码 -->
+        <view class="forget-password-container">
+            <view class="forget-password" bindtap="showForgetPwd" hover-class="navigator-hover">忘记密码？</view>
+        </view>
+        <view class="form-btn {{(upwd.length>0&&uname.length>0)?'active':''}}" bindtap="triggerLogin">登 录</view>
+        <navigator class="form-btn exit" open-type="exit" target="miniProgram" wx:if="{{showExitBtn}}">退出小程序</navigator> 
+        <view class="exit-tips" wx:if="{{showExitBtn}}">点击“退出小程序”，下次打开时会自动登录绑定的公众号账号，无须重新登录</view>
+    </view>
+    <image class="login-logo" src="{{IMG.loginlogo}}"></image>
+</view>
+
+<!-- 处理微信授权 -->
+<view class="auth-box" wx:if="{{showAuthBtn}}">
+    <image class="auth-logo" src="{{IMG.authlogo}}"></image>
+    <view class="auth-title">上课点名</view>
+    <view class="auth-describe">申请获得您的微信昵称和头像</view>
+    <view class="auth-btn-wrap">
+        <button class="auth-btn" open-type="getUserInfo" bindgetuserinfo="getUserInfoFN">微信授权</button>
+    </view>
+</view>
+
+<!-- 处理页面回退 -->
+<view class="exit-box" wx:if="{{count>0}}">
+    <image class="exit-logo" src="{{IMG.exitlogo}}"></image>
+    <view class="exit-tips">点击“退出小程序”，下次打开时会自动登录绑定的公众号账号，无须重新登录</view>
+    <view class="btn change" bindtap="changeUser">切换用户</view>
+    <navigator class="btn exit" open-type="exit" target="miniProgram">退出小程序</navigator> 
+</view>
+
+<!-- 选择用户 -->
+<user-list id="userList" list="{{bindlist}}" bindselectuser="userActionsheetSelect" bindcloseuser="userActionsheetClose"></user-list>
+
+<!-- 切换绑定用户 -->
+<scroll-view class="absolute change-box" scroll-y="true" wx:if="{{showChangeUserBox}}">
+    <view class="title">您已绑定下列用户，点击可以快速切换</view>
+    <view wx:for="{{bindlist}}" wx:key="{{index}}" bindtap="bindUserSelect" data-name="{{item.LoginName}}" 
+        data-website="{{item.WebSite}}" class="item flex-between">
+        <view class="item-left">
+            {{item.LoginName}}
+            <view class="sname" wx:if="{{item.CompanyName}}">学校：{{item.CompanyName}}</view>
+        </view>
+        <view class="item-right flex-center" catchtap="bindUserRemove" data-name="{{item.LoginName}}" data-id="{{item.Id}}" data-index="{{index}}">
+            <image class="icon" src="{{IMG.userdelete}}"></image>
+        </view>
+    </view>
+    <view class="btn" bindtap="bindUser">绑定新用户</view>
+</scroll-view>

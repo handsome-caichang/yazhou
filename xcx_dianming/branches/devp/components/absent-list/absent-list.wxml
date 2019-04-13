@@ -1,0 +1,9 @@
+<action-sheet clazz="bottom" id="b" bindclose="close">
+    <view class="absent-list">
+        <view wx:for="{{list1}}" wx:key="index" bindtap="select" 
+            data-index="{{index}}" class="absent-item {{stu.absentcauseid==item.id ? 'active' : ''}}">
+            <text>{{item.name}}</text>
+            <image class="icon" src="{{IMG.gou}}" hidden="{{stu.absentcauseid!=item.id}}"></image>
+        </view>
+    </view>
+</action-sheet>

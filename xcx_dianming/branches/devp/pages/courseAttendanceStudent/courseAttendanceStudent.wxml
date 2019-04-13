@@ -1,0 +1,34 @@
+<!-- 添加学员列表页 -->
+<view class="header">
+    <view class="search-box box">
+        <input value="{{keyword}}" bindinput="searchInput" placeholder="请输入学生姓名，学号，电话" type="text" placeholder-class="input-place" />
+        <view class="search-btn" bindtap="search">搜索</view>
+    </view>
+</view>
+<view class="seperate"></view>
+<!-- 垂直滚动，这里必须设置高度 -->
+<scroll-view scroll-top="{{scrollTop}}" scroll-y="true" style="height:{{scrollHeight}}px;" class="list" bindscrolltolower="bindDownLoad" bindscrolltoupper="topLoad" bindscroll="scroll">
+    <view class="item" bindtap="chooseStudent" wx:for="{{list}}" data-index="{{index}}" wx:key="{{item.id}}">
+        <image class="icon" src="{{item.check?IMG.checkBox:IMG.unCheckBox}}"></image>
+        <view class="title box">
+            <view>{{item.name}}</view>
+            <view>{{item.serial}}</view>
+            <view>{{item.campusname}}</view>
+        </view>
+        <view class="info flex-between">
+            <view>年级：{{item.grade}}</view>
+            <view>手机号码：{{item.smstel}}</view>
+        </view>
+    </view>
+</scroll-view>
+<view class="footer">
+    <view bindtap="postOneCourse">仅上这节课</view>
+    <view bindtap="postAddToClass" wx:if="{{cfgAddClass}}">加入此班</view>
+</view>
+<!-- 空白页 -->
+<view wx:if="{{list.length==0}}" class="body flex-center flex-col">
+    <image src="{{IMG.empty1001}}" class='empty-img' />
+    <view class='empty-tips'>没有找到你指定的搜索结果~</view>
+</view>
+<!-- 入班提示的弹窗 -->
+<submit-actionsheet bindconfirmevent='postaddtoclassevent' id="submitAction"></submit-actionsheet>

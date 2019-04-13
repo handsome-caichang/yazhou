@@ -1,0 +1,113 @@
+scroll-view {
+    width: 100%;
+}
+.header {
+    background: #fff;
+    padding: 7px 15px 9px;
+    position: relative;
+    width: 100%;
+}
+.search-box {
+    height: 28px;
+    position: relative;
+}
+.search-box input {
+    padding: 0 52px 0 10px;
+    border: 1px solid #eef1f6;
+    border-radius: 28px;
+    height: 28px;
+    width: 100%;
+    outline: none;
+    margin: 0;
+    font-size: 13px;
+}
+.search-box .input-place {
+    color: #BBBBBB;
+}
+.search-box .search-btn {
+    position: absolute;
+    right: 0;
+    width: 50px;
+    height: 28px;
+    line-height: 28px;
+    text-align: center;
+    border-radius: 28px;
+    background-color: #eef1f6;
+}
+.seperate {
+    height: 5px;
+    background-color: #EEF1F6;
+}
+.body {
+    position: absolute;
+    top: 49px;
+    bottom: 50px;
+    left: 0;
+    right: 0;
+    background-color: #EEF1F6;
+}
+.empty-img {
+    width: 100px;
+    height: 135.5px;
+}
+.empty-tips {
+    margin-top: 28px;
+    font-size: 13px;
+    color: #666;
+}
+.item {
+    position: relative;
+    line-height: 1;
+    background-color: #ffffff;
+    border-bottom: 1px solid #ebebeb;
+    padding: 15px 15px 18px 48px;
+}
+.item .icon {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 15px;
+    margin: auto;
+    width: 18px;
+    height: 18px;
+    background-size: 18px;
+}
+.item .title {
+    margin-bottom: 15px;
+}
+.item .title>view:first-child {
+    font-size: 16px;
+    color: #333;
+    margin-right: 5px;
+}
+.item .title>view:nth-child(2) {
+    color: #999999;
+    font-size: 12px;
+    margin: 0 15px 0 5px;
+}
+.item .title>view:last-child {
+    color: #8B572A;
+    font-size: 12px;
+}
+.item .info {
+    font-size: 12px;
+    color: #666666;
+}
+.footer {
+    line-height: 1;
+    background-color: #ffffff;
+    border-top: 1px solid #ebebeb;
+    text-align: right;
+    padding: 10px 0;
+}
+.footer view {
+    display: inline-block;
+    background-color: #1E88F5;
+    font-size: 15px;
+    color: #fff;
+    border-radius: 50px;
+    margin-right: 10px;
+    padding: 0 18px;
+    height: 28px;
+    line-height: 28px;
+}

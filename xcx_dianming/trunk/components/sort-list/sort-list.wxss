@@ -1,0 +1,63 @@
+.header.sort-item{
+    height: 50px;
+    color: #999;
+    width: 100%;
+    justify-content: center;
+}
+ .sort-item{
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+    padding: 0 15px;
+    border-bottom: 1px solid #eef1f6;
+}
+
+.sort-item.active{
+    color:#1e88f5;
+}
+
+.icon{
+    width: 14px;
+    height: 14px;
+    vertical-align: middle;
+    overflow: hidden;
+}
+
+.icon.gou{
+    width:14px;
+    height:16px;
+    margin-left:13px;
+    vertical-align: -2px;
+}
+
+
+.sort-tip{
+    position:absolute;
+    z-index:9999992;
+    width:130px;
+    height:130px;
+    left:calc(50% - 65px);
+    top:calc(50% - 65px);
+    background:rgba(0,0,0,.5);
+    border-radius:4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    color:#fff;
+    font-size:12px;
+    transition:opacity 0.8s linear 0.2s;
+    opacity: 0;
+}
+
+.sort-tip.active{
+    opacity:1;
+}
+
+.sort-tip .icon{
+    width: 35px;
+    height: 35px;
+    margin-bottom: 15px;
+}

@@ -1,0 +1,7 @@
+{
+    "component":true,
+    "navigationBarTitleText": "拍照",
+    "usingComponents":{
+        "img-area":"/components/img-area/img-area"
+    }
+}

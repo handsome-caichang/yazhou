@@ -1,0 +1,41 @@
+.photograph{
+    background:#fff;
+}
+
+.img-area{
+    position: absolute;
+    bottom:50px;
+}
+
+.btn-wrapper{
+    position:absolute;
+    padding-left:40%;
+    top:calc(100% - 50px);
+    left:0;
+    right:0;
+    bottom:0;
+    box-shadow: 0 -4px 4px rgba(0,0,0,.05);
+}
+.button{
+    height: 28px;
+    border-radius: 28px;
+    background: #eef1f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+
+}
+
+.button.cancel{
+    background: #fff;
+    border: 1px solid #1e88f5;
+    color: #1e88f5;
+}
+
+.btn{
+    width: 95px;
+    background: #1e88f5;
+    color: #fff;
+    margin-right: 15px;
+}

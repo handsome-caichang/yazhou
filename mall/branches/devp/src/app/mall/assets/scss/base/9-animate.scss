@@ -1,0 +1,115 @@
+@import '../variable.scss';
+
+/* 淡入淡出 */
+/* .fade-enter-active, .fade-leave-active {
+    opacity: 1;
+    transition: all $duration $timing;
+}
+.fade-enter, .fade-leave-active {
+    opacity: 0;
+} */
+
+/* 右侧进，右侧出 */
+/* .slide-right-right-enter-active, .slide-right-right-leave-active {
+    transition: all $duration $timing;
+}
+.slide-right-right-enter {
+    transform: translate3d(100%, 0, 0);
+    opacity: 0;
+}
+.slide-right-right-leave-active {
+    transform: translate3d(100%, 0, 0);
+    opacity: 1;
+} */
+
+/* 右侧进，左侧出 */
+/* .slide-right-left-enter-active, .slide-right-left-leave-active {
+    transition: all $duration $timing;
+}
+.slide-right-left-enter {
+    transform: translate3d(100%, 0, 0);
+    opacity: 0;
+}
+.slide-right-left-leave-active {
+    transform: translate3d(-100%, 0, 0);
+    opacity: 1;
+} */
+
+/* 左侧进，右侧出 */
+/* .slide-left-right-enter-active, .slide-left-right-leave-active {
+    transition: all $duration $timing;
+}
+.slide-left-right-enter {
+    transform: translate3d(-100%, 0, 0);
+    opacity: 0;
+}
+.slide-left-right-leave-active {
+    transform: translate3d(100%, 0, 0);
+    opacity: 1;
+} */
+
+
+
+/* 右侧进，右侧出 */
+/* .right-right-enter-active, .right-right-leave-active {
+    transition: all $duration $timing;
+}
+.right-right-enter {
+    transform: translate3d(100%, 0, 0);
+    // opacity: 0;
+}
+.right-right-leave-active {
+    transform: translate3d(100%, 0, 0);
+    // opacity: 1;
+} */
+
+
+/* .right-fade-enter-active, .right-fade-leave-active {
+    transition: all $duration $timing;
+}
+.right-fade-enter {
+    transform: translate3d(100%, 0, 0);
+    // opacity: 0;
+}
+.right-fade-leave-active {
+    // transform: translate3d(100%, 0, 0);
+    // opacity: 0;
+} */
+
+
+
+
+
+
+
+
+
+
+
+/* 右侧进，左侧出 */
+/* 用于前进时 */
+.right-left-enter-active, .right-left-leave-active {
+    transition: all $duration $timing;
+}
+.right-left-enter {
+    transform: translate3d(100%, 0, 0);
+    opacity: 0;
+}
+.right-left-leave-active {
+    transform: translate3d(-100%, 0, 0);
+    opacity: 1;
+}
+
+/* 左侧进，右侧出 */ 
+/* 用于后退时 */
+.left-right-enter-active, .left-right-leave-active {
+    transition: all $duration $timing;
+}
+.left-right-enter {
+    transform: translate3d(-100%, 0, 0);
+    opacity: 0;
+}
+.left-right-leave-active {
+    transform: translate3d(100%, 0, 0);
+    opacity: 1;
+}

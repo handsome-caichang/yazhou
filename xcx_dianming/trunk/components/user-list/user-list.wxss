@@ -1,0 +1,21 @@
+.header.item{
+    height: 50px;
+    color: #999;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+}
+.item {
+    padding: 5px 15px;
+    min-height: 44px;
+    border-bottom: 1px solid #eef1f6;
+}
+.item .uname {
+    color: #333333;
+    font-weight: bold;
+}
+.item .sname {
+    color: #898989;
+}

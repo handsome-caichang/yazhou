@@ -1,0 +1,71 @@
+<view class="container">
+    <scroll-view scroll-y class="main-area" bindscroll="onscroll">
+        <view class="body">
+            <!-- 上课时间,上课内容 -->
+            <view class="header">
+                <view class="header-time flex-between"  bindtap="openPicker">
+                    <view>
+                        <text class="color666">上课时间：</text>
+                        <text>{{field.courseTime || ''}}</text>
+                    </view>
+                    <image src="{{IMG.arrowRight}}" class="icon" wx:if="{{showChangeTime}}"></image>
+                </view>
+
+                <!--上课内容-->
+                <navigator url="/pages/courseContent/courseContent" class="header-content  flex-between" hover-class="none">
+                    <view>
+                        <text class="color666">上课内容：</text>
+                        <text hidden="{{!id}}">{{jinduTitle + "   " + (res.content || '')}}</text>
+                    </view>
+                    <image src="{{IMG.arrowRight}}" class="icon"></image>
+                </navigator>
+
+                <navigator url="/pages/detail/photograph/photograph" class="header-photograph flex-between">
+                    <view>
+                        <text class="color666">上课照片：</text>
+                        <text>{{listImgFile.length == 0 ? '' : listImgFile.length}}</text>
+                    </view>
+                    <image src="{{IMG.arrowRight}}" class="icon"></image>
+                </navigator>
+            </view>
+            <!-- 搜索,排序 -->
+            <view class="nav flex-between">
+                <view class="search-container flex-center">
+					<input class="search-box" placeholder="输入学生姓名"  bindchange="syncSearch" type="text"/>
+					<image class="icon icon-search" src="{{IMG.search}}"></image>
+					<view class="btn search-btn flex-center" bindtap="searchList">搜索</view>
+				</view>
+				<view class="btn sort-btn flex-center" bindtap="openSort">
+					<image class="icon" src="{{descStatus ? IMG.sortDesc: IMG.sortAsc}}"></image>
+					<span>排序</span>
+                </view>
+                <navigator url="/pages/courseAttendanceStudent/courseAttendanceStudent?id={{res.coursedetail.id}}&classid={{res.coursedetail.classid}}" class="btn operate-btn flex-center" hover-class="none">
+					<text>添加学员</text>
+                </navigator>
+            </view>
+            <!-- 点名操作界面 -->
+            <child-list id="list" listOrigin="{{listOrigin}}" 
+                bindopenDynamic = "openDynamic"
+                bindopenAbsent="openAbsent"
+                config="{{childConfig}}" bindcountChange="countChange"></child-list>
+        </view>
+    </scroll-view>
+    <view class="count-and-submit footer flex-between">
+        <view class="count-area flex-between">
+            <view>共 <text class="high-light">{{countObj.total}}</text>人</view>
+            <view>出勤: {{countObj.attend}}</view>
+            <view>计费: {{countObj.cost}}</view>
+            <view>试听: {{countObj.try_}}</view>
+        </view>
+        <view class="btn btn-revoke flex-center" bindtap="openCancelCourse" wx:if="{{isCourseCancel}}">取消上课</view>
+        <view class="btn btn-revoke flex-center" bindtap="revokeCourse" wx:if="{{isCourseRevoke}}">撤销上课</view>
+        <view class="btn btn-submit flex-center" bindtap="submitCourse">点名上课</view>
+    </view>
+
+
+    <time-picker id="timePicker" time="{{field.timePicker}}" bindchange="changeTime" bindclose="closePicker" wx:if="{{openPicker}}"></time-picker>
+    <absent-list id="absentList" list="{{res.absentcauselist}}" bindselectAbsent="selectAbsent"></absent-list>
+    <sort-list id="sortList" bindclickSort="clickSort" bindselectSort="selectSort"></sort-list>
+    <dynamic-input id="dynamicInput" dynamicCostUnitShow="{{compute.dynamicCostUnitShow}}" unitcode="{{res.unitcode}}"></dynamic-input>
+    <submit-actionsheet id="submitDialog" bindconfirmevent="cancelCourse"></submit-actionsheet>
+</view>

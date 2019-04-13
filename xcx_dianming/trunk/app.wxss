@@ -1,0 +1,87 @@
+page {
+    font-size: 15px;
+    color: #333333;
+}
+view,
+input,
+image,
+text,
+textarea {
+    box-sizing: border-box;
+}
+.box {
+    display: flex;
+}
+.box-wrap {
+    flex-wrap: wrap;
+}
+.ellipsis {
+    display: -webkit-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-all;
+    -webkit-box-orient: vertical;
+}
+.absolute {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+
+/* --------------------------------------------------------------------------------- */
+/**app.wxss**/
+.container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+    position: relative;
+  } 
+  
+  .flex-center{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: row;
+  }
+  
+  .flex-between{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-direction: row;
+  }
+  
+  .flex-start{
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      flex-direction: row;
+  }
+  
+  .flex-end{
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      flex-direction: row;
+  }
+  
+  .flex-col{
+      flex-direction:column !important;
+  }
+  
+  .color666{
+      color:#666 !important;
+  }
+  
+  .icon{
+      width: 1em;
+      height: 1em;
+      vertical-align: -.15em;
+      overflow: hidden;
+  }

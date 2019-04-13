@@ -1,0 +1,11 @@
+<view>
+    <action-sheet clazz="bottom" id="users" bindclose="close">
+        <view slot="header" class="header .item">切换用户</view>
+        <view>
+            <view wx:for="{{list}}" wx:key="{{index}}" bindtap="select" data-name="{{item.LoginName}}" data-website="{{item.WebSite}}" class="item">
+                <view class="uname">{{item.LoginName}}</view>
+                <view class="sname" wx:if="{{item.CompanyName}}">学校：{{item.CompanyName}}</view>
+            </view>
+        </view>
+    </action-sheet>
+</view>
