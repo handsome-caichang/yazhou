@@ -369,3 +369,16 @@
 @mixin shadow-base($x:0px,$y:-4px,$b:4px,$c:rgba(0,0,0,0.05)){
     box-shadow: $x $y $b $c;
 }
+// 必填
+.require-icon {
+    position: relative;
+    &:after {
+        content: '*';
+        display: block;
+        position: absolute;
+        left: -7px;
+        top: 3px;
+        color: #FE6064;
+        font-size: 14px;
+    }
+}

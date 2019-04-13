@@ -24,25 +24,9 @@ var env = {pro: 'all'}
         var arr = [], 
             obj = {
                 parent: new HtmlWebpackPlugin({
-                    filename: 'parent/index.html',
-                    template: './src/app/parent/index.html',
-                    chunks: ['parent'],
-                    inject: true,
-                    minify: {
-                        removeComments: true,
-                        collapseWhitespace: true,
-                        removeAttributeQuotes: true,
-                        removeScriptTypeAttributes: true,
-                        removeStyleLinkTypeAttributes: true,
-                        minifyCSS: true,
-                        minifyJS: true
-                    },
-                    chunksSortMode: 'dependency'
-                }),
-                parentShare: new HtmlWebpackPlugin({
-                    filename: 'parent/share.html',
-                    template: './src/app/parent-share/index.html',
-                    chunks: ['parentShare'],
+                    filename: 'user/index.html',
+                    template: './src/app/user/index.html',
+                    chunks: ['user'],
                     inject: true,
                     minify: {
                         removeComments: true,
@@ -56,57 +40,9 @@ var env = {pro: 'all'}
                     chunksSortMode: 'dependency'
                 }),
                 teacher: new HtmlWebpackPlugin({
-                    filename: 'teacher/index.html',
-                    template: './src/app/teacher/index.html',
-                    chunks: ['teacher'],
-                    inject: true,
-                    minify: {
-                        removeComments: true,
-                        collapseWhitespace: true,
-                        removeAttributeQuotes: true,
-                        removeScriptTypeAttributes: true,
-                        removeStyleLinkTypeAttributes: true,
-                        minifyCSS: true,
-                        minifyJS: true
-                    },
-                    chunksSortMode: 'dependency'
-                }),
-                /*teacherShare: new HtmlWebpackPlugin({
-                    filename: '../release/teacher/share.html',
-                    template: './src/app/teacher-share/index.html',
-                    chunks: ['teacherShare'],
-                    inject: true,
-                    minify: {
-                        removeComments: true,
-                        collapseWhitespace: true,
-                        removeAttributeQuotes: true,
-                        removeScriptTypeAttributes: true,
-                        removeStyleLinkTypeAttributes: true,
-                        minifyCSS: true,
-                        minifyJS: true
-                    },
-                    chunksSortMode: 'dependency'
-                }),*/
-                dailyReport: new HtmlWebpackPlugin({
-                    filename: 'teacher/daily_report.html',
-                    template: './src/app/daily-report/daily_report.html',
-                    chunks: ['dailyReport'],
-                    inject: true,
-                    minify: {
-                        removeComments: true,
-                        collapseWhitespace: true,
-                        removeAttributeQuotes: true,
-                        removeScriptTypeAttributes: true,
-                        removeStyleLinkTypeAttributes: true,
-                        minifyCSS: true,
-                        minifyJS: true
-                    },
-                    chunksSortMode: 'dependency'
-                }),
-                weekReport: new HtmlWebpackPlugin({
-                    filename: 'teacher/week_report.html',
-                    template: './src/app/daily-report/week_report.html',
-                    chunks: ['weekReport'],
+                    filename: 'manage/index.html',
+                    template: './src/app/manage/index.html',
+                    chunks: ['manage'],
                     inject: true,
                     minify: {
                         removeComments: true,
@@ -120,7 +56,7 @@ var env = {pro: 'all'}
                     chunksSortMode: 'dependency'
                 }),
             }
-
+            console.log('---------'+pro)
         if (pro === 'all') {
             for (var key in obj) {
                 arr.push(obj[key])

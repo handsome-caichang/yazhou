@@ -12,8 +12,9 @@ module.exports = {
     resolve: resolve,
 
     dev: {
-        assetsSubDirectory: 'static',
-        assetsPublicPath: '/weixin/',
+        assetsSubDirectory: "static",
+        assetsPublicPath: '/',
+        cacheBusting: true,
         cacheBusting: true,
         jsSourceMap: true,
         cssSourceMap: true,
@@ -23,13 +24,14 @@ module.exports = {
     },
 
     build: {
-        assetsRoot: resolve('../release/weixin'),
-        assetsSubDirectory: 'static',
-        assetsPublicPath: '//cdn01.xiaogj.com/uploads/mobile/xgj/',
+        assetsRoot: resolve("../release/"),
+        assetsSubDirectory: "static",
+        assetsPublicPath: "https://cdn01.xiaogj.com/uploads/mobile/mzs/",
+        // assetsPublicPath: "/",
         jsSourceMap: false,
         cssSourceMap: false,
         productionGzip: false,
-        productionGzipExtensions: ['js', 'css'],
+        productionGzipExtensions: ["js", "css"],
         bundleAnalyzerReport: process.env.npm_config_report,
         env: {
             NODE_ENV: '"production"'
@@ -37,31 +39,61 @@ module.exports = {
     },
 
     proxy: {
-        '/api': {
-            target: 'http://test.xiaogj.com',
-            changeOrigin: true,
+        "/home": {
+            target: "http://trialapply.xrx100.com",
+            changeOrigin: true
         },
-        '/weixin/teacher/Process.ashx': {
-            target: 'http://test.xiaogj.com',
-            changeOrigin: true,
+        "/weixin/teacher/Process.ashx": {
+            target: "http://test.xiaogj.com",
+            changeOrigin: true
         },
-        '/weixin/parent/Process.ashx': {
-            target: 'http://test.xiaogj.com',
-            changeOrigin: true,
+        "/weixin/parent/Process.ashx": {
+            target: "http://test.xiaogj.com",
+            changeOrigin: true
         },
-        '/weixin/login.ashx': {
-            target: 'http://test.xiaogj.com',
-            changeOrigin: true,
+        "/weixin/login.ashx": {
+            target: "http://test.xiaogj.com",
+            changeOrigin: true
         },
-        '/99/api': {
-            target: 'http://wone.xiaogj.com',
+        
+        "/99/weixin/teacher/Process.ashx": {
+            target: "http://wone.xiaogj.com",
             changeOrigin: true,
-            pathRewrite: {'^/99/api': '/api'}
+            pathRewrite: {
+                "^/99/weixin/teacher/Process.ashx":
+                    "/weixin/teacher/Process.ashx"
+            }
         },
-        '/99/weixin/teacher/Process.ashx': {
-            target: 'http://wone.xiaogj.com',
+        "/lqy": {
+            
+            target: "http://10.0.0.158:811",
             changeOrigin: true,
-            pathRewrite: {'^/99/weixin/teacher/Process.ashx': '/weixin/teacher/Process.ashx'}
-        }
+            pathRewrite: { "^/lqy": "" }
+        },
+        "/zzy": {
+            target: "http://10.0.0.137:8084",
+            changeOrigin: true,
+            pathRewrite: { "^/zzy": "" }
+        },
+        "/py": {
+            target: "http://10.0.0.120:808",
+            changeOrigin: true,
+            pathRewrite: { "^/py": "" }
+        },
+        "/zw": {
+            target: "http://10.0.0.125:1555",
+            changeOrigin: true,
+            pathRewrite: { "^/zw": "" }
+        },
+        "/czf": {
+            target: "http://10.0.0.152:9001",
+            changeOrigin: true,
+            pathRewrite: { "^/czf": "" }
+        },
+        "/xs": {
+            target: "http://10.0.0.149:999",
+            changeOrigin: true,
+            pathRewrite: { "^/xs": "" }
+        },
     }
-}
+};

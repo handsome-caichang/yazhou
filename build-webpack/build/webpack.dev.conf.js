@@ -22,7 +22,7 @@ module.exports = env => {
     var sourceMap = {
         "sourceMap": dev.cssSourceMap
     }
-    var port = 1099
+    var port = 1021
     // 获取本地IP
     var ServerHost = (function getIPAdress() {
         var interfaces = require('os').networkInterfaces();
@@ -42,45 +42,21 @@ module.exports = env => {
 
 
     function getHtmlArr(pro) {
-        var arr = [], 
+        var arr = [],
             obj = {
-                parent: new HtmlWebpackPlugin({
-                    filename: 'parent/index.html',
-                    template: './src/app/parent/index.html',
-                    chunks: ['parent'],
+                user: new HtmlWebpackPlugin({
+                    filename: "user/index.html",
+                    template: "./src/app/user/index.html",
+                    chunks: ["user"],
                     inject: true
                 }),
-                parentShare: new HtmlWebpackPlugin({
-                    filename: 'parent/share.html',
-                    template: './src/app/parent-share/index.html',
-                    chunks: ['parentShare'],
-                    inject: true
-                }),
-                teacher: new HtmlWebpackPlugin({
-                    filename: 'teacher/index.html',
-                    template: './src/app/teacher/index.html',
-                    chunks: ['teacher'],
-                    inject: true
-                }),
-                /*teacherShare: new HtmlWebpackPlugin({
-                    filename: 'teacher/share.html',
-                    template: './src/app/teacher-share/index.html',
-                    chunks: ['teacherShare'],
-                    inject: true
-                }),*/
-                dailyReport: new HtmlWebpackPlugin({
-                    filename: 'teacher/daily_report.html',
-                    template: './src/app/daily-report/daily_report.html',
-                    chunks: ['dailyReport'],
-                    inject: true
-                }),
-                weekReport: new HtmlWebpackPlugin({
-                    filename: 'teacher/week_report.html',
-                    template: './src/app/daily-report/week_report.html',
-                    chunks: ['weekReport'],
+                manage: new HtmlWebpackPlugin({
+                    filename: "manage/index.html",
+                    template: "./src/app/manage/index.html",
+                    chunks: ["manage"],
                     inject: true
                 })
-            }
+            };
 
         console.log(pro);
 
@@ -136,7 +112,7 @@ module.exports = env => {
         devServer: {
             clientLogLevel: 'warning',
             hot: true,
-            contentBase: [config.resolve("../release"),config.resolve("../release-old")],
+            contentBase: config.resolve("../release"),
             compress: true,
             https: httpsEnable,
             host: '0.0.0.0',
